@@ -1,0 +1,14 @@
+{
+  "name": "samuel-skills",
+  "description": "Samuel Osuna's personal skill registry: a spec-driven delivery pipeline for indie hacker projects",
+  "owner": {
+    "name": "Samuel Osuna"
+  },
+  "plugins": [
+    {
+      "name": "samuel",
+      "source": "./plugins/samuel",
+      "description": "Personal development workflow skills for indie hacker projects"
+    }
+  ]
+}

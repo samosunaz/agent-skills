@@ -1,0 +1,319 @@
+# Autonomous pipeline heartbeat — samuel conductor (TEMPLATE).
+#
+# Copy this to `.github/workflows/conductor.yml` in a CONSUMER repo (one that uses
+# the samuel pipeline: GitHub Issues with pipeline:* labels). It fires the conductor
+# loop on a schedule or when an issue becomes `pipeline:ready`, and opens a DRAFT PR.
+# It NEVER marks a PR ready, merges, or closes an issue — that stays human.
+#
+# Full walkthrough: plugins/samuel/reference/automated-trigger.md
+#
+# Required secrets:
+#   ANTHROPIC_API_KEY      — authenticates `claude -p`
+#                            (subscription alt: set CLAUDE_CODE_OAUTH_TOKEN instead)
+#   GH_TOKEN               — uses the built-in ${{ github.token }}; no secret to create
+#
+# If `.claude/samuel.md` sets `security_scan`, add that command to the `allow`
+# list below AND install the scanner in a step before the run — otherwise
+# /samuel:validate reports the scan as skipped and the gate passes without it.
+#
+# Option B (self-hosted on the droplet): change `runs-on: ubuntu-latest` to
+# `runs-on: self-hosted`. That is the ONLY diff — the `claude -p` invocation is identical.
+
+name: Conductor (autonomous pipeline)
+
+on:
+  schedule:
+    # Heartbeat — 09:00 & 15:00 UTC, Mon–Fri. Adjust to taste.
+    - cron: "0 9,15 * * 1-5"
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number to ship"
+        required: true
+
+jobs:
+  conductor:
+    # Fire on the exact pipeline:ready label transition, or any non-issue event
+    # (schedule / manual dispatch). NOT on every later label change of a ready issue.
+    if: github.event.label.name == 'pipeline:ready' || github.event_name != 'issues'
+    runs-on: ubuntu-latest          # option B: change to `self-hosted` (only diff)
+    permissions:
+      contents: write               # push the feature branch
+      pull-requests: write          # open the draft PR
+      issues: write                 # comment + flip labels
+    outputs:
+      issue: ${{ steps.run.outputs.issue }}
+      branch: ${{ steps.run.outputs.branch }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      # Spend caps — tune per repo. The item cap is enforced by the CLI
+      # (--max-budget-usd); the sweep cap by the loop below, between items.
+      ITEM_BUDGET_USD: "10"
+      SWEEP_BUDGET_USD: "40"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # full history — the conductor branches and diffs
+
+      - name: Pre-stage Claude Code plugin + permission allowlist
+        run: |
+          mkdir -p ~/.claude
+          cat > ~/.claude/settings.json <<'JSON'
+          {
+            "extraKnownMarketplaces": {
+              "samuel-skills": {
+                "source": { "source": "github", "repo": "samosunaz/agent-skills" }
+              }
+            },
+            "enabledPlugins": { "samuel@samuel-skills": true },
+            "permissions": {
+              "allow": [
+                "Read", "Edit", "Write", "Glob", "Grep", "Skill", "Agent",
+                "Bash(git add *)", "Bash(git commit *)", "Bash(git status *)",
+                "Bash(git diff *)", "Bash(git log *)", "Bash(git branch *)",
+                "Bash(git checkout *)", "Bash(git push *)",
+                "Bash(gh issue view *)", "Bash(gh issue list *)", "Bash(gh issue edit *)",
+                "Bash(gh issue comment *)", "Bash(gh issue create *)",
+                "Bash(gh pr create *)", "Bash(gh pr view *)", "Bash(gh pr list *)",
+                "Bash(gh pr checks *)", "Bash(gh repo view *)", "Bash(gh label *)",
+                "Bash(bun *)", "Bash(npm *)", "Bash(pnpm *)", "Bash(node *)",
+                "Bash(gitleaks *)", "Bash(semgrep *)"
+              ],
+              "deny": [
+                "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh issue close *)",
+                "Bash(git push --force*)", "Bash(git push -f*)",
+                "Bash(rm -rf *)", "Bash(curl *)", "Bash(wget *)", "WebFetch",
+                "Bash(* migrate deploy*)", "Bash(* db:drop*)"
+              ]
+            }
+          }
+          JSON
+
+      - name: Install Claude Code CLI
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Run the conductor (ship → draft PR)
+        id: run
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LABELED_ISSUE: ${{ github.event.issue.number }}
+          DISPATCH_ISSUE: ${{ github.event.inputs.issue }}
+        run: |
+          set -euo pipefail
+          gh repo set-default "$GITHUB_REPOSITORY"
+
+          : > /tmp/conductor-report.tsv
+          # Also the transcripts: on a self-hosted runner /tmp survives between
+          # runs, and the artifact glob would pick up items this run never touched.
+          rm -f /tmp/conductor-capped /tmp/conductor-*.jsonl
+
+          # Runs one item, then records `issue cost turns tokens outcome` as a TSV
+          # row and leaves the item's cost in ITEM_COST for the sweep accumulator.
+          run_one() {
+            local n="$1"
+            local log="/tmp/conductor-$n.jsonl"
+            local res cost turns tokens subtype is_error outcome
+            echo "=== conductor #$n ==="
+            # No --model: model IDs rotate. To pin, uncomment and use the current Opus id:
+            #   --model claude-opus-4-8
+            # `--output-format stream-json` is a hard error without `--verbose`.
+            # Redirect, never tee: --verbose emits every message AND every tool
+            # result, so piping it to stdout would publish whatever the agent
+            # read into the Actions log — world-readable on a public repo.
+            # stderr stays on the console so failures are still visible, and out
+            # of the file so it can't shadow the result line `tail` reads.
+            claude -p "/samuel:conductor $n --ship
+              /goal ship a draft PR with a green gate; record assumptions; never merge/ready.
+              Stop after 40 turns." \
+              --max-turns 50 \
+              --max-budget-usd "$ITEM_BUDGET_USD" \
+              --output-format stream-json --verbose \
+              > "$log" || true
+
+            # Last JSONL line is the result object:
+            #   {"type":"result","subtype":"success","is_error":false,
+            #    "total_cost_usd":0.4897,"num_turns":1,"usage":{...}}
+            res="$(tail -n 1 "$log" 2>/dev/null || true)"
+            if [ -z "$res" ] || ! printf '%s' "$res" | jq -e 'select(.type=="result")' >/dev/null 2>&1; then
+              # A budget- or turn-killed run can die before emitting `result`.
+              # Charge the full item cap so the sweep accumulator never fails open.
+              cost="$ITEM_BUDGET_USD"; turns="?"; tokens="?"; outcome="aborted"
+            else
+              cost="$(printf '%s' "$res" | jq -r '.total_cost_usd // 0')"
+              turns="$(printf '%s' "$res" | jq -r '.num_turns // "?"')"
+              tokens="$(printf '%s' "$res" | jq -r '"\(.usage.input_tokens // "?")/\(.usage.output_tokens // "?")"')"
+              subtype="$(printf '%s' "$res" | jq -r '.subtype // "unknown"')"
+              is_error="$(printf '%s' "$res" | jq -r '.is_error // false')"
+              outcome="escalated"
+              if [ "$subtype" != "success" ] || [ "$is_error" = "true" ]; then
+                outcome="aborted"
+              # Item-scoped by construction: a sweep runs every item in THIS one
+              # checkout, so the current branch belongs to whichever item last
+              # created one, not to $n. /samuel:done sets this label immediately
+              # after opening the draft PR, and the sweep only enumerates
+              # pipeline:ready issues, so it cannot be pre-set.
+              elif gh issue view "$n" --json labels --jq '.labels[].name' \
+                   | grep -qx 'pipeline:in-review'; then
+                outcome="shipped"
+              fi
+            fi
+
+            printf '%s\t%s\t%s\t%s\t%s\n' "$n" "$cost" "$turns" "$tokens" "$outcome" \
+              >> /tmp/conductor-report.tsv
+            ITEM_COST="$cost"
+            echo "--- #$n: $outcome · \$$cost · $turns turns · $tokens tokens ---"
+          }
+
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            # Heartbeat — sweep the whole pipeline:ready inbox (multi-item).
+            SWEEP_SPENT="0"
+            for n in $(gh issue list --state open --label "pipeline:ready" \
+                        --json number --jq '.[].number'); do
+              run_one "$n"
+              SWEEP_SPENT="$(awk -v a="$SWEEP_SPENT" -v b="$ITEM_COST" 'BEGIN{printf "%.4f", a+b}')"
+              if awk -v a="$SWEEP_SPENT" -v b="$SWEEP_BUDGET_USD" 'BEGIN{exit !(a>=b)}'; then
+                echo "Sweep cap hit: \$$SWEEP_SPENT of \$$SWEEP_BUDGET_USD — stopping the sweep."
+                touch /tmp/conductor-capped
+                break
+              fi
+            done
+            # Per-item outcomes land in the run report below; per-PR CI reporting
+            # is still the morning review's job (ci-check can't fan out N issues).
+            exit 0
+          fi
+
+          # Single-issue events (labeled / workflow_dispatch).
+          if [ "$EVENT_NAME" = "issues" ]; then
+            ISSUE="$LABELED_ISSUE"
+          else
+            ISSUE="$DISPATCH_ISSUE"
+          fi
+          # Emit the issue UP FRONT so ci-check can report even if the run below
+          # aborts (turn cap / agent error) before a branch/PR exists.
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+
+          run_one "$ISSUE"
+
+          # Branch is known only after the conductor created it.
+          echo "branch=$(git branch --show-current)" >> "$GITHUB_OUTPUT"
+
+      # One comment per run on a rolling "Conductor log" issue — the loop's own
+      # state file. Covers every launch path; `always()` so an aborted sweep
+      # still reports what it spent.
+      - name: Post the run report (conductor:log)
+        if: always()
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh repo set-default "$GITHUB_REPOSITORY"
+
+          REPORT="/tmp/conductor-report.tsv"
+          if [ ! -s "$REPORT" ]; then
+            echo "No conductor rows to report."
+            exit 0
+          fi
+
+          gh label create conductor:log --color 0E8A16 \
+            --description "Rolling conductor run log" --force || true
+
+          LOG_ISSUE="$(gh issue list --label conductor:log --state open \
+            --json number --jq '.[0].number' 2>/dev/null || true)"
+          if [ -z "$LOG_ISSUE" ] || [ "$LOG_ISSUE" = "null" ]; then
+            # `gh issue create` prints the URL; the number is its last path segment.
+            LOG_URL="$(gh issue create --title "Conductor run log" --label conductor:log \
+              --body "Rolling log — one comment per conductor run (cost, turns, tokens, outcome). Keep this issue open.")"
+            LOG_ISSUE="${LOG_URL##*/}"
+          fi
+
+          SPENT="$(awk -F'\t' '{c += $2} END {printf "%.4f", c}' "$REPORT")"
+          BODY="$(mktemp)"
+          {
+            printf '**Conductor run** — %s · %s · [Action run](%s)\n\n' \
+              "$EVENT_NAME" "$(date -u '+%Y-%m-%d %H:%M UTC')" "$RUN_URL"
+            printf '| item | cost (USD) | turns | tokens (in/out) | outcome |\n'
+            printf '|---|---|---|---|---|\n'
+            awk -F'\t' '{printf "| #%s | %s | %s | %s | %s |\n", $1, $2, $3, $4, $5}' "$REPORT"
+            awk -F'\t' '{n++; o[$5]++} END {printf "\n**Totals** — %d item(s) · shipped %d · escalated %d · aborted %d\n", n, o["shipped"], o["escalated"], o["aborted"]}' "$REPORT"
+            if [ -f /tmp/conductor-capped ]; then
+              printf '\nBudget — spent $%s of $%s; **sweep cap hit, run cut short**.\n' "$SPENT" "$SWEEP_BUDGET_USD"
+            else
+              printf '\nBudget — spent $%s of $%s (cap not reached).\n' "$SPENT" "$SWEEP_BUDGET_USD"
+            fi
+          } > "$BODY"
+
+          gh issue comment "$LOG_ISSUE" --body-file "$BODY"
+          cat "$BODY" >> "$GITHUB_STEP_SUMMARY"
+
+      # The transcripts, for a post-mortem the run report can't answer. PRIVATE
+      # REPOS ONLY: a transcript carries every tool result the agent saw, and
+      # artifacts — unlike step logs — get NO secret masking. On a public repo
+      # any signed-in user can download them, so the upload is gated off and the
+      # JSONL stays on the runner. A missing `private` field evaluates falsy,
+      # which fails safe (no upload).
+      - name: Upload conductor transcripts
+        if: always() && github.event.repository.private
+        uses: actions/upload-artifact@v4
+        with:
+          name: conductor-jsonl
+          path: /tmp/conductor-*.jsonl
+          retention-days: 3
+          if-no-files-found: ignore
+
+  # Cheap loop-closer — no agent, no Opus idling. Single-issue events only:
+  # a schedule run ships N issues, which a single downstream job can't fan out.
+  ci-check:
+    needs: conductor
+    # Run on conductor success OR failure (not when skipped/cancelled) so a turn-cap /
+    # agent-error stop still surfaces on the issue. Single-issue events only — a schedule
+    # run ships N issues, which one downstream job can't fan out.
+    if: >-
+      always()
+      && (needs.conductor.result == 'success' || needs.conductor.result == 'failure')
+      && github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+      checks: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE: ${{ needs.conductor.outputs.issue }}
+      BRANCH: ${{ needs.conductor.outputs.branch }}
+    steps:
+      - name: Watch CI and report on the issue
+        run: |
+          set -euo pipefail
+          gh repo set-default "$GITHUB_REPOSITORY"
+
+          if [ -z "${ISSUE:-}" ]; then
+            echo "No issue from the conductor — nothing to report."
+            exit 0
+          fi
+
+          if [ -z "${BRANCH:-}" ]; then
+            # conductor aborted before opening a PR (turn cap / agent error).
+            gh issue comment "$ISSUE" --body \
+              "🟡 Conductor run did not complete (turn cap or error) — no draft PR. See the workflow run + handoff."
+            exit 0
+          fi
+
+          PR="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+          if [ -z "$PR" ] || [ "$PR" = "null" ]; then
+            gh issue comment "$ISSUE" --body \
+              "🟡 Conductor produced no draft PR for \`$BRANCH\` (likely a red gate or a blocker — see the handoff)."
+            exit 0
+          fi
+
+          URL="$(gh pr view "$PR" --json url --jq .url)"
+          # Watch the PR's checks. --watch exits non-zero if any check fails; capture it.
+          if gh pr checks "$PR" --watch; then
+            gh issue comment "$ISSUE" --body "✅ CI green on draft PR #$PR — $URL"
+          else
+            gh issue comment "$ISSUE" --body "❌ CI red on draft PR #$PR — $URL"
+          fi
+          # NB: never `gh pr ready` / `gh pr merge` — marking ready and merging stay human.

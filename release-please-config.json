@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/refs/heads/main/schemas/config.json",
+  "signoff": "GitHub Actions <github-actions[bot]@users.noreply.github.com>",
+  "packages": {
+    ".": {
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "prerelease": false,
+      "release-type": "node",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "plugins/samuel/.claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "plugins/samuel/.codex-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ],
+      "changelog-sections": [
+        { "type": "feat", "section": "🚀 Features" },
+        { "type": "fix", "section": "🩹 Fixes" },
+        { "type": "perf", "section": "🔥 Performance", "hidden": false },
+        { "type": "refactor", "section": "♻️ Refactoring", "hidden": false },
+        { "type": "docs", "section": "📄 Documentation", "hidden": false },
+        { "type": "style", "section": "🎨 Styling", "hidden": false },
+        { "type": "test", "section": "🧪 Tests", "hidden": false },
+        { "type": "build", "section": "🛠️ Build System", "hidden": false },
+        { "type": "ci", "section": "☁️ Continuous Integration", "hidden": false },
+        { "type": "chore", "section": "🧹 Miscellaneous Chores", "hidden": false },
+        { "type": "revert", "section": "⏪ Reverts", "hidden": false }
+      ]
+    }
+  }
+}

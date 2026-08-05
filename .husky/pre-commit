@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+if ! bun run check:plugins; then
+  echo
+  echo "Plugin or marketplace manifest validation failed."
+  echo "Fix the reported manifest issues before committing."
+  exit 1
+fi
+
+if ! bun run check:context; then
+  echo
+  echo "Injected context commands violate CLAUDE.md rules (static analysis / fallback)."
+  echo "Fix the reported lines before committing."
+  exit 1
+fi

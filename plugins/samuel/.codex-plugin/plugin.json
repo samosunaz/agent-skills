@@ -1,0 +1,15 @@
+{
+  "name": "samuel",
+  "version": "3.11.0",
+  "description": "Personal indie hacker workflow: spec-driven pipeline with living journal, autonomous conductor, git, and project management skills",
+  "author": {
+    "name": "Samuel Osuna"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Samuel",
+    "shortDescription": "Spec-driven pipeline for indie hacker projects",
+    "developerName": "Samuel Osuna",
+    "category": "Development"
+  }
+}

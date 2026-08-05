@@ -1,0 +1,27 @@
+{
+  "name": "@samuel/agent-skills",
+  "version": "3.11.0",
+  "private": true,
+  "description": "Skill registry for personal indie hacker projects",
+  "scripts": {
+    "commit": "cz",
+    "prepare": "husky",
+    "check:context": "bash scripts/lint-skill-context.sh",
+    "check:plugins": "sh scripts/validate-plugins.sh",
+    "check:autonomy": "bash scripts/lint-autonomy.sh"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
+    "@commitlint/cz-commitlint": "^20.4.3",
+    "commitizen": "^4.3.1",
+    "husky": "^9.1.7",
+    "inquirer": "8.2.5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "packageManager": "bun@1.2.4"
+}

@@ -1,0 +1,37 @@
+# Skills deliberately outside the checkpoint-interaction convention.
+#
+# The coverage check is the complement of this file: every SKILL.md must either
+# carry the standard phrase (interaction-tools.md § The standard phrase) or be
+# listed here with a reason. A new skill shows up as unclassified until someone
+# makes the call — which is the point. Never add a path here to silence the
+# check; add it because the skill genuinely holds no human decision gate.
+#
+# Check (empty output = pass):
+#   comm -23 <(find plugins -name SKILL.md | sort) \
+#            <(grep -rl 'interaction-tools' --include=SKILL.md plugins | sort) \
+#   | grep -vxFf plugins/samuel/reference/checkpoint-exclusions.txt
+
+# Read-only reporting. Reconstructs state and presents it; the user decides
+# afterwards, in their own turn, with no option list to answer.
+plugins/ops/skills/catchup/SKILL.md
+plugins/ops/skills/pr-radar/SKILL.md
+plugins/samuel/skills/workflow/progress/SKILL.md
+
+# Read-only analysis. Severity-tagged findings, no auto-edits, nothing to approve.
+plugins/samuel/skills/pipeline/analyze/SKILL.md
+
+# Waits, but never on a decision: it collects the open-ended research question
+# and joins subagents. SKILL.md:116 asks for follow-ups after presenting —
+# input collection, not a gate.
+plugins/samuel/skills/pipeline/codebase-documentation/SKILL.md
+
+# Applies its fixes directly and reports afterwards (SKILL.md:139, :151).
+# A summary is not a gate.
+plugins/samuel/skills/git/remove-slop/SKILL.md
+
+# The autonomous driver. It hard-stops and hands off; it never asks a question,
+# by design — see interaction-tools.md § Boundary.
+plugins/samuel/skills/workflow/conductor/SKILL.md
+
+# Reference material — the org diagram standard, no execution and no gate.
+plugins/samuel/skills/product/mermaid/SKILL.md

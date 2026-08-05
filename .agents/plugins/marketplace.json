@@ -1,0 +1,19 @@
+{
+  "name": "samuel-skills",
+  "interface": {
+    "displayName": "Samuel Skills"
+  },
+  "plugins": [
+    {
+      "name": "samuel",
+      "source": {
+        "source": "local",
+        "path": "../../plugins/samuel"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Development"
+    }
+  ]
+}
