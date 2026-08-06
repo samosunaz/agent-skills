@@ -1,10 +1,10 @@
 # Samuel Osuna — Agent Skills
 
-Personal skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for Samuel Osuna's personal and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker; [Backlog.md](https://backlog.md) survives only as an optional local scratchpad during implementation.
+Personal skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for Samuel Osuna's personal and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker.
 
 ## Prerequisites
 
-- **[Claude Code](https://claude.ai/code)** or **[Codex](https://developers.openai.com/codex)** — both load these plugins.
+- **[Claude Code](https://claude.ai/code)** or **[Codex](https://developers.openai.com/codex)** — both load this plugin.
 - To run the pipeline in a project: the [`gh` CLI](https://cli.github.com), authenticated.
 - **[Bun](https://bun.sh)** `1.2.4+` to work on this repo itself.
 
@@ -45,9 +45,9 @@ Skills are namespaced by plugin: `/samuel:plan`, `/samuel:implement`, `/samuel:c
 
 ### OpenAI Codex
 
-Clone or copy this repo and Codex discovers both plugins via `.agents/plugins/marketplace.json`. Enable what you need.
+Clone or copy this repo and Codex discovers the plugin via `.agents/plugins/marketplace.json`.
 
-Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/samuel/agents/`, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`, `landed`) need that path passed another way.
+Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/samuel/agents/`, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
 
 ## Source of Truth
 
@@ -136,65 +136,76 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:codebase-documentation` | Parallel sub-agent codebase exploration. Documents findings without suggesting changes. |
-| `/samuel:spec` *(optional)* | Generate a Spec (User Stories, FR-### MUST, SC-### measurable, Edge Cases). WHAT/WHY, not HOW. |
-| `/samuel:plan` | 5-phase interactive planning with forced human checkpoints + Constitution Check. |
-| `/samuel:refine-plan` | Surgical edits to existing plans based on feedback. |
-| `/samuel:analyze` *(optional)* | Read-only cross-artifact consistency check (spec/research/plan/tasks/constitution). |
-| `/samuel:implement` | Sequential task execution with human verification + living Implementation Notes journal. |
-| `/samuel:validate` | Verifies against success criteria, seals the journal, runs documentation impact analysis. |
+| [`/samuel:codebase-documentation`](plugins/samuel/skills/pipeline/codebase-documentation/SKILL.md) | Parallel sub-agent codebase exploration. Documents findings without suggesting changes. |
+| [`/samuel:spec`](plugins/samuel/skills/pipeline/spec/SKILL.md) *(optional)* | Generate a Spec (User Stories, FR-### MUST, SC-### measurable, Edge Cases). WHAT/WHY, not HOW. |
+| [`/samuel:plan`](plugins/samuel/skills/pipeline/plan/SKILL.md) | 5-phase interactive planning with forced human checkpoints + Constitution Check. |
+| [`/samuel:refine-plan`](plugins/samuel/skills/pipeline/refine-plan/SKILL.md) | Surgical edits to existing plans based on feedback. |
+| [`/samuel:analyze`](plugins/samuel/skills/pipeline/analyze/SKILL.md) *(optional)* | Read-only cross-artifact consistency check (spec/research/plan/tasks/constitution). |
+| [`/samuel:implement`](plugins/samuel/skills/pipeline/implement/SKILL.md) | Sequential task execution with human verification + living Implementation Notes journal. |
+| [`/samuel:validate`](plugins/samuel/skills/pipeline/validate/SKILL.md) | Verifies against success criteria, seals the journal, runs documentation impact analysis. |
 
 ### Workflow
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:roadmap` | Product Ownership / discovery: read the product's state, propose prioritized **bets** (`roadmap:now/next/later` issues) — what to build next and why. Upstream of `plan`. |
-| `/samuel:kickoff` | Initialize a new project: vision, MVP scope, tech decisions, initial task breakdown. |
-| `/samuel:next` | Pull the next prioritized work item (GitHub Issues). |
-| `/samuel:start-task` | Pick an item, create branch/worktree, bootstrap task-context + feature dir. |
-| `/samuel:conductor` | Drive the pipeline unattended (cloud/overnight); `--ship` opens a draft PR. Safety gate: isolated worktree or a CI runner on a non-main branch. Budget caps + a run report per run. |
-| `/samuel:done` | Open a PR (`Closes #N`, `--draft` for autonomous runs) synthesizing the journal; mark the item done; cleanup. |
-| `/samuel:progress` | Personal dashboard: item status, velocity, blockers (GitHub Issues). |
-| `/samuel:retro` | Personal retrospective from GitHub Issues/PRs + git history. |
-| `/samuel:team-orchestrate` | Spawn multi-session Claude Code agent teams for parallel work streams. |
-| `/samuel:waves` | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
-| `/samuel:wave-prep` | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
+| [`/samuel:roadmap`](plugins/samuel/skills/workflow/roadmap/SKILL.md) | Product Ownership / discovery: read the product's state, propose prioritized **bets** (`roadmap:now/next/later` issues) — what to build next and why. Upstream of `plan`. |
+| [`/samuel:kickoff`](plugins/samuel/skills/workflow/kickoff/SKILL.md) | Initialize a new project: vision, MVP scope, tech decisions, initial task breakdown. |
+| [`/samuel:next`](plugins/samuel/skills/workflow/next/SKILL.md) | Pull the next prioritized work item (GitHub Issues). |
+| [`/samuel:start-task`](plugins/samuel/skills/workflow/start-task/SKILL.md) | Pick an item, create branch/worktree, bootstrap task-context + feature dir. |
+| [`/samuel:conductor`](plugins/samuel/skills/workflow/conductor/SKILL.md) | Drive the pipeline unattended (cloud/overnight); `--ship` opens a draft PR. Safety gate: isolated worktree or a CI runner on a non-main branch. Budget caps + a run report per run. |
+| [`/samuel:done`](plugins/samuel/skills/workflow/done/SKILL.md) | Open a PR (`Closes #N`, `--draft` for autonomous runs) synthesizing the journal; mark the item done; cleanup. |
+| [`/samuel:progress`](plugins/samuel/skills/workflow/progress/SKILL.md) | Personal dashboard: item status, velocity, blockers (GitHub Issues). |
+| [`/samuel:retro`](plugins/samuel/skills/workflow/retro/SKILL.md) | Personal retrospective from GitHub Issues/PRs + git history. |
+| [`/samuel:team-orchestrate`](plugins/samuel/skills/workflow/team-orchestrate/SKILL.md) | Spawn multi-session Claude Code agent teams for parallel work streams. |
+| [`/samuel:waves`](plugins/samuel/skills/workflow/waves/SKILL.md) | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
+| [`/samuel:wave-prep`](plugins/samuel/skills/workflow/wave-prep/SKILL.md) | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
 
 ### Product
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:feature-dossier` | Create/update a living feature dossier (enriched markdown + Mermaid, evidence `file:line`, changelog) in a versioned product catalog. |
+| [`/samuel:feature-dossier`](plugins/samuel/skills/product/feature-dossier/SKILL.md) | Create/update a living feature dossier (enriched markdown + Mermaid, evidence `file:line`, changelog) in a versioned product catalog. |
+| [`/samuel:mermaid`](plugins/samuel/skills/product/mermaid/SKILL.md) | The diagram style standard: semantic shapes, one-emoji vocabulary, `classDef` palette. Single home for how every Mermaid diagram in the pipeline is drawn. |
 
 ### Design
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:motion-brief` | Refine a natural-language animation/transition description (+ screenshots, diagrams, references) into an implementation-ready Motion Brief with canonical motion nomenclature and a paste-ready agent prompt. |
+| [`/samuel:motion-brief`](plugins/samuel/skills/design/motion-brief/SKILL.md) | Refine a natural-language animation/transition description (+ screenshots, diagrams, references) into an implementation-ready Motion Brief with canonical motion nomenclature and a paste-ready agent prompt. |
 
 ### Git & Dev
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:create-atomic-commit` | Atomic conventional commits, no AI attribution, requires approval. |
-| `/samuel:pr-self-audit` | High-signal PR review: bugs, security, logic errors. |
-| `/samuel:address-pr-comments` | Author side of the review gate: triage, verify, fix, reply, resolve PR comments in incremental passes. |
-| `/samuel:session-handoff` | Context compaction (FIC) for long sessions. |
-| `/samuel:remove-slop` | Remove AI-generated code slop from the current branch. |
+| [`/samuel:create-atomic-commit`](plugins/samuel/skills/git/create-atomic-commit/SKILL.md) | Atomic conventional commits, no AI attribution, requires approval. |
+| [`/samuel:pr-self-audit`](plugins/samuel/skills/git/pr-self-audit/SKILL.md) | High-signal PR review: bugs, security, logic errors. |
+| [`/samuel:address-pr-comments`](plugins/samuel/skills/git/address-pr-comments/SKILL.md) | Author side of the review gate: triage, verify, fix, reply, resolve PR comments in incremental passes. |
+| [`/samuel:session-handoff`](plugins/samuel/skills/git/session-handoff/SKILL.md) | Context compaction (FIC) for long sessions. |
+| [`/samuel:remove-slop`](plugins/samuel/skills/git/remove-slop/SKILL.md) | Remove AI-generated code slop from the current branch. |
+
+### Contract
+
+The backend ↔ client API handoff, in both directions. Agent-to-agent output, inline by default (a fenced block to paste into the other agent's session). Client axis is `web` or `mobile`.
+
+| Skill | Purpose |
+|-------|---------|
+| [`/samuel:api-request`](plugins/samuel/skills/contract/api-request/SKILL.md) | `web \| mobile → backend`: spec an endpoint a client needs — flow diagram, data requirements, proposed endpoints, error→UI mapping, open questions. |
+| [`/samuel:api-contract`](plugins/samuel/skills/contract/api-contract/SKILL.md) | `backend → web \| mobile`: document an endpoint you built — routes, validations, response shapes, native types (TypeScript + Swift/Kotlin), breaking-change notes. |
 
 ### Meta
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:find-unknowns` | Map-vs-territory audit: audit / preflight (Issue N, READY-or-HOLD) / teach / quiz. Preflight gates autonomous `pipeline:ready`; quiz is the human comprehension gate before merging agent-authored PRs. |
-| `/samuel:repo-audit` | Substrate drift detector for consumer repos: deterministic checks + semantic CLAUDE.md pass. Report-only. |
+| [`/samuel:find-unknowns`](plugins/samuel/skills/meta/find-unknowns/SKILL.md) | Map-vs-territory audit: audit / preflight (Issue N, READY-or-HOLD) / teach / quiz. Preflight gates autonomous `pipeline:ready`; quiz is the human comprehension gate before merging agent-authored PRs. |
+| [`/samuel:repo-audit`](plugins/samuel/skills/meta/repo-audit/SKILL.md) | Substrate drift detector for consumer repos: deterministic checks + semantic CLAUDE.md pass. Report-only. |
+| [`/samuel:create-review-md`](plugins/samuel/skills/meta/create-review-md/SKILL.md) | Generate a repo's root `REVIEW.md` (schema v1): deterministic evidence digest + semantic derivation of repo-specific review rules, cited per bullet. |
 
 ### Governance *(optional)*
 
 | Skill | Purpose |
 |-------|---------|
-| `/samuel:create-constitution` | Ratify a repo-root `CONSTITUTION.md` (3–5 non-negotiable principles, semver). |
-| `/samuel:update-constitution` | Amend the constitution with a Sync Impact Report. |
+| [`/samuel:create-constitution`](plugins/samuel/skills/meta/create-constitution/SKILL.md) | Ratify a repo-root `CONSTITUTION.md` (3–5 non-negotiable principles, semver). |
+| [`/samuel:update-constitution`](plugins/samuel/skills/meta/update-constitution/SKILL.md) | Amend the constitution with a Sync Impact Report. |
 
 ## Agents
 
@@ -211,7 +222,6 @@ Sub-agents are spawned by skills for parallel data retrieval. They are retriever
 
 Work is tracked in GitHub Issues + PRs via the `gh` CLI (no GitHub MCP) — the only tracker (ADR 0002). A work item is one Issue whose body serves three reading speeds: a ten-second **TL;DR** (*Qué / Por qué / Ojo* + chips) so a human can triage without reading agent-facing prose, the human **Brief**, and the self-contained **Executor Plan**. PR bodies open with the same block. Status is `pipeline:*` labels; a PR `Closes #N`; the conductor's `--ship` mode opens draft PRs for headless/cloud runs. Owner/repo is explicit (never parsed from origin), so it works behind an SSH-alias / multi-account setup. Hub + storage map: `plugins/samuel/reference/tracker.md`.
 
-Backlog.md is not a tracker — it survives only as an optional local scratchpad to decompose a big plan into checkable subtasks during implementation (`plugins/samuel/reference/backlog-operations.md`).
 
 ## Creating a new skill
 

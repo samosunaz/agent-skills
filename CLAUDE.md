@@ -20,7 +20,20 @@ This repo targets **Claude Code** and **OpenAI Codex** from one shared skill sou
 
 Adding or renaming a skill needs no sync step — the plugin dir is the only source. Adding a **plugin** touches four files: both marketplaces, its two manifests, and `release-please-config.json` `extra-files` (a manifest missing from `extra-files` freezes that plugin's version silently; `scripts/validate-plugins.sh` fails the pre-commit hook on that gap and on version drift).
 
-Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`, `landed`) resolve only under Claude Code — Codex needs the path passed another way.
+Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) resolve only under Claude Code — Codex needs the path passed another way.
+
+**The two manifests are not interchangeable.** Same `name`/`version`/`description`, different shape:
+
+| Field | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` |
+|---|---|---|
+| `skills` | array of group dirs (`["./skills/pipeline", …]`) | **string** path (`"./skills/"`) |
+| `interface` | not used | required block: `displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `capabilities`, `defaultPrompt` |
+
+The Codex marketplace entry needs `policy.installation` **and** `policy.authentication` (`ON_INSTALL` \| `ON_USE`) plus `category` on every plugin — the validator mirrors the workspace ingestion schema. Its `source.path` is relative to the **repo root**, not to the marketplace file: `./plugins/<name>`, never `../../plugins/<name>`. Spec: [`plugin-json-spec.md`](https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/plugin-creator/references/plugin-json-spec.md).
+
+Codex's optional companion files are `.mcp.json` (`mcpServers`) and `.app.json` (`apps`) — this repo declares neither, and `hooks` is rejected outright by the validator. There is no OpenAPI document anywhere in the plugin contract; the only YAML is a per-skill `<skill>/agents/openai.yaml` carrying Codex-side presentation metadata (`interface.display_name`, `interface.short_description`, optional `icon_small`/`icon_large`/`brand_color`/`default_prompt`, `policy.allow_implicit_invocation`, `dependencies.tools`). It is optional and unused here; the `agents/` directory at plugin root is Claude sub-agents, unrelated.
+
+Verify with the upstream validator, not by eye: `scripts/validate_plugin.py` from the same spec directory. Known deviation — it walks `skills/` only one level deep, so this repo's grouped layout (`skills/<group>/<skill>/SKILL.md`) makes it report seven groups as "missing `SKILL.md`". That is a scaffolding-linter artifact, not a runtime break: Codex's real loader is a recursive walk with `MAX_SCAN_DEPTH = 6` (`codex-rs/ext/skills/src/loader/`), so it finds every nested skill. Flatten only if a marketplace ever gates submission on that script.
 
 ## Repository Structure
 
@@ -147,7 +160,6 @@ Agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them a
 
 Work is tracked in **GitHub Issues + PRs** via the `gh` CLI (**no GitHub MCP**) — the only SoT (ADR 0002, `docs/decisions/0002-single-tracker-github.md`). Built for unattended/cloud sessions and CI-gated merge. A work item is one Issue whose body serves three reading speeds: a ten-second **TL;DR**, the human **Brief**, and the self-contained **Executor Plan** (markers `<!-- samuel:brief -->` / `<!-- samuel:plan -->`); status is `pipeline:*` labels; a PR `Closes #N`; decisions are Issue comments. Hub + storage map: `plugins/samuel/reference/tracker.md`. Adapter: `reference/github-operations.md`. The SSH-alias origin breaks owner/repo parsing → always use the stored `repo` + `gh repo set-default`, **never parse `git remote`**.
 
-**Backlog.md is not a tracker** — it survives only as the optional, implement-time **local disector** (decompose a big Executor Plan into checkable local subtasks; derivable, disposable, read back by nobody). Recipes + NOT-list: `reference/backlog-operations.md`.
 
 The committed layer (always files, never tracker state):
 - **Plan format** — TL;DR + Brief + Executor Plan (`reference/plan-templates.md`), in the Issue body.

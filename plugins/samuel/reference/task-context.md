@@ -24,7 +24,7 @@ last_updated: 2026-05-21
 
 The frontmatter MUST appear at the top of the file before any prose. Existing task-context body content follows as-is after the closing `---`. `repo` is copied from `.claude/samuel.md` (repo config) by `/samuel:start-task` so the rest of the pipeline reads a single file.
 
-**Legacy contexts (ADR 0002):** a task-context with `tracker: backlog` — or with no `tracker` key — is pre-migration. Pipeline skills MUST NOT execute over it: stop and offer the migration path (`reference/tracker.md` § Legacy contexts).
+**Legacy contexts (ADR 0002):** a task-context whose `tracker` key is anything other than `github` is pre-migration. Pipeline skills MUST NOT execute over it: stop and offer the migration path (`reference/tracker.md` § Legacy contexts).
 
 `spec_required` defaults to `false`: bugs and small features go straight from `/samuel:start-task` to `/samuel:plan`. Set it `true` only for features where capturing WHAT/WHY before HOW pays off.
 

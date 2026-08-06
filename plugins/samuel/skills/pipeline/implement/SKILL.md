@@ -1,7 +1,7 @@
 ---
 name: implement
 description: Execute a self-contained Executor Plan step-by-step with human verification between phases, keeping a living Implementation Notes journal. Use when ready to implement a planned item.
-allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(gh *) Bash(backlog *) Bash(awk *) Bash(test *) mcp__backlog__task_list mcp__backlog__task_view mcp__backlog__task_edit mcp__backlog__task_search Read Edit Write Agent AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(gh *) Bash(awk *) Bash(test *) Read Edit Write Agent AskUserQuestion
 ---
 
 # Implement Plan
@@ -28,7 +28,7 @@ Execute the **Executor Plan** for the active item, step by step, with human veri
 1. **Load the Executor Plan** for the item: `gh issue view {item} -R {repo} --json body,title` → parse the `<!-- samuel:plan -->` section (Steps, guardrails, validation, DoD) and the `<!-- samuel:brief -->` AC.
 2. **Set phase**: edit `.claude/task-context.md` → `phase: implement`, `last_updated: {today}`.
 3. **Read `CONSTITUTION.md`** if present — a MUST violation is a hard STOP (record a decision + `V-NNN`).
-4. **Open the journal** at `{feature_dir}/implementation-notes.md` (create the dir if needed). `Write` the stub from `../../../reference/implementation-notes.md`. Plain file — **no backlog doc, no two-call dance**. Populate D/V/T/Q **proactively** as you work.
+4. **Open the journal** at `{feature_dir}/implementation-notes.md` (create the dir if needed). `Write` the stub from `../../../reference/implementation-notes.md`. A plain committed file — edit it with Read/Edit/Write. Populate D/V/T/Q **proactively** as you work.
 
 ## Step 1: Present the execution plan
 
@@ -46,8 +46,6 @@ Proceed? (Y/N)
 ```
 
 **WAIT.** (Conductor: proceed with option 1.) (attended-auto: proceed with option 1, announcing it in one line; no journal entry — executing the agreed plan is not a decision, and Step 0 has already opened a journal that would otherwise fill with them (`../../../reference/autonomy.md` § Recording contract).)
-
-> Big plan? At your discretion, dissect the Steps into local backlog subtasks for dependency ordering and local ticks — `../../../reference/backlog-operations.md` (derivable, disposable, read back by nobody).
 
 ## Step 2: Sequential execution with phase pauses
 

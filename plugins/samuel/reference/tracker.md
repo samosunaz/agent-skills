@@ -2,7 +2,7 @@
 
 The samuel pipeline tracks work in **GitHub Issues + Pull Requests**, operated through the `gh` CLI. One Issue = one work item: body = Brief + Executor Plan (`<!-- samuel:brief -->` / `<!-- samuel:plan -->`), status = `pipeline:*` labels, closed by a PR `Closes #N`. The exact commands, label transitions, and PR ops live in the adapter: `reference/github-operations.md`. The single-tracker decision is ADR 0002 (`docs/decisions/0002-single-tracker-github.md` in this repo).
 
-There is **no alternate tracker backend**. Backlog.md survives only as an optional, local disector — see the pointer section below.
+There is **no alternate tracker backend** and no offline fallback.
 
 ## Repo config — `.claude/samuel.md`
 
@@ -67,13 +67,9 @@ What stays in the tracker (never a file): **ephemeral, task-scoped** signals —
 
 **Discovery (the roadmap)** also lives in the tracker: bets are `roadmap:now|next|later` issues — *they* are the SoT for "what to build next" (mutually exclusive with `pipeline:*` on an issue; committing a bet swaps `roadmap:*` for `pipeline:triage`). An optional `docs/product/ROADMAP.md` is a **projection** regenerated from those issues, never the source. Owned by `/samuel:roadmap`; mindset in `reference/product-ownership.md`.
 
-## Backlog = optional local disector
-
-Backlog.md is **not a tracker**. It survives as the agent's private, implement-time scratchpad: decompose the Issue's Executor Plan Steps into checkable local subtasks (`backlog task create/edit`, `sequence list`) when a plan is big enough to want local ticks and dependency ordering. Created at will, thrown away at close, **read back by nobody** — not validate, not done, not a resuming session. Litmus test: derivable and disposable. Recipes and the explicit NOT-list: `reference/backlog-operations.md`. Rationale: ADR 0002.
-
 ## Legacy contexts
 
-A `.claude/task-context.md` (or `.claude/samuel.md`) with `tracker: backlog` — or with no `tracker` key at all — is a **pre-migration context**, not a supported mode. A pipeline skill that meets one stops and offers the migration path: write `.claude/samuel.md` with `tracker: github` + `repo`, and re-capture any open backlog work as Issues (`gh issue create`, Brief from the old task body). Never silently fall back to backlog storage.
+A `.claude/task-context.md` (or `.claude/samuel.md`) whose `tracker` key is anything other than `github` is a **pre-migration context**, not a supported mode. A pipeline skill that meets one stops and offers the migration path: write `.claude/samuel.md` with `tracker: github` + `repo`, and re-capture any open work as Issues (`gh issue create`, Brief from the old task body). Never silently fall back to another storage backend.
 
 ## How a skill uses this
 
@@ -88,4 +84,4 @@ _Add a line each time Claude trips on something._
 - `gh` needs `repo` (owner/name) explicitly — the SSH alias breaks origin parsing. See `github-operations.md`.
 - No `gh` available or unauthenticated: stop and tell the user to install/auth `gh`. There is no offline tracker fallback (ADR 0002) — offline work continues on the branch; item state syncs when back online.
 - Don't store `repo` only in `task-context.md` — pre-task skills (`next`, `progress`, `kickoff`) need it from `.claude/samuel.md`.
-- The journal and `validation.md` are **committed files** — a skill that writes them via `backlog doc` is wrong (backlog is the disector, never storage).
+- The journal and `validation.md` are **committed files** — a skill that writes them into the tracker is wrong. Files are the durable layer; the tracker holds only ephemeral, task-scoped state.

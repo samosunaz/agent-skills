@@ -1,6 +1,6 @@
 # 0002. Single tracker — GitHub only; backlog demoted to local disector
 
-- **Status**: accepted
+- **Status**: accepted — amended 2026-08-06 (see [Amendment](#amendment-2026-08-06))
 - **Date**: 2026-07-12
 
 ## Context
@@ -31,7 +31,15 @@ samuel v2 made GitHub the default source of truth but kept Backlog.md as a secon
 - No offline tracker mode. Offline work continues on the branch; item state syncs when back online.
 - `tracker: backlog` contexts created before this ADR stop being executable — the legacy pointer is the migration path.
 
+## Amendment (2026-08-06)
+
+The disector carve-out is retired too. In the month since this ADR, no run ever decomposed an Executor Plan into Backlog.md subtasks — the plan's own phase checkboxes plus the journal covered it, and a second local task surface only invited the "is this state durable?" question this ADR exists to answer with *no*.
+
+- Backlog.md is out of the pipeline entirely. `plugins/samuel/reference/backlog-operations.md` is deleted; the two pointers to it above are historical.
+- `implement` no longer declares `Bash(backlog *)` or the `mcp__backlog__*` tools.
+- The Decision section stands unchanged otherwise — GitHub remains the only source of truth, and the committed layer (Brief + Executor Plan, journal, `validation.md`) is still where durability lives.
+
 ## References
 
 - Upstream precedent: the source registry's own single-tracker ADR (jul 2026), which this decision mirrors and whose personal-blueprint carve-out it closes.
-- Hub + storage map: `plugins/samuel/reference/tracker.md`. Disector recipes: `plugins/samuel/reference/backlog-operations.md`.
+- Hub + storage map: `plugins/samuel/reference/tracker.md`.

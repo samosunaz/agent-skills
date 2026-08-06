@@ -3,13 +3,35 @@
   "version": "3.11.0",
   "description": "Personal indie hacker workflow: spec-driven pipeline with living journal, autonomous conductor, git, and project management skills",
   "author": {
-    "name": "Samuel Osuna"
+    "name": "Samuel Osuna",
+    "url": "https://github.com/samosunaz"
   },
+  "homepage": "https://github.com/samosunaz/agent-skills#readme",
+  "repository": "https://github.com/samosunaz/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "pipeline",
+    "spec-driven",
+    "github",
+    "code-review",
+    "automation"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Samuel",
     "shortDescription": "Spec-driven pipeline for indie hacker projects",
+    "longDescription": "A GitHub-native delivery pipeline: work items are Issues carrying a human Brief and a self-contained Executor Plan. Runs research → spec → plan → analyze → implement → validate with forced human checkpoints and a living implementation journal, then opens a PR. Includes an autonomous conductor for headless runs and a wave coordinator that parallelizes issues from the native dependency graph.",
     "developerName": "Samuel Osuna",
-    "category": "Development"
+    "category": "Development",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Planea el issue 42 y escribe el Executor Plan",
+      "Implementa la fase actual y actualiza el journal",
+      "Valida la implementación contra los criterios de aceptación"
+    ],
+    "websiteURL": "https://github.com/samosunaz/agent-skills"
   }
 }
