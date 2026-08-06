@@ -30,61 +30,61 @@ docs/product/
 Regenerated on every create/update. Newest-touched first.
 
 ```markdown
-# Catálogo de Funcionalidades — [Producto]
+# Capability Catalog — [Product]
 
-Referencia viva de las capacidades de la plataforma. Cada entrada enlaza a su dossier completo.
+Living reference for the platform's capabilities. Every row links to its full dossier.
 
-> Mantenido por `/samuel:feature-dossier`. La tabla se regenera al crear/actualizar un dossier — no la edites a mano.
+> Maintained by `/samuel:feature-dossier`. The table is regenerated on every create/update — do not edit it by hand.
 
-| Capacidad | Estado | Resumen (1 línea) | Actualizado | Dossier |
-|-----------|--------|-------------------|-------------|---------|
-| Publicación programada | 🟢 Live | Agendar publicaciones por zona horaria | 2026-06-01 | [Ver](./publicacion-programada/README.md) |
-| Búsqueda full-text | 🟢 Live | Índice incremental sobre el contenido | 2026-05-20 | [Ver](./busqueda-full-text/README.md) |
+| Capability | Status | Summary (1 line) | Updated | Dossier |
+|------------|--------|------------------|---------|---------|
+| Scheduled publishing | 🟢 Live | Schedule posts in the author's timezone | 2026-06-01 | [View](./scheduled-publishing/README.md) |
+| Full-text search | 🟢 Live | Incremental index over the content | 2026-05-20 | [View](./full-text-search/README.md) |
 ```
 
 ---
 
 ## Dossier Template — `docs/product/<slug>/README.md`
 
-Sections marked **(conditional)** are included only when relevant. Every code claim cites `file:line` — no vague references. Content is written in the dossier's `--lang` language (**default Spanish**); technical terms (APIs, components, file paths) stay in English. The example template below is in Spanish (the default); with `--lang en` the same structure is written in English.
+Sections marked **(conditional)** are included only when relevant. Every code claim cites `file:line` — no vague references. Content is written in the dossier's `--lang` language (**default English**); technical terms (APIs, components, file paths) always stay in English. Pass `--lang es` to write the same structure in Spanish.
 
 ```markdown
-# [Nombre de la Capacidad]
+# [Capability Name]
 
 | | |
 |---|---|
-| **Estado** | 🟢 Live |
-| **Slug** | `publicacion-programada` |
-| **Versión** | v2.5 |
-| **Owner** | [equipo/persona] |
+| **Status** | 🟢 Live |
+| **Slug** | `scheduled-publishing` |
+| **Version** | v2.5 |
+| **Owner** | [team/person] |
 | **Issues/RFC** | [#123, links] |
-| **PRs clave** | [#456, #470] |
-| **Actualizado** | 2026-06-01 |
+| **Key PRs** | [#456, #470] |
+| **Updated** | 2026-06-01 |
 
-## Qué ofrece
+## What it does
 
-[2-4 frases en lenguaje de producto. Qué resuelve, para quién, qué valor entrega.
-Perspectiva de USUARIO, no de desarrollador: "Los autores pueden agendar una
-publicación en su zona horaria", no "se agregó ScheduleResolver".]
+[2-4 sentences in product language. What it solves, for whom, what value it delivers.
+USER perspective, not developer perspective: "Authors can schedule a post in their
+own timezone", not "added a ScheduleResolver".]
 
-## Funcionalidades
+## Features
 
-- [Capacidad concreta 1]
-- [Capacidad concreta 2]
-- [Capacidad concreta 3]
+- [Concrete capability 1]
+- [Concrete capability 2]
+- [Concrete capability 3]
 
-## Flujo de usuario
+## User flow
 
-[Pasos numerados. Si el flujo tiene >3 pasos o ramas, añade un diagrama.]
+[Numbered steps. If the flow has >3 steps or branches, add a diagram.]
 
 ```mermaid
 flowchart TD
     A[...] --> B{...}
 ```
 
-## Arquitectura técnica
+## Technical architecture
 
-[Componentes y dónde viven, con file:line. Cómo fluye el dato de extremo a extremo.]
+[Components and where they live, with file:line. How data flows end to end.]
 
 ```mermaid
 flowchart LR
@@ -94,59 +94,59 @@ flowchart LR
     classDef db fill:#ccfbf1,stroke:#0d9488,color:#134e4a
 ```
 
-- **Frontend**: `src/...:NN` — [rol]
-- **Backend**: `worker/...:NN` — [rol]
+- **Frontend**: `src/...:NN` — [role]
+- **Backend**: `worker/...:NN` — [role]
 
-## Modelo de datos  (condicional)
+## Data model  (conditional)
 
-[Entidades/tablas involucradas. Diagrama ER si hay relaciones no triviales.]
+[Entities/tables involved. ER diagram when the relations are non-trivial.]
 
 ```mermaid
 erDiagram
-    EVENTO ||--o{ ORDEN : genera
-    ORDEN ||--|| PAGO : tiene
+    POST ||--o{ REVISION : has
+    POST ||--|| SCHEDULE : carries
 ```
 
-## Estados  (condicional — solo si la capacidad tiene ciclo de vida)
+## States  (conditional — only when the capability has a lifecycle)
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Pendiente
-    Pendiente --> Pagada: aprobado
-    Pendiente --> Expirada: timeout
+    [*] --> Draft
+    Draft --> Published: schedule fires
+    Draft --> Expired: timeout
 ```
 
-## Integraciones y dependencias
+## Integrations and dependencies
 
-- [Pasarela / API externa / módulo interno del que depende — con su contrato]
+- [External API / internal module it depends on — with its contract]
 
-## Reglas de negocio y constraints
+## Business rules and constraints
 
-- [Invariante, límite o edge case que un cambio futuro no debe romper]
+- [Invariant, limit, or edge case a future change must not break]
 
-## Cómo modificar esta capacidad
+## How to change this capability
 
-[El payload de referencia futura. Dónde tocar para los cambios típicos, qué
-romper-con-cuidado, qué pruebas cubren esto. Para humanos Y para IA.]
+[The future-reference payload. Where to touch for the typical changes, what to
+break carefully, which tests cover this. For humans AND for AI.]
 
-- Para [cambio típico A]: editar `file:NN`, revisar [efecto colateral].
-- Cuidado con: [invariante / acoplamiento no obvio].
+- For [typical change A]: edit `file:NN`, check [side effect].
+- Careful with: [invariant / non-obvious coupling].
 
-## Referencias de código
+## Code references
 
-- `path/to/file.ext:NN` — [qué hace]
-- `path/to/other.ext:NN-MM` — [qué hace]
+- `path/to/file.ext:NN` — [what it does]
+- `path/to/other.ext:NN-MM` — [what it does]
 
-## Capturas  (condicional — UI)
+## Screenshots  (conditional — UI)
 
-[Screenshot: descripción]  ← placeholder; pedir al usuario las imágenes reales.
+[Screenshot: description]  ← placeholder; ask the user for the real images.
 
 ## Changelog
 
-| Fecha | Versión | Cambio | PR |
-|-------|---------|--------|-----|
-| 2026-06-01 | v2.5 | Agendado por zona horaria | #470 |
-| 2026-05-10 | v2.4 | Dossier inicial | #456 |
+| Date | Version | Change | PR |
+|------|---------|--------|-----|
+| 2026-06-01 | v2.5 | Timezone-aware scheduling | #470 |
+| 2026-05-10 | v2.4 | Initial dossier | #456 |
 ```
 
 ---
@@ -157,9 +157,9 @@ On **UPDATE**, never silently overwrite. The flow is:
 
 1. Re-read the existing dossier.
 2. Re-derive current state from code + new PRs/commits since the last changelog entry.
-3. Revise the affected sections in place (Funcionalidades, Arquitectura, diagramas, etc.).
+3. Revise the affected sections in place (Features, Technical architecture, diagrams, and so on).
 4. **Append** a new `Changelog` row: date, version, one-line change, PR.
-5. Bump the header `Versión` + `Actualizado`.
+5. Bump the header `Version` + `Updated`.
 6. Present a summary of *which sections changed* before writing.
 
 The changelog is append-only and is the audit trail of how the capability evolved.
@@ -172,9 +172,9 @@ Every diagram follows the **style standard**: `mermaid-style.md` (same `referenc
 
 | Template section | Diagram |
 |------------------|---------|
-| Flujo de usuario | `flowchart TD` (decisions/branches) |
-| Arquitectura técnica | `flowchart LR` + `subgraph` per boundary |
-| Modelo de datos | `erDiagram` |
-| Estados | `stateDiagram-v2` |
+| User flow | `flowchart TD` (decisions/branches) |
+| Technical architecture | `flowchart LR` + `subgraph` per boundary |
+| Data model | `erDiagram` |
+| States | `stateDiagram-v2` |
 
 Cross-service request/response inside any section → `sequenceDiagram`.

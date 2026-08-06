@@ -32,17 +32,17 @@ When the runtime exposes no interaction tool, ask with **numbered options mirror
 ```
 {One-sentence statement of the decision.}
 
-1. {Label} (recomendado) — {what it means, and the trade-off it accepts}
+1. {Label} (recommended) — {what it means, and the trade-off it accepts}
 2. {Label} — {what it means, and the trade-off it accepts}
 3. {Label} — {what it means, and the trade-off it accepts}
 
-¿Cuál? (1/2/3)
+Which? (1/2/3)
 ```
 
 **WAIT for the answer.** Rules that make the fallback equivalent to the tool, not a degraded cousin:
 
 - The recommendation goes **first** and says why in its own line — never as a separate paragraph the reader has to reconcile.
-- Options are mutually exclusive unless the question says otherwise; say "elige las que apliquen" for the multi-select case.
+- Options are mutually exclusive unless the question says otherwise; say "pick all that apply" for the multi-select case.
 - Keep the options in the step body, not buried inside the sentence that names the tool. Both paths then read from the same list and can't drift.
 
 This block is the only place the fallback format is defined. A skill that needs a variant adds it here; it does not inline its own.

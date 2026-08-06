@@ -1,11 +1,11 @@
-> **Qué:**
-> **Por qué:**
-> **Ojo:**
-> `{n} archivos · +{a}/-{b}` · `riesgo bajo` · `review ~{n} min`
+> **What:**
+> **Why:**
+> **Caveat:**
+> `{n} files · +{a}/-{b}` · `risk low` · `review ~{n} min`
 
 <!--
-Cuatro líneas, en español, escritas AL FINAL como compresión del cuerpo.
-"Ojo: Nada" es válido y frecuente — inventar un riesgo enseña a saltarse la línea.
+Four lines, written LAST as a compression of the body.
+"Caveat: None" is valid and frequent — a manufactured risk teaches the reader to skip the line.
 Spec: plugins/samuel/reference/github-operations.md § TL;DR
 -->
 

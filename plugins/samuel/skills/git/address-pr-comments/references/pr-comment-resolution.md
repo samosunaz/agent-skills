@@ -102,7 +102,7 @@ gh api repos/$OWNER/$NAME/pulls/{number}/requested_reviewers \
 
 ## Pass markers (incremental boundary)
 
-Each `/samuel:address-pr-comments` pass closes by posting ONE consolidated `Resolución` comment that doubles as the next run's stop boundary. Detection is **ID-based** (which reviews/comments a pass processed), never timestamp-based — a review submitted mid-pass is absent from the marker and enters the next pass.
+Each `/samuel:address-pr-comments` pass closes by posting ONE consolidated `Resolution` comment that doubles as the next run's stop boundary. Detection is **ID-based** (which reviews/comments a pass processed), never timestamp-based — a review submitted mid-pass is absent from the marker and enters the next pass.
 
 ### Fetch prior markers
 
@@ -117,14 +117,14 @@ Processed review IDs = union of the `Reviews:` lines across all markers; unproce
 
 ```markdown
 <!-- samuel:address-pass -->
-## Resolución — pass {P}
+## Resolution — pass {P}
 
-| ID | Finding | Disposición | Detalle |
-|----|---------|-------------|---------|
-| T1 | `a.ts:42` — missing await | ✅ Corregido | {SHA permalink} |
-| T2 | prefer const | ❌ Rechazado | already const after refactor ({permalink}) |
-| T3 | why this approach? | 💬 Respondido | trade-off: {one line} |
-| T4 | leak on retry path | ⏳ Pendiente | valid — blocked on {reason}, thread left open |
+| ID | Finding | Disposition | Detail |
+|----|---------|-------------|--------|
+| T1 | `a.ts:42` — missing await | ✅ Fixed | {SHA permalink} |
+| T2 | prefer const | ❌ Rejected | already const after refactor ({permalink}) |
+| T3 | why this approach? | 💬 Answered | trade-off: {one line} |
+| T4 | leak on retry path | ⏳ Pending | valid — blocked on {reason}, thread left open |
 
 Reviews: {review_id}, {review_id}
 Comments: {comment_id}   (omit the line if none)

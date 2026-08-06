@@ -26,10 +26,10 @@ Empirical base: a render canvas run against GitHub (a dedicated render-canvas PR
 | Database | Cylinder | `DB[(🗄️ D1)]` | 🗄️ | `db` |
 | Cache | Cylinder | `KV[(⚡ KV)]` | ⚡ | `cache` |
 | Queue / jobs | Subroutine | `Q[[📬 Queue]]` | 📬 | `queue` |
-| Decision | Diamond | `D{¿Sesión válida?}` | — | `decision` |
-| Success / terminal ok | context shape | `OK([✅ Publicado])` | ✅ | `ok` |
-| Warning / degraded / retry | context shape | `W[⚠️ Reintento]` | ⚠️ | `warn` |
-| Error / failure | context shape | `F([❌ Falló])` | ❌ | `fail` |
+| Decision | Diamond | `D{Session valid?}` | — | `decision` |
+| Success / terminal ok | context shape | `OK([✅ Published])` | ✅ | `ok` |
+| Warning / degraded / retry | context shape | `W[⚠️ Retry]` | ⚠️ | `warn` |
+| Error / failure | context shape | `F([❌ Failed])` | ❌ | `fail` |
 
 **Specialization emojis** (no class of their own — they *replace* the base emoji while the class keeps carrying the role): 🔐 auth/security (`AUTH[🔐 AuthService]:::svc`), 📦 file/object storage (`R2[(📦 R2)]:::db`), ⏰ cron/scheduler (`CR[⏰ Scheduler]:::svc`), 📊 observability/metrics, 🪝 webhook receiver.
 
@@ -108,11 +108,11 @@ User flow with outcomes:
 
 ```mermaid
 flowchart TD
-    U([👤 Usuario]):::actor --> P[🖥️ Prompt de landing]:::ui
-    P --> D{¿Créditos disponibles?}:::decision
-    D -->|Sí| OK([✅ Landing generada]):::ok
-    D -->|No| F([❌ Cuota agotada]):::fail
-    F --> R[⚠️ Ofrecer upgrade]:::warn
+    U([👤 User]):::actor --> P[🖥️ Landing prompt]:::ui
+    P --> D{Credits available?}:::decision
+    D -->|Yes| OK([✅ Landing generated]):::ok
+    D -->|No| F([❌ Quota exhausted]):::fail
+    F --> R[⚠️ Offer upgrade]:::warn
     R --> D
     classDef actor fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
     classDef ui fill:#cffafe,stroke:#0891b2,color:#164e63
@@ -133,15 +133,15 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as 👤 Usuario
+    actor U as 👤 User
     participant FE as 🖥️ Editor
     participant API as ⚙️ Worker
     participant LLM as 🌐 Anthropic API
-    U->>FE: Describe la landing
+    U->>FE: Describe the landing
     FE->>API: POST /generate
     API->>LLM: messages.create
-    alt Generación OK
-        LLM-->>API: contenido
+    alt Generation OK
+        LLM-->>API: content
         API-->>FE: 201 Created
     else Rate limit
         LLM-->>API: 429

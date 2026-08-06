@@ -125,7 +125,7 @@ gh issue create -R {repo} --title "{type}: {feature}" \
 ```
 Items start at `pipeline:triage`. `/samuel:plan` fills the Executor Plan and promotes to `pipeline:planned`/`ready`.
 
-Seeding is where the TL;DR earns the most: a fresh backlog is a dozen issues nobody has context on yet, and in a week the founder won't either. Estimates at this stage are guesses — say so in the chip (`~1 día?`) rather than omitting it.
+Seeding is where the TL;DR earns the most: a fresh backlog is a dozen issues nobody has context on yet, and in a week the founder won't either. Estimates at this stage are guesses — say so in the chip (`~1 day?`) rather than omitting it.
 
 ### Checkpoint 3 — Present
 

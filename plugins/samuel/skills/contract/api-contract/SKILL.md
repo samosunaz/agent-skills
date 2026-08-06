@@ -33,7 +33,7 @@ Read as needed:
 
 - **Item**: from Context (`item`) > branch > ask. Optional.
 - **Backend repo**: verify this is a backend (Laravel: `artisan`/`composer.json` `laravel/framework`; Node: `express`/`@nestjs/*`). If a client repo is detected, suggest `/samuel:api-request` instead.
-- **Consumers**: who will consume this — `web`, `mobile`, or `both`. Resolve: `--consumers` flag → else ask **"¿Quién consume este contrato? web / mobile / ambos"**. This decides which native types to emit (TS / Swift+Kotlin / both).
+- **Consumers**: who will consume this — `web`, `mobile`, or `both`. Resolve: `--consumers` flag → else ask **"Who consumes this contract? web / mobile / both"**. This decides which native types to emit (TS / Swift+Kotlin / both).
 - **API changes**: use "Files changed" from Context (filter with the backend globs in `contract-templates.md`). If none, ask which endpoints to document — the user may be documenting an existing API, not a diff.
 
 ### 2) ANALYZE
@@ -64,17 +64,17 @@ Build from the **Backend → Client Contract** template in `contract-templates.m
 
 - Every field in every table has type **and** nullability **and** description. No `any`/`mixed` unless truly dynamic.
 - **Client Types** — generate ONLY for the resolved consumers: TypeScript (web), Swift `struct` + Kotlin `data class` (mobile). Mark `Optional`/nullable **exactly** as the API behaves — a wrong non-null crashes native clients.
-- Monetary values: state the unit (centavos/cents). Dates: ISO 8601 + timezone. Enums: list every value (stable order — they map to native enums).
+- Monetary values: state the unit (cents). Dates: ISO 8601 + timezone. Enums: list every value (stable order — they map to native enums).
 - Migration notes only for changes; omit for fully new endpoints. **Flag breaking changes**, and when `mobile`/`both`, call out whether old app versions break (they can't be force-updated).
 - Client-side logic: only if the backend returns raw data needing non-trivial processing. Response examples: realistic domain data, not lorem ipsum.
 
-Present the block **inline, fenced for copy-paste**. Then: "Revisa el contrato. ¿Cambios? (OK / editar)" — **WAIT.**
+Present the block **inline, fenced for copy-paste**. Then: "Review the contract. Changes? (OK / edit)" — **WAIT.**
 
 ### 5) PERSIST (opt-in)
 
-Ask once: **"¿Lo dejo en el chat o lo guardo en GitHub? (chat / guardar)"**. Only on "guardar": `gh issue comment {item}` with the block, or a new Issue `API Contract: {name}` if none.
+Ask once: **"Keep it in the chat, or save it to GitHub? (chat / save)"**. Only on "save": `gh issue comment {item}` with the block, or a new Issue `API Contract: {name}` if none.
 
-Close with: `Contrato {inline | issue #N} · consumers {web|mobile|both} · {N} endpoints, {N} campos · el/los agente(s) cliente pueden consumirlo directamente.`
+Close with: `Contract {inline | issue #N} · consumers {web|mobile|both} · {N} endpoints, {N} fields · the client agent(s) can consume it directly.`
 
 ## Gotchas
 

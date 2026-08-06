@@ -220,7 +220,7 @@ Sub-agents are spawned by skills for parallel data retrieval. They are retriever
 
 ## Source of truth — GitHub Issues + PRs
 
-Work is tracked in GitHub Issues + PRs via the `gh` CLI (no GitHub MCP) — the only tracker (ADR 0002). A work item is one Issue whose body serves three reading speeds: a ten-second **TL;DR** (*Qué / Por qué / Ojo* + chips) so a human can triage without reading agent-facing prose, the human **Brief**, and the self-contained **Executor Plan**. PR bodies open with the same block. Status is `pipeline:*` labels; a PR `Closes #N`; the conductor's `--ship` mode opens draft PRs for headless/cloud runs. Owner/repo is explicit (never parsed from origin), so it works behind an SSH-alias / multi-account setup. Hub + storage map: `plugins/samuel/reference/tracker.md`.
+Work is tracked in GitHub Issues + PRs via the `gh` CLI (no GitHub MCP) — the only tracker (ADR 0002). A work item is one Issue whose body serves three reading speeds: a ten-second **TL;DR** (*What / Why / Caveat* + chips) so a human can triage without reading agent-facing prose, the human **Brief**, and the self-contained **Executor Plan**. PR bodies open with the same block. Status is `pipeline:*` labels; a PR `Closes #N`; the conductor's `--ship` mode opens draft PRs for headless/cloud runs. Owner/repo is explicit (never parsed from origin), so it works behind an SSH-alias / multi-account setup. Hub + storage map: `plugins/samuel/reference/tracker.md`.
 
 
 ## Creating a new skill

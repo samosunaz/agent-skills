@@ -31,7 +31,7 @@ flowchart TD
     classDef doc fill:#f5f5f4,stroke:#78716c,color:#292524
 ```
 
-> A TL;DR block and a one-line Brief are enough to capture an item — the plan fills the rest later. The TL;DR is the floor, not extra ceremony: an item too vague to state as *qué / por qué / ojo* isn't captured, it's a note to self.
+> A TL;DR block and a one-line Brief are enough to capture an item — the plan fills the rest later. The TL;DR is the floor, not extra ceremony: an item too vague to state as *what / why / caveat* isn't captured, it's a note to self.
 
 > **Discovery vs delivery.** `/samuel:roadmap` is upstream of everything else: it decides *what* to build (bets as `roadmap:*` issues). Committing a bet promotes it to `pipeline:triage`, where delivery begins. `/samuel:kickoff` seeds the first bets at project start; `/samuel:roadmap` keeps the direction fresh after.
 

@@ -63,12 +63,12 @@ Build the PR body from, in priority order:
 
 Synthesize: Summary (2–3 sentences), Key files + why, Decisions, Plan deviations (cite the decision).
 
-**Then compress once more into the TL;DR** — four lines, Spanish, the first block of the PR body (spec: adapter § TL;DR). It is written *after* everything above, from those sources, never from the branch name or the Issue title:
+**Then compress once more into the TL;DR** — four lines, the first block of the PR body (spec: adapter § TL;DR). It is written *after* everything above, from those sources, never from the branch name or the Issue title:
 
-- **Qué** — what the merged diff changes, observably. Not "implementa el plan de #N".
-- **Por qué** — the pain it removes. Usually already stated in the Issue's TL;DR; if the implementation changed the answer, the PR's version wins and the divergence is worth a sentence in `## Summary`.
-- **Ojo** — the one thing that could bite a reviewer: a breaking change, a `V-NNN` deviation from the plan, a migration, an AC met differently than specified. Journal `V-`/`Q-` entries and `validation.md` findings are the honest source. `Nada` when there genuinely is nothing.
-- **Chips** — `{n} archivos · +{a}/-{b}` (from the Context diff stat) · `riesgo {bajo|medio|alto}` · `review ~{n} min`. Risk is about blast radius, not diff size: a two-line change to auth is `riesgo alto`; a 400-line docs-only PR is `bajo`.
+- **What** — what the merged diff changes, observably. Not "implements the plan of #N".
+- **Why** — the pain it removes. Usually already stated in the Issue's TL;DR; if the implementation changed the answer, the PR's version wins and the divergence is worth a sentence in `## Summary`.
+- **Caveat** — the one thing that could bite a reviewer: a breaking change, a `V-NNN` deviation from the plan, a migration, an AC met differently than specified. Journal `V-`/`Q-` entries and `validation.md` findings are the honest source. `None` when there genuinely is nothing.
+- **Chips** — `{n} files · +{a}/-{b}` (from the Context diff stat) · `risk {low|medium|high}` · `review ~{n} min`. Risk is about blast radius, not diff size: a two-line change to auth is `risk high`; a 400-line docs-only PR is `low`.
 
 ### DoD checklist
 
@@ -90,13 +90,13 @@ gh pr create -R {repo} --base main --head {branch} \
   {--draft when autonomous / requested} \
   --title "{type}({scope}): {description}" \
   --body "$(printf '%s\n' \
-    '> **Qué:** {…}' '> **Por qué:** {…}' '> **Ojo:** {…}' '> `{chips}`' '' \
+    '> **What:** {…}' '> **Why:** {…}' '> **Caveat:** {…}' '> `{chips}`' '' \
     '## Summary' '{…}' '' '## Changes' '{…}' '' '## Test plan' '- [ ] {AC}' '' 'Closes #{item}')"
 ```
 
 - **`Closes #{item}`** is mandatory — it auto-closes the Issue on merge.
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution.**
-- **Body opens with the TL;DR**, in Spanish — the body is a human surface; only the title is pinned to English conventional.
+- **Body opens with the TL;DR** — the body is a human surface; the title is pinned to conventional-commit form.
 - Code cited in the body → **SHA permalinks** (adapter § Linking); the push above just made the branch SHA linkable.
 - Then: `gh issue edit {item} -R {repo} --add-label pipeline:in-review --remove-label pipeline:in-progress`.
 
@@ -161,9 +161,9 @@ gh label create promo:bip -R {repo} -c C77DFF -d "Building in public: process/to
 gh issue edit {item} -R {repo} --add-label promo:bip
 gh issue comment {item} -R {repo} --body "$(cat <<'EOF'
 <!-- samuel:bip -->
-**Pilar:** {A sesiones autónomas | B sistema/skills | C producto}
-**Gancho:** {una línea con el número duro}
-**Evidencia:** {journal D-003, V-001 · PR #N · run report}
+**Pillar:** {A autonomous runs | B system/skills | C product}
+**Hook:** {one line carrying the hard number}
+**Evidence:** {journal D-003, V-001 · PR #N · run report}
 EOF
 )"
 ```

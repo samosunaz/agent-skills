@@ -32,8 +32,8 @@ Read as needed:
 ### 1) DETECT
 
 - **Item**: from Context (`item`) > branch > ask. Optional — a spec can exist with no tracked item.
-- **Requesting platform**: `web` or `mobile` (iOS/Android nativo). Resolve: `--platform` flag → repo markers (`package.json` with a web framework = web; `*.xcodeproj`/`Package.swift`/`build.gradle` + `*.swift`/`*.kt` = mobile) → else ask **"¿Desde web o mobile?"**. This drives type generation and platform concerns downstream.
-- **What's being built**: if files changed, spawn a `component-locator` (sonnet) to identify components/screens being modified, the services/stores that make API calls, and existing calls in the changed files. If speccing before any code exists, skip the agent and ask **"¿Qué flujo o pantalla estás construyendo?"**
+- **Requesting platform**: `web` or `mobile` (native iOS/Android). Resolve: `--platform` flag → repo markers (`package.json` with a web framework = web; `*.xcodeproj`/`Package.swift`/`build.gradle` + `*.swift`/`*.kt` = mobile) → else ask **"From web or mobile?"**. This drives type generation and platform concerns downstream.
+- **What's being built**: if files changed, spawn a `component-locator` (sonnet) to identify components/screens being modified, the services/stores that make API calls, and existing calls in the changed files. If speccing before any code exists, skip the agent and ask **"Which flow or screen are you building?"**
 
 ### 2) GATHER
 
@@ -41,13 +41,13 @@ Read as needed:
 
 **From user** (confirm/supplement, keep it tight — present inferences instead of asking blank):
 
-> "Para la spec confirmo:
-> 1. **Flujo** — descríbelo (o confirmo lo que infiero del código)
-> 2. **Datos que faltan** — qué no tienes aún?
-> 3. **Prioridad** — alta / media / baja
-> 4. **Edge cases** — vacío, error, loading, permisos?"
+> "For the spec, confirm:
+> 1. **Flow** — describe it (or confirm what I infer from the code)
+> 2. **Missing data** — what don't you have yet?
+> 3. **Priority** — high / medium / low
+> 4. **Edge cases** — empty, error, loading, permissions?"
 
-**If platform = mobile**, also probe the mobile-specific concerns from `contract-templates.md` (Platform axis): paginación/infinite-scroll, tamaño de payload, variantes de imagen, compatibilidad con versiones viejas de la app, manejo offline.
+**If platform = mobile**, also probe the mobile-specific concerns from `contract-templates.md` (Platform axis): pagination/infinite-scroll, payload size, image variants, backward compatibility with old app versions, offline handling.
 
 ### 3) SIZE — pick format (both inline)
 
@@ -69,13 +69,13 @@ Build from the **Client → Backend Spec** template (full or compact) in `contra
 - **Client Context**: web → ASCII component sketch; mobile → screen + section description. The backend agent needs to see WHY the shape matters.
 - Open Questions: genuine unknowns the backend must decide.
 
-Present the block **inline, fenced for copy-paste**. Then: "Revisa la spec. ¿Cambios? (OK / editar)" — **WAIT.**
+Present the block **inline, fenced for copy-paste**. Then: "Review the spec. Changes? (OK / edit)" — **WAIT.**
 
 ### 5) PERSIST (opt-in)
 
-Ask once: **"¿Lo dejo en el chat o lo guardo en GitHub? (chat / guardar)"**. Only on "guardar": `gh issue comment {item}` with the block, or a new `pipeline:triage` Issue `API Spec: {name}` if none.
+Ask once: **"Keep it in the chat, or save it to GitHub? (chat / save)"**. Only on "save": `gh issue comment {item}` with the block, or a new `pipeline:triage` Issue `API Spec: {name}` if none.
 
-Close with: `Spec {inline | issue #N} · platform {web|mobile} · {N} endpoints, {N} data points · el agente backend puede consumirla directamente.`
+Close with: `Spec {inline | issue #N} · platform {web|mobile} · {N} endpoints, {N} data points · the backend agent can consume it directly.`
 
 ## Gotchas
 

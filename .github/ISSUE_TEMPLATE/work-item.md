@@ -1,21 +1,21 @@
 ---
 name: Work item
-about: Un item de trabajo del pipeline samuel (TL;DR + Brief; el plan lo llena /samuel:plan)
+about: A samuel pipeline work item (TL;DR + Brief; /samuel:plan fills the plan)
 title: ''
 labels: pipeline:triage
 assignees: ''
 ---
 
 <!-- samuel:brief -->
-> **Qué:**
-> **Por qué:**
-> **Ojo:**
-> `S` · `riesgo bajo` · `~{estimado}`
+> **What:**
+> **Why:**
+> **Caveat:**
+> `S` · `risk low` · `~{estimate}`
 
 <!--
-Cuatro líneas, en español, que se leen en diez segundos: la decisión de entrarle o no.
-Chips: tamaño (S = 1-2 archivos · M = 3-4 o una decisión de diseño · L = revisar si es un solo item),
-riesgo por blast radius (no por tamaño del diff) y estimado en unidades concretas (~2 h, ~1 tarde).
+Four lines, read in ten seconds: the decision to engage with this now, or not.
+Chips: size (S = 1-2 files · M = 3-4 or one design decision · L = check whether it is really one item),
+risk by blast radius (not by diff size), and an estimate in concrete units (~2 h, ~1 afternoon).
 Spec: plugins/samuel/reference/github-operations.md § TL;DR
 -->
 

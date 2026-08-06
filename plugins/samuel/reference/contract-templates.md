@@ -228,7 +228,7 @@ flowchart TD
 └──────────────────────────┘
 \`\`\`
 
-- **mobile** → screen + section description: "Pantalla {X}, sección {Y}: lista con {field_a} como título, {field_b} como subtítulo, {field_c} como badge."
+- **mobile** → screen + section description: "Screen {X}, section {Y}: list with {field_a} as the title, {field_b} as the subtitle, {field_c} as a badge."
 
 ## Open Questions
 

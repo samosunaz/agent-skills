@@ -31,13 +31,11 @@ If `gh` is missing → tell the user: `"gh CLI required. Install: https://cli.gi
 The rest of the body is written for agents — a cold executor needs the full plan, the reviewer needs the diff rationale. A human deciding whether to *enter* needs neither. Without the block, the only way to triage is to read agent-facing prose at agent-facing volume, which is where the human becomes the bottleneck.
 
 ```markdown
-> **Qué:** {el cambio observable — una frase, empieza por el verbo}
-> **Por qué:** {el dolor que quita, o la apuesta que abre}
-> **Ojo:** {lo único que puede morder — breaking change, decisión pendiente, riesgo. "Nada" es una respuesta válida y frecuente}
+> **What:** {the observable change — one sentence, start with the verb}
+> **Why:** {the pain it removes, or the bet it opens}
+> **Caveat:** {the one thing that can bite — breaking change, pending decision, risk. "None" is a valid and frequent answer}
 > `{chips}`
 ```
-
-**In Spanish** — the body is a human surface (same rule as Issue titles). Only PR/commit titles are pinned to English conventional.
 
 Chips differ by surface, everything above them doesn't:
 
@@ -57,7 +55,7 @@ Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no 
 - **Listing files or steps.** That's the Executor Plan / the diff, two scrolls down.
 - **Opening with "Este PR implementa…" / "Este issue busca…".** Start at the change itself.
 - **Writing it first.** It's a *synthesis*: compose the body, then compress downward. On a PR that means after the journal and `validation.md` are read, not before.
-- **An `Ojo:` that needs two lines.** That's not a warning, that's an unscoped item — split it or plan it.
+- **A `Caveat:` that needs two lines.** That's not a warning, that's an unscoped item — split it or plan it.
 
 No HTML marker of its own: on an Issue it's the first block *inside* `<!-- samuel:brief -->`, on a PR it's the first block of the body. Skills that splice a section already carry it along verbatim.
 
@@ -68,10 +66,10 @@ No HTML marker of its own: on an Issue it's the first block *inside* `<!-- samue
 Issue bodies, PR bodies, and comments render with **hardbreaks on** — each newline becomes a `<br>`, so the four lines stay four lines. Committed `.md` files don't: the same block collapses into one run-on paragraph. Verified against `gh api /markdown`:
 
 ```bash
-gh api /markdown --method POST -f mode=gfm      -f text='> **Qué:** a
-> **Por qué:** b'   # → <p>…a<br> …b</p>   ✅ four lines
-gh api /markdown --method POST -f mode=markdown -f text='> **Qué:** a
-> **Por qué:** b'   # → <p>…a …b</p>       ❌ collapsed
+gh api /markdown --method POST -f mode=gfm      -f text='> **What:** a
+> **Why:** b'   # → <p>…a<br> …b</p>   ✅ four lines
+gh api /markdown --method POST -f mode=markdown -f text='> **What:** a
+> **Why:** b'   # → <p>…a …b</p>       ❌ collapsed
 ```
 
 So the block belongs to Issues and PRs and nowhere else. Don't lift it into a dossier, `ROADMAP.md`, or any committed doc — those need explicit `<br>`, two trailing spaces, or a list, and at that point you want that file's own format, not this one.
@@ -86,9 +84,9 @@ A samuel work item is a single GitHub Issue. Its **body** has two marker-delimit
 
 ```markdown
 <!-- samuel:brief -->
-> **Qué:** {…}
-> **Por qué:** {…}
-> **Ojo:** {…}
+> **What:** {…}
+> **Why:** {…}
+> **Caveat:** {…}
 > `{chips}`
 
 ## Brief
@@ -155,14 +153,14 @@ The label alone loses the angle: months later the only way to recover *why* it w
 ```bash
 gh issue comment N -R owner/repo --body "$(cat <<'EOF'
 <!-- samuel:bip -->
-**Pilar:** A (sesiones autónomas) · B (sistema/skills) · C (producto)
-**Gancho:** {una línea con el número duro}
-**Evidencia:** {journal D-003, V-001 · PR #N · run report}
+**Pillar:** A (autonomous runs) · B (system/skills) · C (product)
+**Hook:** {one line carrying the hard number}
+**Evidence:** {journal D-003, V-001 · PR #N · run report}
 EOF
 )"
 ```
 
-A `Gancho` with no real number of your own is usually the tell that the item isn't a story yet. Harvest the queue with:
+A `Hook` with no real number of your own is usually the tell that the item isn't a story yet. Harvest the queue with:
 
 ```bash
 gh issue list -R owner/repo --state all --label "promo:bip" --json number,title,url,closedAt --jq 'sort_by(.closedAt)'
@@ -257,9 +255,9 @@ gh issue create -R owner/repo \
   --label "type:feat,priority:medium,pipeline:triage" \
   --body "$(cat <<'EOF'
 <!-- samuel:brief -->
-> **Qué:** ...
-> **Por qué:** ...
-> **Ojo:** ...
+> **What:** ...
+> **Why:** ...
+> **Caveat:** ...
 > `M` · `riesgo bajo` · `~2 h`
 
 ## Brief
@@ -398,9 +396,9 @@ gh pr create -R owner/repo --base main --head {branch} \
   {--draft for autonomous runs} \
   --title "{type}({scope}): {description}" \
   --body "$(cat <<'EOF'
-> **Qué:** ...
-> **Por qué:** ...
-> **Ojo:** ...
+> **What:** ...
+> **Why:** ...
+> **Caveat:** ...
 > `4 archivos · +120/-30` · `riesgo bajo` · `review ~5 min`
 
 ## Summary

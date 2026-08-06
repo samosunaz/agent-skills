@@ -71,7 +71,7 @@ Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {c
 
 **Goal**: persist the Brief + Executor Plan to the Issue body. Build both sections per `plan-templates.md` (decisive, self-contained, evidence-backed, guardrails embedded, exact gate command).
 
-**Write the TL;DR last** (four lines, Spanish, top of the brief section — spec: adapter § TL;DR). It's a compression of the finished plan, so it can only be written once the plan exists. Its `Ojo:` line is where the plan's one real hazard surfaces — the breaking change, the still-open dependency, the decision that constrains siblings. If nothing qualifies, say `Nada`; inventing a hazard trains the reader to skip the line.
+**Write the TL;DR last** (four lines, top of the brief section — spec: adapter § TL;DR). It's a compression of the finished plan, so it can only be written once the plan exists. Its `Caveat:` line is where the plan's one real hazard surfaces — the breaking change, the still-open dependency, the decision that constrains siblings. If nothing qualifies, say `Nada`; inventing a hazard trains the reader to skip the line.
 
 1. If `Item` ≠ `NO_ITEM`: fetch the current body, preserve/refresh the `<!-- samuel:brief -->` section, fill the `<!-- samuel:plan -->` section. Write the composed body to a temp file (`Write`), then:
    ```bash
@@ -119,7 +119,7 @@ _Add a line each time Claude trips on something._
 - The Executor Plan must be **decisive** — no "figure out X" / "the existing helper". Replace every dangling reference with a concrete `file:line`, or it can't run unattended.
 - Editing the body replaces it — re-emit the Brief section verbatim when you fill the plan section. That includes the TL;DR block: it sits inside the brief markers and has none of its own.
 - A TL;DR written from the chat instead of from the finished plan drifts from it silently — write it last, reading the plan, not your memory of the conversation.
-- Re-planning an existing item **refreshes** the TL;DR; a stale `Ojo:` describing a hazard that got designed away is worse than no line at all.
+- Re-planning an existing item **refreshes** the TL;DR; a stale `Caveat:` describing a hazard that got designed away is worse than no line at all.
 - `pipeline:planned` ≠ pickable. Only `pipeline:ready` (planned + unblocked) is the autopilot inbox.
 - Inter-issue dependencies go in the native `blockedBy` graph, never only in prose — `/samuel:waves` dispatches from the graph, so an edge described in the body but not declared puts two dependent items in the same wave. Re-adding an existing edge fails loudly: read-then-add (adapter § Issue dependencies).
 - Step sizing: >~200 lines or 4+ files → split into Steps or separate items.
@@ -129,7 +129,7 @@ _Add a line each time Claude trips on something._
 - Comments ride the fetch — an `Upstream decision` notice ignored at planning resurfaces as decision drift at pickup. Address it in the plan (or rebut it in a comment), don't skip it.
 - **ROUTE is a question, not a menu.** Printing `/samuel:implement` as a suggestion and ending the turn is the behavior Phase 5 step 3 replaces: the default outcome was deferral, and the context that justified the design died with the turn.
 - Answering "ahora" means **dispatching** `/samuel:implement` in the same turn, not telling the user to type it. Implement's own phase gate is the next checkpoint, so chaining skips no approval.
-- The ROUTE recommendation must **cite** its inputs (open decision? heuristic fired?). An uncited "yo diría que lo dejes" is a guess the user cannot check.
+- The ROUTE recommendation must **cite** its inputs (open decision? heuristic fired?). An uncited "I'd leave it for later" is a guess the user cannot check.
 
 ## Sub-Agent Rules
 

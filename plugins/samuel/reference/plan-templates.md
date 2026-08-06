@@ -14,10 +14,10 @@ Each layer is written for a reader the next one down would starve. The plan is u
 
 ```markdown
 <!-- samuel:brief -->
-> **Qué:** {el cambio observable — una frase, empieza por el verbo}
-> **Por qué:** {el dolor que quita, o la apuesta que abre}
-> **Ojo:** {lo único que puede morder — breaking change, decisión pendiente, riesgo. "Nada" es válido}
-> `{S|M|L}` · `riesgo {bajo|medio|alto}` · `~{estimado en unidades concretas}`
+> **What:** {the observable change — one sentence, start with the verb}
+> **Why:** {the pain it removes, or the bet it opens}
+> **Caveat:** {the one thing that can bite — breaking change, pending decision, risk. "None" is valid}
+> `{S|M|L}` · `risk {low|medium|high}` · `~{estimate in concrete units}`
 
 ## Brief
 

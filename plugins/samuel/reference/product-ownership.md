@@ -53,10 +53,10 @@ A bet is a *mini-brief* — enough to decide, not enough to build. The Executor 
 
 ```markdown
 <!-- samuel:opportunity -->
-> **Qué:** {la capacidad que abre — una frase}
-> **Por qué:** {el job que resuelve, ligado al north star}
-> **Ojo:** {lo que la mataría: dependencia, supuesto sin validar, apuesta de mercado. "Nada" es válido}
-> `{S|M|L}` · `confianza {alta|media|baja}` · `{now|next|later}`
+> **What:** {the capability it opens — one sentence}
+> **Why:** {the job it resolves, tied to the north star}
+> **Caveat:** {what would kill it: a dependency, an unvalidated assumption, a market bet. "None" is valid}
+> `{S|M|L}` · `confidence {high|medium|low}` · `{now|next|later}`
 
 ## Opportunity
 **Problem / Job:** {the unmet user or business job}

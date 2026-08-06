@@ -1,12 +1,12 @@
 ---
 name: address-pr-comments
-description: "Triage, verify, and resolve incoming PR comments — apply fixes, reply, resolve threads, close each pass with a Resolución marker comment, re-request review. Incremental: scopes to feedback since the last pass. Author side of the PR review gate. Trigger on 'address pr comments', 'atender comentarios pr', 'resolver review', 'responder review'."
+description: "Triage, verify, and resolve incoming PR comments — apply fixes, reply, resolve threads, close each pass with a Resolution marker comment, re-request review. Incremental: scopes to feedback since the last pass. Author side of the PR review gate. Trigger on 'address pr comments', 'atender comentarios pr', 'resolver review', 'responder review'."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git remote *) Bash(git rev-parse *) Bash(git config *) Bash(git status *) Bash(git worktree *) Bash(git fetch *) Bash(git checkout *) Bash(git stash *) Bash(git add *) Bash(git commit *) Bash(git push *) Bash(gh pr *) Bash(gh issue *) Bash(gh api *) Bash(head *) Bash(basename *) Bash(pwd *) Bash(test *) Read Grep Glob Edit Write Agent AskUserQuestion
 ---
 
 # Address PR Comments
 
-Close the feedback loop on a pull request: fetch the feedback since the last pass (bots + humans), **verify each finding against the code**, triage, apply fixes with approval, reply, resolve threads, close the pass with ONE consolidated `Resolución` comment, and re-request review. This is the **author side** of the PR review gate that follows `/samuel:done`.
+Close the feedback loop on a pull request: fetch the feedback since the last pass (bots + humans), **verify each finding against the code**, triage, apply fixes with approval, reply, resolve threads, close the pass with ONE consolidated `Resolution` comment, and re-request review. This is the **author side** of the PR review gate that follows `/samuel:done`.
 
 In this solo context the most common caller scenario: Sam left review comments on an agent-authored draft PR (conductor / waves) and a fresh session addresses them. Sam is the human reviewer — his threads follow the human rules below, never the bot shortcuts.
 
@@ -167,26 +167,26 @@ For **Reply** / **Discard** / **Outdated**: draft replies (honest, concise, in t
 Per [pr-comment-resolution.md](references/pr-comment-resolution.md):
 - Reply to each inline thread by root comment id; reply to conversation comments via the issues endpoint.
 - Resolve threads with `resolveReviewThread` — **only** Actionable-fixed, bot Discard, and confirmed Outdated. Leave human discussion threads for the reviewer to resolve.
-- **Never resolve a thread where the reviewer is right but the fix isn't done** — leave it open and reply explaining the blocker (disposición ⏳ Pendiente in the marker).
+- **Never resolve a thread where the reviewer is right but the fix isn't done** — leave it open and reply explaining the blocker (disposition ⏳ Pending in the marker).
 - If `reviewDecision` was CHANGES_REQUESTED and fixes are pushed, re-request review from the human who blocked.
 
-Reply body for fixed items should link the fix: `Hecho en {short-sha} — {one line}`.
+Reply body for fixed items should link the fix: `Fixed in {short-sha} — {one line}`.
 
-**Close the pass with ONE consolidated comment** — `## Resolución — pass {P}` + the disposition table (finding → disposición → fix permalink or reason) + the processed review/comment IDs (format + recipes: resolution ref § Pass markers). Never edit a prior pass's marker; each pass appends its own. This comment is both the human audit trail and the next run's stop boundary.
+**Close the pass with ONE consolidated comment** — `## Resolution — pass {P}` + the disposition table (finding → disposition → fix permalink or reason) + the processed review/comment IDs (format + recipes: resolution ref § Pass markers). Never edit a prior pass's marker; each pass appends its own. This comment is both the human audit trail and the next run's stop boundary.
 
 ## Step 9: CONFIRM
 
 ```
-Atendidos {N} comentarios en PR #{number}:
-  ✅ {n} fixes aplicados ({m} commits, pushed)
-  💬 {n} respuestas
-  🔒 {n} threads resueltos
-  ⏳ {n} esperando al reviewer (no auto-resueltos)
-  📌 Resolución — pass {P} publicada en el PR
+Addressed {N} comments on PR #{number}:
+  ✅ {n} fixes applied ({m} commits, pushed)
+  💬 {n} replies
+  🔒 {n} threads resolved
+  ⏳ {n} waiting on the reviewer (not auto-resolved)
+  📌 Resolution — pass {P} posted on the PR
 ```
 
-{if re-requested:} Review re-solicitado a @{reviewer}.
-{if worktree created:} Worktree intacto en {path} para la siguiente pasada.
+{if re-requested:} Review re-requested from @{reviewer}.
+{if worktree created:} Worktree left intact at {path} for the next pass.
 
 If a worktree was created in Step 2, recommend keeping it until merge. If checkout-here was used, remind to restore the original branch + stash pop.
 

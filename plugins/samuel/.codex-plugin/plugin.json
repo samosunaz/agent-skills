@@ -28,9 +28,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Planea el issue 42 y escribe el Executor Plan",
-      "Implementa la fase actual y actualiza el journal",
-      "Valida la implementación contra los criterios de aceptación"
+      "Plan issue 42 and write its Executor Plan",
+      "Implement the current phase and update the journal",
+      "Validate the implementation against the acceptance criteria"
     ],
     "websiteURL": "https://github.com/samosunaz/agent-skills"
   }
