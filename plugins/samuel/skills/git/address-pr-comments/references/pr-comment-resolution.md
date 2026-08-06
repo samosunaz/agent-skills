@@ -131,12 +131,12 @@ Comments: {comment_id}   (omit the line if none)
 Commits: {short-shas}
 ```
 
-Dispositions: ✅ Corregido · 💬 Respondido · ❌ Rechazado (citable reason) · 👌 Obsoleto/Ya atendido · ⏳ Pendiente (reviewer is right, fix blocked — thread stays open). Element-initial IDs (`T{n}`), never `#{n}` (autolink); code references are SHA permalinks (`reference/github-operations.md` § Linking).
+Dispositions: ✅ Fixed · 💬 Answered · ❌ Rejected (citable reason) · 👌 Obsolete/Already handled · ⏳ Pending (reviewer is right, fix blocked — thread stays open). Element-initial IDs (`T{n}`), never `#{n}` (autolink); code references are SHA permalinks (`reference/github-operations.md` § Linking).
 
 ### Post
 
 ```bash
-gh pr comment {number} --body-file resolucion.md
+gh pr comment {number} --body-file resolution.md
 ```
 
 Never edit a prior marker — each pass appends its own comment.

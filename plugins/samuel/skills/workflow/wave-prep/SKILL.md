@@ -49,7 +49,7 @@ Launching this skill grants exactly one write: `blockedBy` edges the human appro
    Only edges absent from the live graph survive (the sweep already fetched current blockers).
 4. **EDGE PLAN — checkpoint.** Present: proposed new edges (`B blocked by A — evidence`), the cycle check on the union graph (existing + proposed — a cycle is a hard stop: drop or invert an edge before proceeding), the resulting wave partition preview, soft conflicts, and the plan-missing/excluded routing list. **WAIT for approval** — nothing is written before it. On `--dry-run`, this presentation is the deliverable; stop here.
 5. **WRITE** — declare only the approved edges, read-then-add per the adapter's write contract. Re-verify with one batched read; report written vs skipped-as-existing.
-6. **ROUTE** — same turn, context alive: offer dispatching `/samuel:waves <ready set>` now (answering "ahora" invokes the skill); list plan-missing issues as `/samuel:plan N` one-liners. If nothing is wave-ready, say so plainly — an empty set is a finding, not a failure.
+6. **ROUTE** — same turn, context alive: offer dispatching `/samuel:waves <ready set>` now (answering "now" invokes the skill); list plan-missing issues as `/samuel:plan N` one-liners. If nothing is wave-ready, say so plainly — an empty set is a finding, not a failure.
 
 ## Gotchas
 

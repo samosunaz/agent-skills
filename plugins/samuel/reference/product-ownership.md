@@ -67,7 +67,7 @@ A bet is a *mini-brief* — enough to decide, not enough to build. The Executor 
 **Horizon:** now | next | later
 ```
 
-The TL;DR block is the same four lines every samuel Issue opens with (spec: `reference/github-operations.md` § TL;DR) — only the chips are bet-specific. A roadmap review means re-reading ten or twenty of these at once, which is exactly the scan the block is for. `confianza` is the discovery analogue of delivery's `riesgo`: how sure are we this is worth building, not how likely it is to break.
+The TL;DR block is the same four lines every samuel Issue opens with (spec: `reference/github-operations.md` § TL;DR) — only the chips are bet-specific. A roadmap review means re-reading ten or twenty of these at once, which is exactly the scan the block is for. `confidence` is the discovery analogue of delivery's `risk`: how sure are we this is worth building, not how likely it is to break.
 
 ## The discovery → delivery handoff
 
@@ -78,4 +78,4 @@ The TL;DR block is the same four lines every samuel Issue opens with (spec: `ref
                     pipeline:triage  →  /samuel:plan (Brief + Executor Plan)  →  /samuel:implement → …
 ```
 
-On promotion, the `## Opportunity` mini-brief is expanded into a full `## Brief` (Scope / Out of scope / Acceptance Criteria); the `roadmap:*` label is swapped for `pipeline:triage`. The TL;DR survives the promotion — rewrite its chips to the delivery shape (`riesgo`, estimate) and re-check `Ojo:`, since a bet's killer assumption often becomes the plan's real hazard. Discovery ends, delivery begins.
+On promotion, the `## Opportunity` mini-brief is expanded into a full `## Brief` (Scope / Out of scope / Acceptance Criteria); the `roadmap:*` label is swapped for `pipeline:triage`. The TL;DR survives the promotion — rewrite its chips to the delivery shape (`risk`, estimate) and re-check `Caveat:`, since a bet's killer assumption often becomes the plan's real hazard. Discovery ends, delivery begins.

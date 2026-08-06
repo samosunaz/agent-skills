@@ -249,7 +249,7 @@ Branch: `{branch}`
 **`{METHOD} {path}`** — {new | modified}
 {one-line description}
 
-| Campo | Tipo | Null | Nota |
+| Field | Type | Null | Note |
 |---|---|---|---|
 | `field` | `type` | no | {NEW / CHANGED / REMOVED}: {detail} |
 
@@ -264,13 +264,13 @@ Migration: {one-liner on backward compat — flag if it breaks old mobile versio
 **API Request** — {#N} · platform: {web | mobile}
 Branch: `{branch}`
 
-Necesito: {one-line description}
+Need: {one-line description}
 
 **`{METHOD} {suggested path}`**
 Request: `{ field: type, ... }`
 Response: `{ field: type, ... }`
 
-Contexto: {where this renders and why the shape matters}
+Context: {where this renders and why the shape matters}
 ```
 
 ## Size Heuristic

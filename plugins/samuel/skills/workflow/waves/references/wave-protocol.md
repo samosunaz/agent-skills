@@ -110,8 +110,8 @@ DELIVERY:
 3. Run the plan's gate command (Validation § Automated); fix failures until green.
 4. Commit in atomic conventional commits. No AI attribution, no Generated-with footers.
 5. Push the branch. Open a DRAFT PR: `gh pr create --draft --title "{type}: {summary}" --body "..."`
-   — body opens with a 4-line Spanish TL;DR and contains `Closes #{N}`.
-6. Update the card: `orca worktree set --worktree active --workspace-status in-review --comment "PR abierto: {pr-url}"`.
+   — body opens with the 4-line TL;DR and contains `Closes #{N}`.
+6. Update the card: `orca worktree set --worktree active --workspace-status in-review --comment "PR open: {pr-url}"`.
 7. Report done (single message, from this terminal):
    `orca orchestration send --to {coordinator_handle} --type worker_done --subject "issue {N} shipped" --body "{3 sentences: did / found / left}" --payload '{"taskId":"{task_id}","dispatchId":"{dispatch_id}","prUrl":"{pr-url}","filesModified":[...]}' --json`
    Then idle. Do not poll.

@@ -41,11 +41,11 @@ Chips differ by surface, everything above them doesn't:
 
 | Surface | Chips | Written by |
 |---|---|---|
-| Issue (`pipeline:*`) | `` `{S\|M\|L}` · `riesgo {bajo\|medio\|alto}` · `~{estimado}` `` | `/samuel:plan`; `kickoff` and `repo-audit` at capture |
-| Roadmap bet (`roadmap:*`) | `` `{S\|M\|L}` · `confianza {alta\|media\|baja}` · `{now\|next\|later}` `` | `/samuel:roadmap` |
-| PR | `` `{n} archivos · +{a}/-{b}` · `riesgo {bajo\|medio\|alto}` · `review ~{n} min` `` | `/samuel:done` |
+| Issue (`pipeline:*`) | `` `{S\|M\|L}` · `risk {low\|medium\|high}` · `~{estimate}` `` | `/samuel:plan`; `kickoff` and `repo-audit` at capture |
+| Roadmap bet (`roadmap:*`) | `` `{S\|M\|L}` · `confidence {high\|medium\|low}` · `{now\|next\|later}` `` | `/samuel:roadmap` |
+| PR | `` `{n} files · +{a}/-{b}` · `risk {low\|medium\|high}` · `review ~{n} min` `` | `/samuel:done` |
 
-Estimates go in concrete units (`~2 h`, `~1 tarde`), never "some work" — the number is what a context-switch decision is made on.
+Estimates go in concrete units (`~2 h`, `~1 afternoon`), never "some work" — the number is what a context-switch decision is made on.
 
 Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no design decision · **M** = 3–4 files or one design decision · **L** = beyond that, so check § Sizing in `plan-templates.md` before planning it.
 
@@ -258,7 +258,7 @@ gh issue create -R owner/repo \
 > **What:** ...
 > **Why:** ...
 > **Caveat:** ...
-> `M` · `riesgo bajo` · `~2 h`
+> `M` · `risk low` · `~2 h`
 
 ## Brief
 ...
@@ -399,7 +399,7 @@ gh pr create -R owner/repo --base main --head {branch} \
 > **What:** ...
 > **Why:** ...
 > **Caveat:** ...
-> `4 archivos · +120/-30` · `riesgo bajo` · `review ~5 min`
+> `4 files · +120/-30` · `risk low` · `review ~5 min`
 
 ## Summary
 {synthesized from journal + brief + commits}

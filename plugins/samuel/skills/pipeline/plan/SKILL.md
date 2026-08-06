@@ -98,19 +98,19 @@ Edit `.claude/task-context.md`: `phase: plan`, `last_updated: {today}`.
 2. Present: title, summary, the Steps table, key decisions. Show the Issue URL and note it's `pipeline:planned` (mark `pipeline:ready` once dependencies are clear, so autopilot can pick it up).
    - **The unknowns seam** (canonical heuristics: `../../../reference/pipeline.md` § The unknowns seam): if a heuristic fired while planning (AC empty/unmeasurable, `TBD` markers, `pattern-scanner` found nothing for code the plan assumes exists), suggest `/samuel:find-unknowns {item}` (preflight) before promoting — an offer, never a launch.
    - **Autonomous** (under `/samuel:conductor`): eligibility is necessary, not sufficient — promotion to `pipeline:ready` REQUIRES a preflight verdict `READY`. `HOLD` → stay `pipeline:planned`, post the unknowns comment.
-3. **ROUTE — ahora o diferir.** The plan does not end the turn. Ask where the item goes next, while the context that produced the plan is still in the session. Deferring is a valid answer; deferring **by default** is how the Executor Plan ends up carrying less than the conversation did.
+3. **ROUTE — now or defer.** The plan does not end the turn. Ask where the item goes next, while the context that produced the plan is still in the session. Deferring is a valid answer; deferring **by default** is how the Executor Plan ends up carrying less than the conversation did.
 
-   Ask with `AskUserQuestion` (**implementar ahora** / **diferirlo**); runtimes without it present the same two options as text and **WAIT**. Lead with a recommendation and cite its evidence — whether any decision is still open (unresolved trade-off, an unmet dependency, or an AC that couldn't be written as a measurable outcome) and whether an unknowns heuristic fired above:
+   Ask with `AskUserQuestion` (**implement now** / **defer it**); runtimes without it present the same two options as text and **WAIT**. Lead with a recommendation and cite its evidence — whether any decision is still open (unresolved trade-off, an unmet dependency, or an AC that couldn't be written as a measurable outcome) and whether an unknowns heuristic fired above:
 
    | State | Recommendation |
    |---|---|
-   | No open decision, no heuristic fired | **Ahora**. The plan is freshest right now and you already hold the context it assumes. |
+   | No open decision, no heuristic fired | **Now**. The plan is freshest right now and you already hold the context it assumes. |
    | A heuristic fired | **Preflight first** — `/samuel:find-unknowns {item}`, then decide. Don't promote to `pipeline:ready` on a `HOLD`. |
-   | An open decision remains | **Diferir** and close the decision first; a plan with ambiguity can't be picked up unattended (Critical Rule 1). |
+   | An open decision remains | **Defer** and close the decision first; a plan with ambiguity can't be picked up unattended (Critical Rule 1). |
 
    Then route:
-   - **Ahora** → dispatch `/samuel:implement` in this same turn via the Skill tool (or `/samuel:analyze` first for multi-story / constitution-sensitive work). Don't restate the plan; implement's own phase gate is the next checkpoint.
-   - **Diferir** → the Executor Plan becomes the only carrier. Re-read it the way a cold agent would (the `plan-templates.md` litmus test) and patch whatever still lives only in this chat, then set `pipeline:ready` if it's unblocked — unblocked means no OPEN `blockedBy` blocker in the graph (adapter § Issue dependencies), not an impression from the body — so autopilot can pick it up.
+   - **Now** → dispatch `/samuel:implement` in this same turn via the Skill tool (or `/samuel:analyze` first for multi-story / constitution-sensitive work). Don't restate the plan; implement's own phase gate is the next checkpoint.
+   - **Defer** → the Executor Plan becomes the only carrier. Re-read it the way a cold agent would (the `plan-templates.md` litmus test) and patch whatever still lives only in this chat, then set `pipeline:ready` if it's unblocked — unblocked means no OPEN `blockedBy` blocker in the graph (adapter § Issue dependencies), not an impression from the body — so autopilot can pick it up.
 
 ## Gotchas
 
@@ -128,7 +128,7 @@ _Add a line each time Claude trips on something._
 - The e2e tier is a plan-time decision — a plan without it is not pickup-ready in repos with an e2e app.
 - Comments ride the fetch — an `Upstream decision` notice ignored at planning resurfaces as decision drift at pickup. Address it in the plan (or rebut it in a comment), don't skip it.
 - **ROUTE is a question, not a menu.** Printing `/samuel:implement` as a suggestion and ending the turn is the behavior Phase 5 step 3 replaces: the default outcome was deferral, and the context that justified the design died with the turn.
-- Answering "ahora" means **dispatching** `/samuel:implement` in the same turn, not telling the user to type it. Implement's own phase gate is the next checkpoint, so chaining skips no approval.
+- Answering "now" means **dispatching** `/samuel:implement` in the same turn, not telling the user to type it. Implement's own phase gate is the next checkpoint, so chaining skips no approval.
 - The ROUTE recommendation must **cite** its inputs (open decision? heuristic fired?). An uncited "I'd leave it for later" is a guess the user cannot check.
 
 ## Sub-Agent Rules
