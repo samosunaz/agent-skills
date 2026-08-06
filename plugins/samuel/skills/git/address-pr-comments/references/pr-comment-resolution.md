@@ -147,9 +147,9 @@ Never edit a prior marker — each pass appends its own comment.
 |--------|---------------------|-----------------------------------|
 | GitHub Copilot review | `copilot-pull-request-reviewer[bot]`, `Copilot` | High — nits/suggestions |
 | CodeRabbit | `coderabbitai[bot]` | Medium — verify before resolve |
-| `/samuel:pr-self-audit` | Sam's gh account, inline comments with suggestion blocks | Medium — author's own pipeline |
-| `/codex:review` · ultrareview · native `/code-review` | Sam's gh account or the Claude GitHub app, relayed review output | Medium — verify before resolve |
-| Sam (human reviewer) | real login (`samosunaz` on personal repos) | Low — always reply explicitly, never silent-resolve |
+| `/samuel:pr-self-audit` | the author's own gh account, inline comments with suggestion blocks | Medium — author's own pipeline |
+| `/codex:review` · ultrareview · native `/code-review` | the author's own gh account or the Claude GitHub app, relayed review output | Medium — verify before resolve |
+| Human reviewer | a real login that is not the author's automation | Low — always reply explicitly, never silent-resolve |
 
 ## Gotchas
 
@@ -160,4 +160,4 @@ Never edit a prior marker — each pass appends its own comment.
 - `isOutdated: true` means the line moved or was deleted by later commits — the comment may already be moot. Surface it as "outdated" in triage, don't blindly resolve.
 - Re-requesting a review from a bot reviewer usually fails silently — only re-request human reviewers who left CHANGES_REQUESTED.
 - A PR review with `state: CHANGES_REQUESTED` keeps blocking until that same reviewer submits a new review or it's dismissed — resolving the inline threads is not enough. Reply, push fixes, then re-request.
-- Own-pipeline reviews (`pr-self-audit`, relayed `codex:review`) post from Sam's account — distinguish them from Sam-the-reviewer by body shape (review header/suggestion blocks), not by login alone.
+- Own-pipeline reviews (`pr-self-audit`, relayed `codex:review`) post from the author's own account — distinguish them from the author reviewing by hand by body shape (review header/suggestion blocks), not by login alone.
