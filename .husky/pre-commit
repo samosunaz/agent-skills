@@ -7,6 +7,13 @@ if ! bun run check:plugins; then
   exit 1
 fi
 
+if ! bun run check:portability; then
+  echo
+  echo "Agent Plugins 1.0.0 conformance check failed."
+  echo "A client would not load the plugin as committed."
+  exit 1
+fi
+
 if ! bun run check:context; then
   echo
   echo "Injected context commands violate CLAUDE.md rules (static analysis / fallback)."
