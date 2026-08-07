@@ -1,6 +1,6 @@
 ---
 name: tldr
-description: "Prose standard: rewrite a message to Simplified Technical English — one reading per sentence, no filler, no abstract jargon. Targets the last assistant message by default, or pasted text / a file path. Never touches code, commands, or quoted output. Trigger on 'tldr', 'bro', 'reescribe eso', 'hazlo simple', 'menos jerga', 'quita el relleno', 'too verbose'."
+description: "Prose standard: rewrite a message to Simplified Technical English — one reading per sentence, no filler, no abstract jargon. Targets the last assistant message by default, or pasted text / a file path. Never touches code, commands, or quoted output. Trigger on 'tldr', 'bro', 'rewrite that', 'make it simple', 'less jargon', 'cut the filler', 'too verbose'."
 allowed-tools: Read
 ---
 
@@ -34,30 +34,30 @@ A rewrite that edits a command is a broken rewrite. Protect first, then rewrite 
 
 Delete before you rewrite. Most verbosity is text that carries no fact. Full table in the spoke § Deletion patterns.
 
-1. Openers that announce the action ("Voy a revisar", "Let me check", "Great question").
-2. Closers that offer more help ("¿Quieres que...?", "Let me know if...").
-3. Self-narration ("Ahora que ya leí el archivo, veo que...").
+1. Openers that announce the action ("Let me check", "I've gone ahead and", "Great question").
+2. Closers that offer more help ("Want me to also…?", "Let me know if…").
+3. Self-narration ("Now that I've read the file, I can see that…").
 4. Recaps of what the reader already sees (the diff described again in prose).
 5. Hedges with no real uncertainty, filler adjectives, motivational closers.
 
-Keep a hedge when the uncertainty is real, and name its cause: "No corrí los tests, no sé si pasa."
+Keep a hedge when the uncertainty is real, and name its cause: "I did not run the tests, so I do not know if it passes."
 
 ## Step 4: Rewrite
 
-1. **One word, one meaning.** Pick a term, keep it for the whole text. If it is `issue`, it is `issue` everywhere. Never rotate to "ticket" or "tarea" for variety.
-2. **Active voice with an explicit subject.** "El hook bloquea el comando", not "el comando es bloqueado", not "se bloquea".
-3. **Imperative for instructions, one action per sentence.** "Corre X. Luego abre Y."
+1. **One word, one meaning.** Pick a term, keep it for the whole text. If it is `issue`, it is `issue` everywhere. Never rotate to "ticket" or "task" for variety.
+2. **Active voice with an explicit subject.** "The hook blocks the command", not "the command is blocked", not "the command gets blocked".
+3. **Imperative for instructions, one action per sentence.** "Run X. Then open Y."
 4. **One idea per sentence.** Max 20 words in an instruction, 25 in an explanation. Split, do not subordinate.
-5. **No ambiguous referents.** Use "esto" or "eso" only when the antecedent sits in the same sentence. Otherwise name the thing.
-6. **No vague quantifiers.** "Varios", "algunos", "pronto" become a number, a count, or a date.
-7. **Condition first in every conditional.** "Si el PR ya está mergeado, abre uno nuevo."
+5. **No ambiguous referents.** Use "this" or "that" only when the antecedent sits in the same sentence. Otherwise name the thing.
+6. **No vague quantifiers.** "Several", "some", "soon" become a number, a count, or a date.
+7. **Condition first in every conditional.** "If the PR is already merged, open a new one."
 8. **No noun stacks longer than 3.** Break them with prepositions.
 9. **Canonical tech terms stay in English and stay unexpanded** (PR, issue, squash, worktree, rollback). Abstract jargon gets replaced by the plain verb. Both lists live in the spoke § Jargon.
 10. **No em dashes, no tricolons, no packaged transitions.** Use a period, a comma, or parentheses.
 
 ## Step 5: Constraints
 
-- **Keep the source language.** Never translate. The one surface pinned to a language is the GitHub body, which is English by repo rule — that pin belongs to the adapter, not to this skill.
+- **Keep the source language.** Never translate. A Spanish source stays Spanish, an English source stays English. The one surface pinned to a language is the GitHub body, which is English by repo rule — that pin belongs to the adapter, not to this skill.
 - **Keep every fact.** Deleting a paragraph is correct only when that paragraph carried no fact.
 - **Never add a fact.** If the original did not verify something, the rewrite does not claim it either.
 - **Never soften a failure.** A failed test stays a failed test, a `FAIL` verdict stays `FAIL`.
@@ -65,9 +65,9 @@ Keep a hedge when the uncertainty is real, and name its cause: "No corrí los te
 
 ## Step 6: Output
 
-Print the rewritten text alone. No preamble, no "aquí está la versión".
+Print the rewritten text alone. No preamble, no "here is the cleaned-up version".
 
-Close with at most one line naming what you cut: "Corté el preámbulo y 2 cierres." Skip that line when you cut nothing.
+Close with at most one line naming what you cut: "Cut the opener and 2 closers." Skip that line when you cut nothing.
 
 If the source was already precise, say so in one line and do not invent a rewrite.
 

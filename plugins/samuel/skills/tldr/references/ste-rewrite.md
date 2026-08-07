@@ -20,7 +20,7 @@ These name exactly one thing. A translation invents a second name for it, which 
 
 `PR` · `issue` · `branch` · `worktree` · `commit` · `squash` · `rebase` · `merge` · `rollback` · `deploy` · `CI` · `lint` · `gate` · `hook` · `endpoint` · `payload` · `schema` · `migration` · `cache` · `race condition` · `timeout` · `prompt` · `subagent` · `diff` · `stack trace`
 
-Never write "solicitud de extracción", "rama", or "punto final".
+The rule holds when the surrounding text is in another language. Writing in Spanish does not license "solicitud de extracción" for `PR` or "rama" for `branch`.
 
 ### Replace or delete
 
@@ -28,100 +28,100 @@ These name nothing. Each one hides the fact the reader wants.
 
 | Jargon | Use instead |
 |---|---|
-| leverage, utilize | usar |
-| surface (verbo) | mostrar |
-| streamline | simplificar |
-| facilitate, enable, unlock | permitir, o borrar |
-| architected | diseñé |
-| delve into, deep dive | revisar |
-| align on | acordar |
-| circle back | volver a X el «fecha» |
-| bandwidth | tiempo |
-| low-hanging fruit | nombra la tarea |
-| best practices | nombra la práctica |
-| robust, solid, powerful | di qué resiste, o borrar |
-| seamless, elegant, clean | borrar |
-| comprehensive | da el alcance ("cubre los 12 endpoints") |
-| significant, substantial | da el número |
-| performant | da la métrica ("200 ms p95") |
-| scalable | di hasta qué carga |
-| production-ready | di qué falta |
-| properly, correctly | borrar |
-| in order to | para |
-| basically, essentially | borrar |
-| it's worth noting that | borrar |
-| as mentioned above | nombra la cosa |
-| at the end of the day | borrar |
-| landscape, ecosystem (metáfora) | nombra el sistema real |
+| leverage, utilize | use |
+| surface (verb) | show |
+| streamline | simplify |
+| facilitate, enable, unlock | let, or delete |
+| architected | designed |
+| delve into, deep dive | review |
+| align on | agree on |
+| circle back | return to X on {date} |
+| bandwidth | time |
+| low-hanging fruit | name the task |
+| best practices | name the practice |
+| robust, solid, powerful | say what it withstands, or delete |
+| seamless, elegant, clean | delete |
+| comprehensive | give the scope ("covers all 12 endpoints") |
+| significant, substantial | give the number |
+| performant | give the metric ("200 ms p95") |
+| scalable | say up to what load |
+| production-ready | say what is missing |
+| properly, correctly | delete |
+| in order to | to |
+| basically, essentially | delete |
+| it's worth noting that | delete |
+| as mentioned above | name the thing |
+| at the end of the day | delete |
+| landscape, ecosystem (metaphor) | name the real system |
 
-`orchestrate` is the edge case. Keep it when it names agent or workflow orchestration, which is a real thing in this stack (`/samuel:team-orchestrate`). Replace it with "coordinar" anywhere else.
+`orchestrate` is the edge case. Keep it when it names agent or workflow orchestration, which is a real thing in this stack (`/samuel:team-orchestrate`). Replace it with "coordinate" anywhere else.
 
 ## 2. Deletion patterns
 
 | Pattern | Example | Action |
 |---|---|---|
-| Opener | "Voy a revisar el archivo para entender..." | Delete. Show the result. |
-| Closer | "¿Quieres que también actualice los tests?" | Delete, unless it is a real blocking question. |
-| Self-narration | "Ahora que ya leí `auth.ts`, veo que..." | Delete the clause, keep the finding. |
+| Opener | "Let me look at the file to understand…" | Delete. Show the result. |
+| Closer | "Want me to update the tests too?" | Delete, unless it is a real blocking question. |
+| Self-narration | "Now that I've read `auth.ts`, I can see that…" | Delete the clause, keep the finding. |
 | Recap | Prose describing the diff shown above it | Delete. |
-| Empty hedge | "Creo que probablemente esto podría..." | Delete the hedge, state the fact. |
-| Filler adjective | "una solución robusta y elegante" | Delete both adjectives. |
-| Motivational closer | "¡Listo para producción!" | Delete. |
-| Tricolon | "rápido, simple y confiable" | Keep the one item that carries a fact. |
-| Em dash | "El hook falla — el path no existe" | "El hook falla porque el path no existe." |
+| Empty hedge | "I think this could probably…" | Delete the hedge, state the fact. |
+| Filler adjective | "a robust and elegant solution" | Delete both adjectives. |
+| Motivational closer | "Production-ready!" | Delete. |
+| Tricolon | "fast, simple and reliable" | Keep the one item that carries a fact. |
+| Em dash | "The hook fails — the path does not exist" | "The hook fails because the path does not exist." |
 
-A real hedge survives, with its cause attached. "No corrí los tests, no sé si pasa" is precise. "Creo que debería funcionar" is not.
+A real hedge survives, with its cause attached. "I did not run the tests, so I do not know if it passes" is precise. "I think it should work" is not.
 
 ## 3. Sentence surgery
 
 **Split a subordinated chain.**
 
-- Before: "Dado que el worktree ya existe y el branch está creado, lo que procede sería correr el implement, aunque antes convendría validar que el contexto esté cargado."
-- After: "El worktree y el branch ya existen. Verifica que el contexto esté cargado. Luego corre el implement."
+- Before: "Given that the worktree already exists and the branch is created, the next step would be to run the implement, although it would first be advisable to check that the context is loaded."
+- After: "The worktree and the branch already exist. Verify that the context is loaded. Then run the implement."
 
 **Name the referent.**
 
-- Before: "Eso rompe lo anterior."
-- After: "El rename de `parseUser` rompe el import en `auth.ts:14`."
+- Before: "That breaks the earlier one."
+- After: "The `parseUser` rename breaks the import at `auth.ts:14`."
 
 **Put the condition first.**
 
-- Before: "Abre un PR nuevo si el anterior ya está mergeado."
-- After: "Si el PR anterior ya está mergeado, abre uno nuevo."
+- Before: "Open a new PR if the previous one is already merged."
+- After: "If the previous PR is already merged, open a new one."
 
 **Break the noun stack.**
 
 - Before: "GitHub issue pipeline label sync workflow"
-- After: "el workflow que sincroniza los labels `pipeline:*` de los issues"
+- After: "the workflow that syncs the `pipeline:*` labels on issues"
 
 **Give the number.**
 
-- Before: "Varios tests fallaron."
-- After: "Fallaron 3 tests de 41."
+- Before: "Several tests failed."
+- After: "3 of 41 tests failed."
 
 ## 4. Before/after pairs
 
-### Pair A: agent status report (español)
+### Pair A: agent status report
 
 Before:
 
-> Perfecto, ya terminé de implementar los cambios solicitados. Básicamente lo que hice fue refactorizar el módulo de autenticación para que sea más robusto y mantenible, aprovechando el patrón de repositorio que ya existía en el codebase. Esto debería mejorar significativamente la testabilidad. Cabe mencionar que también actualicé algunos tests que estaban fallando. ¿Te gustaría que revise algo más?
+> Perfect, I've gone ahead and implemented the requested changes. Basically what I did was refactor the authentication module to make it more robust and maintainable, leveraging the repository pattern that already existed in the codebase. This should significantly improve testability. It's worth noting that I also updated a few tests that were failing. Would you like me to look at anything else?
 
 After:
 
-> Refactoricé `auth/` al patrón repository que ya usaba `orders/`. Arreglé 4 tests que fallaban. No corrí el suite completo.
+> I refactored `auth/` to the repository pattern `orders/` already used. I fixed 4 failing tests. I did not run the full suite.
 
-### Pair B: instructions (español)
+### Pair B: instructions
 
 Before:
 
-> Para poder proceder correctamente con el deploy, sería recomendable que primero valides que el pipeline de CI haya pasado exitosamente, y una vez verificado eso, podrías considerar hacer el merge del PR, teniendo en cuenta que si hay conflictos habría que resolverlos antes.
+> In order to proceed correctly with the deploy, it would be advisable to first validate that the CI pipeline has passed successfully, and once you have verified that, you could consider merging the PR, keeping in mind that if there are conflicts they would need to be resolved beforehand.
 
 After:
 
-> Verifica que CI pasó. Si hay conflictos, resuélvelos primero. Luego mergea el PR.
+> Verify that CI passed. If there are conflicts, resolve them first. Then merge the PR.
 
-### Pair C: diagnosis (english)
+### Pair C: diagnosis
 
 Before:
 
@@ -131,7 +131,7 @@ After:
 
 > `CacheStore.get` has a race condition at `cache.ts:88`. Two concurrent requests write the same key. The second write wins and drops the first result.
 
-### Pair D: protected span (mixed)
+### Pair D: protected span
 
 Before:
 
@@ -146,11 +146,11 @@ After:
 > ```bash
 > git reset --hard origin/main
 > ```
-> Este comando borra tus cambios locales.
+> This command deletes your local changes.
 
 The command block is identical in both. The prose around it changed. That is the rule.
 
-### Pair E: the TL;DR block of a PR (english)
+### Pair E: the TL;DR block of a PR
 
 Structure and chips: `../../../reference/github-operations.md` § TL;DR. This pair is about the prose inside it.
 
