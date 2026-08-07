@@ -1,6 +1,6 @@
 ---
 name: create-review-md
-description: "Generate a repo's schema-v1 REVIEW.md — deterministic evidence digest (repo type, gate signals, CI job names, validation/journal findings, self-review history) + semantic derivation of repo-specific rules, cited per bullet. Existing REVIEW.md → --check conformance report only. Trigger on 'create review md', 'generar REVIEW.md', 'review overrides'."
+description: "Generate a repo's schema-v1 REVIEW.md — deterministic evidence digest (repo type, gate signals, CI job names, validation/journal findings, self-review history) + semantic derivation of repo-specific rules, cited per bullet. Existing REVIEW.md → --check conformance report only. Trigger on 'create review md', 'generate REVIEW.md', 'review overrides'."
 allowed-tools: Bash(bash *) Bash(gh api *) Bash(gh pr create *) Bash(git *) Bash(awk *) Bash(test *) Read Write AskUserQuestion
 ---
 

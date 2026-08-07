@@ -1,6 +1,6 @@
 ---
 name: team-orchestrate
-description: "Orchestrate Claude Code agent teams (multi-session parallel agents with shared task list and inter-agent messaging) for code review, debugging with competing hypotheses, multi-module features, or multi-angle research. Use whenever the work has independent parallelizable streams, when teammates need to challenge each other's findings, or when the user mentions 'agent team', 'spawn teammates', 'swarm', 'parallel review', 'team mode', 'orquestar agentes'. Different from /samuel:codebase-documentation (single-session parallel subagents) — use this when teammates must communicate, persist across turns, or be addressed individually."
+description: "Orchestrate Claude Code agent teams (multi-session parallel agents with shared task list and inter-agent messaging) for code review, debugging with competing hypotheses, multi-module features, or multi-angle research. Use whenever the work has independent parallelizable streams, when teammates need to challenge each other's findings, or when the user mentions 'agent team', 'spawn teammates', 'swarm', 'parallel review', 'team mode', 'orchestrate agents'. Different from /samuel:codebase-documentation (single-session parallel subagents) — use this when teammates must communicate, persist across turns, or be addressed individually."
 allowed-tools: Bash Read TeamCreate TeamDelete SendMessage TaskCreate TaskUpdate TaskList TaskGet AskUserQuestion
 ---
 
@@ -50,9 +50,9 @@ Ask one question if intent is ambiguous: what is the user trying to accomplish? 
 | Archetype | Trigger signals | Default size |
 |---|---|---|
 | `review-team` | "review this PR", parallel audit by dimension | 3 (security, performance, tests) |
-| `debug-team` | ambiguous bug, multiple plausible causes, "investiga teorías" | 3-5 (one per hypothesis) |
+| `debug-team` | ambiguous bug, multiple plausible causes, "investigate the theories" | 3-5 (one per hypothesis) |
 | `feature-team` | cross-layer change (front + api + tests), independent modules | 2-4 (one per layer) |
-| `research-team` | multi-angle exploration, library evaluation, "explora desde X ángulos" | 3-4 (one per lens) |
+| `research-team` | multi-angle exploration, library evaluation, "explore this from X angles" | 3-4 (one per lens) |
 
 If none fits cleanly, ask the user to confirm a custom composition before spawning.
 

@@ -1,6 +1,6 @@
 ---
 name: kickoff
-description: "Initialize a new indie project: vision doc, MVP scope, tech decisions, initial task breakdown. Trigger on 'kickoff', 'nuevo proyecto', 'start project'."
+description: "Initialize a new indie project: vision doc, MVP scope, tech decisions, initial task breakdown. Trigger on 'kickoff', 'new project', 'start project'."
 allowed-tools: Bash(gh *) Bash(which *) Bash(git branch *) Bash(git status *) Bash(ls *) Bash(awk *) Read Write Agent AskUserQuestion
 ---
 

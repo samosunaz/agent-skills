@@ -1,6 +1,6 @@
 ---
 name: refine-plan
-description: Iterate on an existing plan based on feedback. Surgical edits to the Executor Plan (Steps, scope, criteria, approach). Trigger on 'iterate plan', 'cambiar el plan', 'ajustar fases'.
+description: Iterate on an existing plan based on feedback. Surgical edits to the Executor Plan (Steps, scope, criteria, approach). Trigger on 'iterate plan', 'change the plan', 'adjust the phases'.
 allowed-tools: Bash(gh *) Bash(which *) Bash(git config *) Bash(awk *) Read Write Edit Agent ExitPlanMode AskUserQuestion
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: waves
-description: "Attended multi-issue coordinator: executes a set of pipeline:ready issues in parallel waves computed from GitHub's native blockedBy graph — one Orca worktree + worker per issue (Codex default, claude-conductor variant), draft PRs, human merge releases the next wave. Trigger on 'waves', 'ondas', 'lanzar ondas', 'ejecutar épica', 'correr la épica en paralelo', 'wave run'."
+description: "Attended multi-issue coordinator: executes a set of pipeline:ready issues in parallel waves computed from GitHub's native blockedBy graph — one Orca worktree + worker per issue (Codex default, claude-conductor variant), draft PRs, human merge releases the next wave. Trigger on 'waves', 'launch waves', 'run the epic', 'run the epic in parallel', 'wave run'."
 allowed-tools: Bash(orca *) Bash(gh *) Bash(git fetch *) Bash(git branch *) Bash(git status *) Bash(jq *) Bash(sed *) Bash(tail *) Bash(head *) Bash(awk *) Bash(grep *) Bash(xargs *) Bash(test *) Bash(date *) Bash(cat *) Bash(ls *) Read Edit Write Skill AskUserQuestion PushNotification
 ---
 

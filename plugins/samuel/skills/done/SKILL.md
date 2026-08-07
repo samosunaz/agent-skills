@@ -1,6 +1,6 @@
 ---
 name: done
-description: "Close the loop — open a PR (Closes #N), mark the item done, and clean up. Supports --draft for autonomous runs. Trigger on 'done', 'terminé', 'ship it', 'crear PR'."
+description: "Close the loop — open a PR (Closes #N), mark the item done, and clean up. Supports --draft for autonomous runs. Trigger on 'done', 'finished', 'ship it', 'open the PR'."
 allowed-tools: Bash(git branch *) Bash(git config *) Bash(git rev-parse *) Bash(git remote *) Bash(git log *) Bash(git diff *) Bash(git merge-base *) Bash(git checkout *) Bash(git push *) Bash(git pull *) Bash(gh pr *) Bash(gh issue *) Bash(gh label *) Bash(awk *) Read Agent AskUserQuestion
 ---
 

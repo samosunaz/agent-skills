@@ -1,6 +1,6 @@
 ---
 name: wave-prep
-description: "Prepare the open backlog for a wave run: sweep pipeline issues, infer real inter-issue dependencies from their Executor Plans, declare the missing native blockedBy edges (human-approved), and hand the ready set to /samuel:waves. Trigger on 'wave prep', 'preparar ondas', 'preparar backlog para waves', 'aristas del backlog', 'qué issues se pueden paralelizar'."
+description: "Prepare the open backlog for a wave run: sweep pipeline issues, infer real inter-issue dependencies from their Executor Plans, declare the missing native blockedBy edges (human-approved), and hand the ready set to /samuel:waves. Trigger on 'wave prep', 'prepare waves', 'prepare the backlog for waves', 'backlog edges', 'which issues can run in parallel'."
 allowed-tools: Bash(gh *) Bash(jq *) Bash(awk *) Bash(grep *) Bash(date *) Read Skill AskUserQuestion
 ---
 

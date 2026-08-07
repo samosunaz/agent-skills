@@ -1,6 +1,6 @@
 ---
 name: next
-description: "Pull the next prioritized work item (GitHub Issues). Trigger on 'next', 'next task', 'qué sigue', 'pull task'."
+description: "Pull the next prioritized work item (GitHub Issues). Trigger on 'next', 'next task', 'what is next', 'pull task'."
 allowed-tools: Bash(gh *) Bash(git branch *) Bash(awk *) Read AskUserQuestion
 ---
 

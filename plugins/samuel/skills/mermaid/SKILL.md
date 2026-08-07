@@ -1,6 +1,6 @@
 ---
 name: mermaid
-description: "Mermaid diagram style standard: semantic shapes + emoji vocabulary + classDef palette. Invoke before authoring any Mermaid diagram (dossier, contract, RFC, Issue/PR). Trigger on 'mermaid', 'diagrama de flujo', 'diagram this', 'estándar mermaid'."
+description: "Mermaid diagram style standard: semantic shapes + emoji vocabulary + classDef palette. Invoke before authoring any Mermaid diagram (dossier, contract, RFC, Issue/PR). Trigger on 'mermaid', 'flow diagram', 'diagram this', 'mermaid standard'."
 allowed-tools: Read
 ---
 

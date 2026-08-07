@@ -1,6 +1,6 @@
 ---
 name: roadmap
-description: "Product Ownership session — read the product's real state and propose prioritized bets (what to build next and why), persisted as roadmap:* issues ready to promote into the pipeline. Discovery, upstream of plan. Trigger on 'roadmap', 'product direction', 'qué construir', 'qué sigue en el producto', 'próximas funcionalidades', 'oportunidades', 'hacia dónde llevar'."
+description: "Product Ownership session — read the product's real state and propose prioritized bets (what to build next and why), persisted as roadmap:* issues ready to promote into the pipeline. Discovery, upstream of plan. Trigger on 'roadmap', 'product direction', 'what to build next', 'what is next for the product', 'upcoming capabilities', 'opportunities', 'where to take this'."
 allowed-tools: Bash(gh *) Bash(git log *) Bash(git branch *) Bash(awk *) Bash(test *) Bash(ls *) Bash(date *) Read Write Edit Glob Agent AskUserQuestion
 ---
 
