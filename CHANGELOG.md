@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/samosunaz/agent-skills/compare/v4.0.0...v4.1.0) (2026-08-07)
+
+
+### 🚀 Features
+
+* **skills:** add tldr, the prose standard, and wire the TL;DR block to it ([#5](https://github.com/samosunaz/agent-skills/issues/5)) ([3de5856](https://github.com/samosunaz/agent-skills/commit/3de58562bfcdddcc03b1bfe1a4af812ab8185df3))
+
 ## [4.0.0](https://github.com/samosunaz/agent-skills/compare/v3.11.1...v4.0.0) (2026-08-07)
 
 
