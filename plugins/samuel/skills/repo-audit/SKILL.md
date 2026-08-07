@@ -25,7 +25,7 @@ The substrate drift detector for the repos the samuel pipeline runs in — read-
 
 ### 1) CHECK
 
-Run `bash "${CLAUDE_PLUGIN_ROOT}/skills/meta/repo-audit/scripts/audit.sh"` from the target repo's root. Present the full `[PASS|GAP|OPT] {check} — {evidence}` table verbatim, plus the closing `AUDIT: PASS|FAIL — N gap(s) · M optional` line. This is the whole deterministic layer, zero model judgment.
+Run `bash "${CLAUDE_PLUGIN_ROOT}/skills/repo-audit/scripts/audit.sh"` from the target repo's root. Present the full `[PASS|GAP|OPT] {check} — {evidence}` table verbatim, plus the closing `AUDIT: PASS|FAIL — N gap(s) · M optional` line. This is the whole deterministic layer, zero model judgment.
 
 ### 2) SEMANTIC PASS
 

@@ -83,10 +83,10 @@ Added principles: {entries}
 Removed principles: {entries + brief reason}
 Modified sections: {Architecture/Quality Gates if updated}
 Skills requiring review:
-- ⚠ pending: plugins/samuel/skills/pipeline/plan/SKILL.md (Constitution Check)
-- ⚠ pending: plugins/samuel/skills/pipeline/analyze/SKILL.md (detection pass)
-- ⚠ pending: plugins/samuel/skills/pipeline/implement/SKILL.md (per-phase pre-check)
-- ⚠ pending: plugins/samuel/skills/pipeline/validate/SKILL.md (final scan)
+- ⚠ pending: plugins/samuel/skills/plan/SKILL.md (Constitution Check)
+- ⚠ pending: plugins/samuel/skills/analyze/SKILL.md (detection pass)
+- ⚠ pending: plugins/samuel/skills/implement/SKILL.md (per-phase pre-check)
+- ⚠ pending: plugins/samuel/skills/validate/SKILL.md (final scan)
 Follow-up TODOs: {item, if any}
 -->
 ```

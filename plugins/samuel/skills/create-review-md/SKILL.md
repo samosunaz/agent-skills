@@ -24,7 +24,7 @@ Generates the repo's root `REVIEW.md` (schema v1, `template/REVIEW.md`) in two l
 
 ### 1) GUARD
 
-Run `bash "${CLAUDE_PLUGIN_ROOT}/skills/meta/create-review-md/scripts/review-md.sh" --check` from the target repo's root. If `REVIEW.md` is absent → continue to EVIDENCE. If present → show the `[PASS|GAP]` conformance report and **stop**; regenerate only if the user explicitly asks (then continue to EVIDENCE, overwriting on WRITE).
+Run `bash "${CLAUDE_PLUGIN_ROOT}/skills/create-review-md/scripts/review-md.sh" --check` from the target repo's root. If `REVIEW.md` is absent → continue to EVIDENCE. If present → show the `[PASS|GAP]` conformance report and **stop**; regenerate only if the user explicitly asks (then continue to EVIDENCE, overwriting on WRITE).
 
 ### 2) EVIDENCE
 

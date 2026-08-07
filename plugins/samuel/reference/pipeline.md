@@ -114,7 +114,7 @@ stateDiagram-v2
 
 > **Autonomy is a three-level scale, and this section is its top end.** Between the default (`interactive`, ask and wait) and the conductor (`autonomous`, record and continue) sits **`attended-auto`** — the human is present, so the run takes the obvious default and *announces* it instead of asking. It moves eight soft gates across `implement`, `done`, `next`, `start-task` and `session-handoff`; every hard stop below binds at all three levels. Switched on with `autonomy:` in `samuel.md`, never by a skill deciding for itself. Levels, the gate-by-gate table, and the recording contract: `autonomy.md`.
 
-`/samuel:conductor` chains the pipeline unattended for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). It can **bootstrap from an item id**, drives up to `validate`, then branches by mode: **review** (default) hard-stops before any PR; **ship** (`--ship`) runs the gate **and the independent reviewer** (validate Step 2.5), opening a **draft PR** via `/samuel:done --draft` only on `Overall: PASS`. The loop is started manually (`claude -p` over SSH) **or automatically** by GitHub (schedule / `issues:labeled`). Recipe + allowlist + multi-item loop: `skills/workflow/conductor/references/autonomous-run.md`. Automatic trigger (the heartbeat) + workflow template: `automated-trigger.md`.
+`/samuel:conductor` chains the pipeline unattended for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). It can **bootstrap from an item id**, drives up to `validate`, then branches by mode: **review** (default) hard-stops before any PR; **ship** (`--ship`) runs the gate **and the independent reviewer** (validate Step 2.5), opening a **draft PR** via `/samuel:done --draft` only on `Overall: PASS`. The loop is started manually (`claude -p` over SSH) **or automatically** by GitHub (schedule / `issues:labeled`). Recipe + allowlist + multi-item loop: `skills/conductor/references/autonomous-run.md`. Automatic trigger (the heartbeat) + workflow template: `automated-trigger.md`.
 
 ```mermaid
 flowchart TD
@@ -171,7 +171,7 @@ flowchart LR
 
 ## The unknowns seam (`find-unknowns`)
 
-`/samuel:find-unknowns` (map-vs-territory audit — `skills/meta/find-unknowns/`) is wired into the pipeline as **suggested, never auto-run**, and only when an *observable* heuristic fires. The autonomous path is the exception — there the preflight verdict is a hard gate, because nobody is watching the assumption that turns out wrong.
+`/samuel:find-unknowns` (map-vs-territory audit — `skills/find-unknowns/`) is wired into the pipeline as **suggested, never auto-run**, and only when an *observable* heuristic fires. The autonomous path is the exception — there the preflight verdict is a hard gate, because nobody is watching the assumption that turns out wrong.
 
 **The asymmetry:**
 

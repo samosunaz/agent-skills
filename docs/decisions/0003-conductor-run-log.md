@@ -34,6 +34,6 @@ Candidate homes considered: a committed file under `docs/` (a nightly loop writi
 
 ## References
 
-- Implementation: `plugins/samuel/skills/workflow/conductor/assets/conductor.yml` (the `Post the run report` step), `plugins/samuel/skills/workflow/conductor/SKILL.md` § Stop / Exit Report, `plugins/samuel/skills/workflow/conductor/references/autonomous-run.md` § 4b.
+- Implementation: `plugins/samuel/skills/conductor/assets/conductor.yml` (the `Post the run report` step), `plugins/samuel/skills/conductor/SKILL.md` § Stop / Exit Report, `plugins/samuel/skills/conductor/references/autonomous-run.md` § 4b.
 - Caps, outcome taxonomy and the morning-review recipe: `plugins/samuel/reference/automated-trigger.md` § Caps & run accounting.
 - Decided while implementing #25; constrains #29 (the loop's reporting/metrics follow-up).
