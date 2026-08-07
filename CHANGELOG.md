@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.11.1](https://github.com/samosunaz/agent-skills/compare/v3.11.0...v3.11.1) (2026-08-07)
+
+
+### 📄 Documentation
+
+* drop the author's first name from address-pr-comments ([f980901](https://github.com/samosunaz/agent-skills/commit/f980901932fbfea35278e7a912668465a012d936))
+* finish the English pass — chips, dispositions, and the ROUTE prompt ([f220d43](https://github.com/samosunaz/agent-skills/commit/f220d43c15836a88ea7dfe8b8471a5619d64db9e))
+* retire Backlog.md, link every skill from the README, and meet the Codex plugin schema ([6f3aea6](https://github.com/samosunaz/agent-skills/commit/6f3aea6cff2b472754335875714ac5b85ff2ab93))
+* write the public registry in English end to end ([077eada](https://github.com/samosunaz/agent-skills/commit/077eada0028045fc19170389f158a3a5cc432f2a))
+
+
+### ☁️ Continuous Integration
+
+* allow release-please to be run manually ([e8dc536](https://github.com/samosunaz/agent-skills/commit/e8dc53648465f065616056e4cfdc519e64c453a0))
+
 ## 3.11.0 (2026-08-01)
 
 

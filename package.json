@@ -1,6 +1,6 @@
 {
   "name": "@samuel/agent-skills",
-  "version": "3.11.0",
+  "version": "3.11.1",
   "private": true,
   "description": "Skill registry for personal indie hacker projects",
   "scripts": {
