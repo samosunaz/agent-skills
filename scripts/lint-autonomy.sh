@@ -18,11 +18,11 @@ else
 fi
 
 # G2 — every skill that reads the key also points at the spoke, and vice versa.
-targets="plugins/samuel/skills/pipeline/implement/SKILL.md
-plugins/samuel/skills/workflow/done/SKILL.md
-plugins/samuel/skills/workflow/next/SKILL.md
-plugins/samuel/skills/workflow/start-task/SKILL.md
-plugins/samuel/skills/git/session-handoff/SKILL.md"
+targets="plugins/samuel/skills/implement/SKILL.md
+plugins/samuel/skills/done/SKILL.md
+plugins/samuel/skills/next/SKILL.md
+plugins/samuel/skills/start-task/SKILL.md
+plugins/samuel/skills/session-handoff/SKILL.md"
 missing=0
 for f in $targets; do
   grep -q '^- Autonomy: ' "$f" || { echo "G2 FAIL — no Autonomy context read: $f"; missing=1; }
@@ -115,11 +115,11 @@ marks=$(grep -rn '(Conductor: \|(Autonomous: \|(Autonomous bootstrap: ' --includ
 # once sailed through green.
 skill_file() {
   case "$1" in
-    implement)       echo plugins/samuel/skills/pipeline/implement/SKILL.md ;;
-    done)            echo plugins/samuel/skills/workflow/done/SKILL.md ;;
-    next)            echo plugins/samuel/skills/workflow/next/SKILL.md ;;
-    start-task)      echo plugins/samuel/skills/workflow/start-task/SKILL.md ;;
-    session-handoff) echo plugins/samuel/skills/git/session-handoff/SKILL.md ;;
+    implement)       echo plugins/samuel/skills/implement/SKILL.md ;;
+    done)            echo plugins/samuel/skills/done/SKILL.md ;;
+    next)            echo plugins/samuel/skills/next/SKILL.md ;;
+    start-task)      echo plugins/samuel/skills/start-task/SKILL.md ;;
+    session-handoff) echo plugins/samuel/skills/session-handoff/SKILL.md ;;
     *)               echo "" ;;
   esac
 }

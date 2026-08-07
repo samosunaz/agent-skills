@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "samuel",
+  "version": "3.11.1",
+  "description": "Personal indie hacker workflow: spec-driven pipeline with living journal, autonomous conductor, git, and project management skills",
+  "author": {
+    "name": "Samuel Osuna",
+    "url": "https://github.com/samosunaz"
+  },
+  "homepage": "https://github.com/samosunaz/agent-skills#readme",
+  "repository": "https://github.com/samosunaz/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "pipeline",
+    "spec-driven",
+    "github",
+    "code-review",
+    "automation"
+  ]
+}

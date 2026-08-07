@@ -52,7 +52,7 @@ This block is the only place the fallback format is defined. A skill that needs 
 One line per skill, near the top, in the dispatch block alongside the skill's other spoke pointers. Not one per checkpoint — the agent reads the whole SKILL.md before executing it.
 
 ```markdown
-> **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../../reference/interaction-tools.md`.
+> **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 ```
 
 Substitute the tool name when a skill's gate is a different one (a planning skill names `ExitPlanMode`). Adjust the relative path to the skill's depth. Everything else stays verbatim — that's what makes the convention greppable.

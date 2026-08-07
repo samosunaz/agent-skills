@@ -9,8 +9,8 @@ Added principles:
 Removed principles:
 - {name}
 Skills requiring review:
-- ✅ updated: plugins/samuel/skills/pipeline/plan/SKILL.md (Constitution Check)
-- ✅ updated: plugins/samuel/skills/pipeline/analyze/SKILL.md (Constitution detection pass)
+- ✅ updated: plugins/samuel/skills/plan/SKILL.md (Constitution Check)
+- ✅ updated: plugins/samuel/skills/analyze/SKILL.md (Constitution detection pass)
 - ⚠ pending: {file path} ({why})
 Follow-up TODOs:
 - {item} (if any placeholders deferred)
