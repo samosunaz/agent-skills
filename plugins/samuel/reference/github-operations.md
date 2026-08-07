@@ -49,6 +49,8 @@ Estimates go in concrete units (`~2 h`, `~1 afternoon`), never "some work" — t
 
 Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no design decision · **M** = 3–4 files or one design decision · **L** = beyond that, so check § Sizing in `plan-templates.md` before planning it.
 
+**The prose inside the block follows the STE standard** — `../skills/tldr/SKILL.md`. This section owns the block's *structure* (four lines, the chips, where it sits); the standard owns its *sentences*: one reading each, active voice with a subject, one idea per line, a number instead of "varios"/"significant", no filler adjective. Compressing a finished body into four lines is the standard's highest-traffic case, and the same rules run on the Brief and the rest of the PR body below it.
+
 ### What kills a TL;DR
 
 - **Restating the title.** The reader just read it. Add the thing the title couldn't fit.
@@ -418,7 +420,7 @@ EOF
 - **`Closes #N`** in the body auto-closes the issue on merge — the link that ties PR ↔ issue. Always include it.
 - **`--draft`** for unattended runs: the agent opens the PR, CI runs, the human reviews → marks ready → merges. Interactive runs may open ready-for-review directly.
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution**, ever.
-- **Body** opens with the TL;DR block (§ TL;DR) — Spanish, four lines, written last. `## Summary` is the agent-facing layer underneath it, not a substitute: a summary explains the change, the TL;DR decides whether it gets read.
+- **Body** opens with the TL;DR block (§ TL;DR) — English, four lines, written last. `## Summary` is the agent-facing layer underneath it, not a substitute: a summary explains the change, the TL;DR decides whether it gets read.
 - After creating: `gh issue edit N --add-label "pipeline:in-review" --remove-label "pipeline:in-progress"`.
 
 ## Enumeration IDs — `#` is for GitHub artifacts only

@@ -62,7 +62,7 @@ Ask: "File `pipeline:triage` Issues for the N gap(s)/finding(s) above?" On yes, 
 gh issue list -R {repo} --search "\"[substrate] {check-id}\" in:title" --state all --json number,title
 ```
 
-Matched (normalized title match) → skip, report `"{title} already exists as {number}, skipping"`. Unmatched → create: title `[substrate] {check-id}` (deterministic) or `[substrate] semantic: {short-title}` (semantic), labels `type:chore,priority:low,pipeline:triage`, TL;DR + Brief + AC from the finding's evidence (adapter § TL;DR — `Ojo:` carries what the gap actually costs if left, which is the whole reason a substrate issue is worth opening). On "no", the report stands as the only output — nothing is filed.
+Matched (normalized title match) → skip, report `"{title} already exists as {number}, skipping"`. Unmatched → create: title `[substrate] {check-id}` (deterministic) or `[substrate] semantic: {short-title}` (semantic), labels `type:chore,priority:low,pipeline:triage`, TL;DR + Brief + AC from the finding's evidence (adapter § TL;DR — `Caveat:` carries what the gap actually costs if left, which is the whole reason a substrate issue is worth opening). On "no", the report stands as the only output — nothing is filed.
 
 ## Autonomy
 

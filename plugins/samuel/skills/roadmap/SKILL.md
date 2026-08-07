@@ -73,7 +73,7 @@ Present the **shortlist** as a table: *Bet · Job/Outcome · Value · Effort · 
 
 Persist the agreed bets to GitHub (confirm first — never auto-create):
 
-One issue per bet: the TL;DR block + the `## Opportunity` mini-brief as the body (`product-ownership.md`). The TL;DR is what makes a shortlist of fifteen bets re-readable next month — write it from the lens that produced the bet, and put the assumption that would kill it in `Ojo:`.
+One issue per bet: the TL;DR block + the `## Opportunity` mini-brief as the body (`product-ownership.md`). The TL;DR is what makes a shortlist of fifteen bets re-readable next month — write it from the lens that produced the bet, and put the assumption that would kill it in `Caveat:`.
 ```bash
 gh issue create -R {repo} --title "{type}: {bet}" \
   --label "type:feat,roadmap:{now|next|later}" \

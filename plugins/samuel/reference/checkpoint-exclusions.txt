@@ -35,3 +35,7 @@ plugins/samuel/skills/conductor/SKILL.md
 
 # Reference material — the org diagram standard, no execution and no gate.
 plugins/samuel/skills/mermaid/SKILL.md
+
+# Reference material — the prose standard. It prints a rewrite and stops
+# (SKILL.md Step 6); posting or committing it is the caller's turn, not a gate.
+plugins/samuel/skills/tldr/SKILL.md
