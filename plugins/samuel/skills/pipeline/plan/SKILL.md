@@ -71,7 +71,7 @@ Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {c
 
 **Goal**: persist the Brief + Executor Plan to the Issue body. Build both sections per `plan-templates.md` (decisive, self-contained, evidence-backed, guardrails embedded, exact gate command).
 
-**Write the TL;DR last** (four lines, top of the brief section — spec: adapter § TL;DR). It's a compression of the finished plan, so it can only be written once the plan exists. Its `Caveat:` line is where the plan's one real hazard surfaces — the breaking change, the still-open dependency, the decision that constrains siblings. If nothing qualifies, say `Nada`; inventing a hazard trains the reader to skip the line.
+**Write the TL;DR last** (four lines, top of the brief section — spec: adapter § TL;DR). It's a compression of the finished plan, so it can only be written once the plan exists. Its `Caveat:` line is where the plan's one real hazard surfaces — the breaking change, the still-open dependency, the decision that constrains siblings. If nothing qualifies, say `None`; inventing a hazard trains the reader to skip the line.
 
 1. If `Item` ≠ `NO_ITEM`: fetch the current body, preserve/refresh the `<!-- samuel:brief -->` section, fill the `<!-- samuel:plan -->` section. Write the composed body to a temp file (`Write`), then:
    ```bash

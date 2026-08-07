@@ -122,7 +122,7 @@ Validate each **Actionable** and **Discard** candidate against reality before pr
 2. **Re-derive the claim independently**: does the bug/risk exist as described? Reproduce the reasoning (or the behavior, when cheap) instead of trusting the reviewer's assertion.
 3. **Check recorded decisions**: journal (D-NNN), ADRs (`docs/decisions/`), `Upstream decision` comments on the Issue, `CONSTITUTION.md`, `REVIEW.md`, CLAUDE.md conventions. A finding that contradicts a recorded decision defends the decision, citing the record — a nit that hits `REVIEW.md`'s "Never flag" list or falls outside its noise budget is refutable by citing that line.
 
-Verdict per finding: **Confirmado** (stays Actionable) · **Refutado** (→ Discard, carrying the citable evidence) · **Incierto** (→ Reply asking for clarification — never guess a fix).
+Verdict per finding: **Confirmed** (stays Actionable) · **Refuted** (→ Discard, carrying the citable evidence) · **Unclear** (→ Reply asking for clarification — never guess a fix).
 
 **Posture**: evidence decides — neither deference nor defensiveness. When rejecting, state the trade-off that was chosen and invite the reviewer to weigh it differently. If no citable reason exists to reject, the finding stands.
 

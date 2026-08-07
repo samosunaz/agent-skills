@@ -2,7 +2,7 @@
 
 The executable recipes behind `/samuel:waves`. The coordinator is a **live attended session** in the target repo's primary checkout; workers are isolated implementers in Orca-managed worktrees. GitHub is the only durable state — the blockedBy graph, PR state, and labels survive any crash; Orca orchestration state is disposable provenance (see § State & recovery).
 
-Boundary (anti-doble-scheduler, decided in #30): **waves = coordinator** (which items enter which wave, and when) · **conductor = per-item engine** · **Orca automations = calendar trigger**. An automation may *invoke* waves; waves never duplicates conductor's pipeline logic and never schedules itself.
+Boundary (anti-double-scheduler, decided in #30): **waves = coordinator** (which items enter which wave, and when) · **conductor = per-item engine** · **Orca automations = calendar trigger**. An automation may *invoke* waves; waves never duplicates conductor's pipeline logic and never schedules itself.
 
 Authority ceiling (ADR 0004): the launch itself grants each worker push + **draft** PR authority and the coordinator comment authority **on the issues being driven** — nothing else. Merge, `gh pr ready`, and issue close are the human's, at every step of this protocol.
 
@@ -163,7 +163,7 @@ orca orchestration check --wait --types worker_done,escalation,decision_gate --t
 - **`decision_gate` / `ask`** → answer from the coordinator's context (`orca orchestration reply --id {msg_id} --body "..."`); anything touching scope, schema, or another issue's territory goes to the human first.
 - **`escalation`** → park the issue (report row: `escalated`), free its concurrency slot, continue the wave.
 - **Timeout** → a checkpoint, not a failure: inspect `task-list --brief` and `terminal read`; a live worker (output advancing, heartbeats) keeps running. Never kill a worker for slowness; 15-60 min tasks are normal.
-- Dispatch queued issues as slots free. Update the coordinator's own card comment at wave milestones (`orca worktree set --worktree active --comment "onda 2: 3/4 PRs abiertos"`).
+- Dispatch queued issues as slots free. Update the coordinator's own card comment at wave milestones (`orca worktree set --worktree active --comment "wave 2: 3/4 PRs open"`).
 
 **Claude-variant supervision.** These workers send no orchestration messages, and `terminal wait --for exit` blocks on one worker at a time — useless for a fan-out. Watch the logs instead, as a single backgrounded poll that wakes the coordinator when the wave drains:
 
@@ -215,7 +215,7 @@ esac
 gh issue comment "$LOG" --body-file {report.md}
 ```
 
-Report shape: header `**Waves run** — {repo} · {date} · {n} ondas`, one row per issue — `| issue | onda | engine | outcome | PR |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Escalated/parked rows name their reason; a truncated run says what it did not cover.
+Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Escalated/parked rows name their reason; a truncated run says what it did not cover.
 
 Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca orchestration reset --tasks --json` only when nothing is active and the report is posted.
 

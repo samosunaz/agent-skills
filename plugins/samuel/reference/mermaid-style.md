@@ -18,9 +18,9 @@ Empirical base: a render canvas run against GitHub (a dedicated render-canvas PR
 
 | Role | Shape | Syntax | Emoji | Class |
 |------|-------|--------|-------|-------|
-| User / actor | Stadium | `U([👤 Usuario])` | 👤 (👥 group) | `actor` |
+| User / actor | Stadium | `U([👤 User])` | 👤 (👥 group) | `actor` |
 | Web frontend | Rect | `FE[🖥️ Editor]` | 🖥️ | `ui` |
-| Mobile client | Rect | `APP[📱 App nativa]` | 📱 | `ui` |
+| Mobile client | Rect | `APP[📱 Native app]` | 📱 | `ui` |
 | Internal API / service | Rect | `API[⚙️ Worker]` | ⚙️ | `svc` |
 | External service | Rect (dashed via class) | `LLM[🌐 Anthropic API]` | 🌐 | `ext` |
 | Database | Cylinder | `DB[(🗄️ D1)]` | 🗄️ | `db` |
@@ -76,15 +76,15 @@ classDef fail fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
 ### `flowchart` — architecture & user flows
 
 - `LR` for architecture, `TD` for user flows / decision trees.
-- Group with `subgraph` by boundary — `Cliente`, `Backend`, `Infra`, `Externos`. Subgraphs stay unstyled; the nodes carry the color.
+- Group with `subgraph` by boundary — `Client`, `Backend`, `Infra`, `External`. Subgraphs stay unstyled; the nodes carry the color.
 - Full standard applies: shapes + emojis + classes.
 
 Architecture:
 
 ```mermaid
 flowchart LR
-    subgraph Cliente
-        U([👤 Usuario]):::actor --> FE[🖥️ Editor]:::ui
+    subgraph Client
+        U([👤 User]):::actor --> FE[🖥️ Editor]:::ui
     end
     subgraph Backend
         FE --> API[⚙️ Worker]:::svc
@@ -156,15 +156,15 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Borrador
-    Borrador --> Publicada: deploy
-    Borrador --> Descartada: timeout
-    Publicada --> Archivada: archive
-    Descartada --> [*]
+    [*] --> Draft
+    Draft --> Published: deploy
+    Draft --> Discarded: timeout
+    Published --> Archived: archive
+    Discarded --> [*]
     classDef ok fill:#dcfce7,stroke:#16a34a,color:#14532d
     classDef fail fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
-    class Publicada ok
-    class Descartada fail
+    class Published ok
+    class Discarded fail
 ```
 
 ### `erDiagram` — data models
@@ -173,8 +173,8 @@ No styling layer (the renderer ignores it). Entities in `UPPER_SNAKE`; relations
 
 ```mermaid
 erDiagram
-    USUARIO ||--o{ PROYECTO : posee
-    PROYECTO ||--|| LANDING : publica
+    USER ||--o{ PROJECT : owns
+    PROJECT ||--|| LANDING : publishes
 ```
 
 ## Surfaces

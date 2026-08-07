@@ -53,7 +53,7 @@ Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no 
 
 - **Restating the title.** The reader just read it. Add the thing the title couldn't fit.
 - **Listing files or steps.** That's the Executor Plan / the diff, two scrolls down.
-- **Opening with "Este PR implementa…" / "Este issue busca…".** Start at the change itself.
+- **Opening with "This PR implements…" / "This issue seeks to…".** Start at the change itself.
 - **Writing it first.** It's a *synthesis*: compose the body, then compress downward. On a PR that means after the journal and `validation.md` are read, not before.
 - **A `Caveat:` that needs two lines.** That's not a warning, that's an unscoped item — split it or plan it.
 

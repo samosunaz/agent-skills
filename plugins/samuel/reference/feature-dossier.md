@@ -21,7 +21,7 @@ docs/product/
 ```
 
 - **Default root**: `docs/product/`. If the repo already has a docs convention (`docs/`, `documentation/`, no `product/`), detect it and confirm the root with the user before writing. Accept `--root <path>` to override.
-- **Slug**: kebab-case, derived from the capability name (`scheduled-publishing` → `publicacion-programada` is fine — pick one language and stay consistent). Reuse `feature_slug` from `.claude/task-context.md` when feature-aware.
+- **Slug**: kebab-case, derived from the capability name (`scheduled-publishing`). A slug in the dossier's `--lang` language is fine too — pick one language per catalog and stay consistent. Reuse `feature_slug` from `.claude/task-context.md` when feature-aware.
 - **One dossier per capability**, not per task/PR. A capability accretes many PRs over its life; each lands as a changelog entry, not a new file.
 - **Statuses**: `🟢 Live` · `🟡 Beta` · `🔵 Planned` · `⚪ Deprecated`.
 

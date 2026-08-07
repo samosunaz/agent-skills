@@ -17,7 +17,7 @@ Two directions, two skills:
 
 Every contract/spec is scoped to one or more **consumers**. Mobile is native (iOS/Android), not a mobile web view — that changes what matters:
 
-| Concern | `web` (frontend) | `mobile` (iOS/Android nativo) |
+| Concern | `web` (frontend) | `mobile` (native iOS/Android) |
 |---|---|---|
 | **Backward compat** | fixes deploy on both sides together | **old app versions live in the wild** — never remove/retype existing fields; additive only, version the endpoint on breaking change |
 | **Nullability** | TS optional `?` is forgiving | Swift `Optional` / Kotlin nullable — a wrongly non-null field **crashes** the app. State null vs non-null exactly |
@@ -25,7 +25,7 @@ Every contract/spec is scoped to one or more **consumers**. Mobile is native (iO
 | **Pagination** | offset acceptable | prefer cursor / infinite-scroll for long lists |
 | **Payload size** | tolerant | minimize (mobile data + battery); return only needed fields |
 | **Images** | responsive `srcset` | explicit size variants (thumb/full) + pixel dimensions |
-| **Dates / money** | ISO 8601 / centavos | same — but state timezone handling explicitly |
+| **Dates / money** | ISO 8601 / minor units (centavos) | same — but state timezone handling explicitly |
 | **Errors** | toast / inline | same + offline / no-connection state |
 | **Push / deep-links** | rarely relevant | note trigger events + payload params if the flow uses them |
 
