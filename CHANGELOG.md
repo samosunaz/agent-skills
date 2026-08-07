@@ -85,7 +85,7 @@
 
 ### 🚀 Features
 
-* **samuel:** attended-auto — un tercer nivel de autonomía para checkpoints suaves
+* **samuel:** attended-auto — a third autonomy level for soft checkpoints
 
 ## 3.4.0 (2026-07-27)
 
