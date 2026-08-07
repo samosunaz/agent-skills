@@ -1,6 +1,6 @@
 ---
 name: api-request
-description: "Spec an endpoint a client needs from the backend, from the web frontend OR native mobile (iOS/Android) perspective. Output is an inline copy-paste block by default. Trigger on 'api request', 'necesito del api', 'pedir endpoint', 'spec para backend', 'nuevo endpoint desde front/mobile'."
+description: "Spec an endpoint a client needs from the backend, from the web frontend OR native mobile (iOS/Android) perspective. Output is an inline copy-paste block by default. Trigger on 'api request', 'i need an endpoint', 'request endpoint', 'spec for backend', 'new endpoint from front/mobile'."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git config *) Bash(git merge-base *) Bash(awk *) Bash(grep *) Bash(gh issue *) Read Grep Glob Agent AskUserQuestion
 ---
 

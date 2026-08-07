@@ -1,6 +1,6 @@
 ---
 name: address-pr-comments
-description: "Triage, verify, and resolve incoming PR comments — apply fixes, reply, resolve threads, close each pass with a Resolution marker comment, re-request review. Incremental: scopes to feedback since the last pass. Author side of the PR review gate. Trigger on 'address pr comments', 'atender comentarios pr', 'resolver review', 'responder review'."
+description: "Triage, verify, and resolve incoming PR comments — apply fixes, reply, resolve threads, close each pass with a Resolution marker comment, re-request review. Incremental: scopes to feedback since the last pass. Author side of the PR review gate. Trigger on 'address pr comments', 'address review feedback', 'resolve review threads', 'reply to review'."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git remote *) Bash(git rev-parse *) Bash(git config *) Bash(git status *) Bash(git worktree *) Bash(git fetch *) Bash(git checkout *) Bash(git stash *) Bash(git add *) Bash(git commit *) Bash(git push *) Bash(gh pr *) Bash(gh issue *) Bash(gh api *) Bash(head *) Bash(basename *) Bash(pwd *) Bash(test *) Read Grep Glob Edit Write Agent AskUserQuestion
 ---
 

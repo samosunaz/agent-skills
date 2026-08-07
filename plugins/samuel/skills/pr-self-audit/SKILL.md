@@ -1,6 +1,6 @@
 ---
 name: pr-self-audit
-description: "Review a PR for bugs, security, and logic errors. High-signal only. Trigger on 'review pr', 'code review', 'revisar pr'."
+description: "Review a PR for bugs, security, and logic errors. High-signal only. Trigger on 'review pr', 'code review', 'audit this pr'."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git remote *) Bash(git rev-parse *) Bash(git config *) Bash(gh pr *) Bash(gh api *) Bash(head *) Read Grep Glob Agent AskUserQuestion
 ---
 

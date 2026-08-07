@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: "Read-only cross-artifact consistency check across spec, research, plan, tasks, journal, and constitution. Severity-tagged findings, no auto-edits. Trigger on 'analyze', 'analizar consistencia', before implementing a non-trivial feature."
+description: "Read-only cross-artifact consistency check across spec, research, plan, tasks, journal, and constitution. Severity-tagged findings, no auto-edits. Trigger on 'analyze', 'consistency check', before implementing a non-trivial feature."
 allowed-tools: Bash(gh *) Bash(which *) Bash(awk *) Bash(test *) Bash(date *) Bash(cat *) Bash(ls *) Read Agent
 ---
 

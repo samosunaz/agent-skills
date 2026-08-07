@@ -4,7 +4,7 @@ A samuel work item carries **one artifact with two sections**: a human **Brief**
 
 Three reading speeds, one artifact:
 
-- **TL;DR** — ten seconds. The triage decision: engage now, or not. Four lines, Spanish, at the very top. Spec: `reference/github-operations.md` § TL;DR.
+- **TL;DR** — ten seconds. The triage decision: engage now, or not. Four lines, English, at the very top. Spec: `reference/github-operations.md` § TL;DR.
 - **Brief** — a human prioritizing or reviewing. One screen. WHAT/WHY, never HOW.
 - **Executor Plan** — an autonomous agent with **zero prior context** (a cold cloud/droplet session). It must execute correctly from this text + repo access alone. HOW, in full.
 

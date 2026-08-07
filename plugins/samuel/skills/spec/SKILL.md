@@ -1,6 +1,6 @@
 ---
 name: spec
-description: "Generate a Spec doc (User Stories P1/P2/P3, FR-### MUST, SC-### measurable, Edge Cases) with up to 5 clarifications. Optional — only when spec_required. Trigger on 'create spec', 'crear spec', or after /samuel:start-task when spec_required."
+description: "Generate a Spec doc (User Stories P1/P2/P3, FR-### MUST, SC-### measurable, Edge Cases) with up to 5 clarifications. Optional — only when spec_required. Trigger on 'create spec', 'write the spec', or after /samuel:start-task when spec_required."
 allowed-tools: Bash(git rev-parse *) Bash(git branch *) Bash(date *) Bash(awk *) Bash(cat *) Read Edit Write Agent AskUserQuestion
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: progress
-description: "Personal progress dashboard: item status, velocity, and blockers from GitHub. Trigger on 'progress', 'progreso', 'dashboard', 'cómo vamos'."
+description: "Personal progress dashboard: item status, velocity, and blockers from GitHub. Trigger on 'progress', 'dashboard', 'where do we stand', 'status'."
 allowed-tools: Bash(gh *) Bash(git log *) Bash(git branch *) Bash(awk *) Bash(date *) Read
 ---
 

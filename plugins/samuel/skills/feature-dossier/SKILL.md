@@ -1,6 +1,6 @@
 ---
 name: feature-dossier
-description: "Create or update a living feature dossier — enriched markdown + Mermaid diagrams/flows — in a versioned product catalog. For big features that change product behavior; reference for humans and AI before future modifications. Output language configurable (--lang, default es). Trigger on 'feature dossier', 'documentar feature', 'documenta esta funcionalidad', 'dossier de feature', 'catálogo de features', 'actualizar dossier'."
+description: "Create or update a living feature dossier — enriched markdown + Mermaid diagrams/flows — in a versioned product catalog. For big features that change product behavior; reference for humans and AI before future modifications. Output language configurable (--lang, default es). Trigger on 'feature dossier', 'document this feature', 'document this capability', 'feature catalog', 'update dossier'."
 allowed-tools: Bash(git log *) Bash(git diff *) Bash(git rev-parse *) Bash(git branch *) Bash(git remote *) Bash(gh pr *) Bash(gh issue *) Bash(gh release *) Bash(date *) Bash(awk *) Bash(test *) Bash(ls *) Read Write Edit Glob Agent AskUserQuestion
 ---
 

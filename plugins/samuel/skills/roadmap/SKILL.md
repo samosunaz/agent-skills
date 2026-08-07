@@ -1,6 +1,6 @@
 ---
 name: roadmap
-description: "Product Ownership session — read the product's real state and propose prioritized bets (what to build next and why), persisted as roadmap:* issues ready to promote into the pipeline. Discovery, upstream of plan. Trigger on 'roadmap', 'product direction', 'qué construir', 'qué sigue en el producto', 'próximas funcionalidades', 'oportunidades', 'hacia dónde llevar'."
+description: "Product Ownership session — read the product's real state and propose prioritized bets (what to build next and why), persisted as roadmap:* issues ready to promote into the pipeline. Discovery, upstream of plan. Trigger on 'roadmap', 'product direction', 'what to build next', 'what is next for the product', 'upcoming capabilities', 'opportunities', 'where to take this'."
 allowed-tools: Bash(gh *) Bash(git log *) Bash(git branch *) Bash(awk *) Bash(test *) Bash(ls *) Bash(date *) Read Write Edit Glob Agent AskUserQuestion
 ---
 
@@ -73,7 +73,7 @@ Present the **shortlist** as a table: *Bet · Job/Outcome · Value · Effort · 
 
 Persist the agreed bets to GitHub (confirm first — never auto-create):
 
-One issue per bet: the TL;DR block + the `## Opportunity` mini-brief as the body (`product-ownership.md`). The TL;DR is what makes a shortlist of fifteen bets re-readable next month — write it from the lens that produced the bet, and put the assumption that would kill it in `Ojo:`.
+One issue per bet: the TL;DR block + the `## Opportunity` mini-brief as the body (`product-ownership.md`). The TL;DR is what makes a shortlist of fifteen bets re-readable next month — write it from the lens that produced the bet, and put the assumption that would kill it in `Caveat:`.
 ```bash
 gh issue create -R {repo} --title "{type}: {bet}" \
   --label "type:feat,roadmap:{now|next|later}" \

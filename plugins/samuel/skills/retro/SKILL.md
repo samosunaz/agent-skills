@@ -1,6 +1,6 @@
 ---
 name: retro
-description: "Personal retrospective: analyze what worked, what didn't, and what to change, from GitHub + git history. Trigger on 'retro', 'retrospectiva', 'qué aprendí'."
+description: "Personal retrospective: analyze what worked, what didn't, and what to change, from GitHub + git history. Trigger on 'retro', 'retrospective', 'lessons learned'."
 allowed-tools: Bash(gh *) Bash(git log *) Bash(git diff *) Bash(git branch *) Bash(awk *) Bash(date *) Read Write AskUserQuestion
 ---
 

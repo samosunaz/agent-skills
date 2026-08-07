@@ -87,7 +87,7 @@ Investigation of an ambiguous bug where multiple causes are plausible. Each team
 
 - Bug is intermittent, environment-specific, or has multiple plausible causes
 - Single-agent investigation would anchor on the first plausible explanation
-- "investiga teorías", "debug con hipótesis", "no sabemos por qué pasa esto"
+- "investigate the theories", "debug with hypotheses", "we do not know why this happens"
 
 ### Sizing
 
@@ -238,7 +238,7 @@ Multi-angle exploration of an open problem, library, or design space. Each teamm
 
 ### When
 
-- "explora X desde varios ángulos"
+- "explore X from several angles"
 - Library / framework evaluation
 - Pre-plan discovery for a technical decision
 - A single investigator would skew toward one frame

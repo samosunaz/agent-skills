@@ -1,6 +1,6 @@
 ---
 name: find-unknowns
-description: "Map-vs-territory audit — surface known unknowns, unknown knowns, and unknown unknowns of an idea, Issue, or diff before they get expensive. Modes: audit (default), preflight (Issue N), teach (--teach «domain»), quiz (--quiz [N]). Standalone — no task-context required. Trigger on 'find unknowns', 'unknowns', 'blind spot', 'puntos ciegos', 'qué no estoy viendo', 'quiz me'."
+description: "Map-vs-territory audit — surface known unknowns, unknown knowns, and unknown unknowns of an idea, Issue, or diff before they get expensive. Modes: audit (default), preflight (Issue N), teach (--teach «domain»), quiz (--quiz [N]). Standalone — no task-context required. Trigger on 'find unknowns', 'unknowns', 'blind spot', 'what am i missing', 'quiz me'."
 allowed-tools: Bash(gh issue view *) Bash(gh issue comment *) Bash(gh pr view *) Bash(gh pr diff *) Bash(git diff *) Bash(git log *) Bash(git branch *) Bash(git rev-parse *) Bash(awk *) Bash(date *) Read Grep Glob Agent Write Edit AskUserQuestion
 ---
 

@@ -131,7 +131,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 33 skills, one directory each
+│       └── skills/               # 34 skills, one directory each
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -178,6 +178,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 |-------|---------|
 | [`/samuel:feature-dossier`](plugins/samuel/skills/feature-dossier/SKILL.md) | Create/update a living feature dossier (enriched markdown + Mermaid, evidence `file:line`, changelog) in a versioned product catalog. |
 | [`/samuel:mermaid`](plugins/samuel/skills/mermaid/SKILL.md) | The diagram style standard: semantic shapes, one-emoji vocabulary, `classDef` palette. Single home for how every Mermaid diagram in the pipeline is drawn. |
+| [`/samuel:tldr`](plugins/samuel/skills/tldr/SKILL.md) | The prose standard (Simplified Technical English): rewrite text so each sentence admits one reading. Single home for how every Issue/PR TL;DR, brief, and chat answer is written. |
 
 ### Design
 

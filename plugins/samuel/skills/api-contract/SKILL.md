@@ -1,6 +1,6 @@
 ---
 name: api-contract
-description: "Document an endpoint the backend built, for the client(s) that consume it — web frontend and/or native mobile (iOS/Android). Emits TS + Swift/Kotlin types. Output is an inline copy-paste block by default. Trigger on 'api contract', 'contrato api', 'documentar endpoint', 'contract for frontend/mobile'."
+description: "Document an endpoint the backend built, for the client(s) that consume it — web frontend and/or native mobile (iOS/Android). Emits TS + Swift/Kotlin types. Output is an inline copy-paste block by default. Trigger on 'api contract', 'document endpoint', 'contract for frontend/mobile'."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git config *) Bash(git merge-base *) Bash(awk *) Bash(grep *) Bash(gh issue *) Read Grep Glob Agent AskUserQuestion
 ---
 
