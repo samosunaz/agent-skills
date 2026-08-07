@@ -1,6 +1,6 @@
-# Samuel Osuna — Agent Skills
+# Agent Skills
 
-> Personal skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for Samuel Osuna's personal and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker.
+> A skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for solo and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker.
 
 <div align="center">
 

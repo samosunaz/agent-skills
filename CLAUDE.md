@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) and Codex when worki
 
 ## What This Is
 
-A skill registry for AI coding agents (Claude Code + Codex) for Samuel Osuna's personal/indie hacker projects. Organized as a plugin monorepo. Skills are folders of instructions and resources that agents load dynamically for specialized workflows. No build system, no tests — this is a content repo of markdown-based skill definitions.
+A skill registry for AI coding agents (Claude Code + Codex) aimed at solo and indie hacker projects. Organized as a plugin monorepo. Skills are folders of instructions and resources that agents load dynamically for specialized workflows. No build system, no tests — this is a content repo of markdown-based skill definitions.
 
 ## Multi-Platform Support
 

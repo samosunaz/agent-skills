@@ -1,6 +1,6 @@
 {
   "name": "samuel-skills",
-  "description": "Samuel Osuna's personal skill registry: a spec-driven delivery pipeline for indie hacker projects",
+  "description": "A skill registry: spec-driven delivery pipeline for solo and indie hacker projects",
   "owner": {
     "name": "Samuel Osuna"
   },
