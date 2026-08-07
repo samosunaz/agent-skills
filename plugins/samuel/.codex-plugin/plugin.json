@@ -1,6 +1,6 @@
 {
   "name": "samuel",
-  "version": "3.11.1",
+  "version": "4.0.0",
   "description": "Personal indie hacker workflow: spec-driven pipeline with living journal, autonomous conductor, git, and project management skills",
   "author": {
     "name": "Samuel Osuna",
