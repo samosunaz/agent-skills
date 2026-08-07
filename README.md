@@ -1,6 +1,22 @@
-# Samuel Osuna — Agent Skills
+# Agent Skills
 
-Personal skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for Samuel Osuna's personal and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker.
+> A skill registry and sub-agents for **Claude Code** and **OpenAI Codex** from one shared skill source, built for solo and indie hacker projects. A spec-driven pipeline with a living implementation journal, plus git and project-management skills. **GitHub-native** — work items are GitHub Issues carrying a human **Brief** + a self-contained **Executor Plan**, driven by an autonomous conductor that can ship draft PRs for headless/cloud runs. GitHub is the only tracker.
+
+<div align="center">
+
+<!-- x-release-please-start-version -->
+
+![Version](https://img.shields.io/badge/version-3.11.1_-seagreen?style=for-the-badge&logo=git&logoColor=seagreen)
+
+<!-- x-release-please-end -->
+
+[![Agent Plugins](https://img.shields.io/badge/Agent_Plugins-1.0.0-blueviolet.svg?style=for-the-badge&logo=json&logoColor=blueviolet)](https://github.com/agentplugins/agent-plugins-spec)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757.svg?style=for-the-badge&logo=anthropic&logoColor=D97757)](https://claude.ai/code)
+[![Codex](https://img.shields.io/badge/Codex-plugin-000000.svg?style=for-the-badge&logo=openai&logoColor=white)](https://developers.openai.com/codex)
+[![release-please](https://img.shields.io/badge/release--please-enabled-mediumseagreen.svg?style=for-the-badge&logo=googlecloud&logoColor=mediumseagreen)](https://github.com/googleapis/release-please)
+[![License](https://img.shields.io/badge/license-MIT-slateblue.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=slateblue)](LICENSE)
+
+</div>
 
 ## Prerequisites
 
