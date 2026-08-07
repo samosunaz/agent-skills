@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  # release-please recomputes from every commit since the last tag, so a manual
+  # run recovers a release PR left stale by pushes whose workflow never fired.
+  workflow_dispatch:
 
 permissions:
   contents: write
