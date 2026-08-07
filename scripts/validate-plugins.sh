@@ -11,14 +11,17 @@ set -e
 # --- release-please tracking -------------------------------------------------
 # A manifest missing from release-please-config.json `extra-files` freezes that
 # plugin's version silently (the samuel Codex manifest sat at 1.0.0 while the
-# repo shipped 3.8.0).
+# repo shipped 3.8.0). `.claude-plugin/plugin.json` is deliberately absent from
+# `extra-files`: it is a symlink to the root manifest, and release-please would
+# replace it with a regular file, forking the two into separate versions.
 root_version=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json | head -1)
 tracking_failed=0
 
 for plugin in plugins/*/; do
-  for manifest_dir in .claude-plugin .codex-plugin; do
-    manifest="${plugin}${manifest_dir}/plugin.json"
+  for manifest_path in plugin.json .codex-plugin/plugin.json; do
+    manifest="${plugin}${manifest_path}"
     [ -f "$manifest" ] || continue
+    [ -L "$manifest" ] && continue
 
     if ! grep -q "\"$manifest\"" release-please-config.json; then
       echo "MISSING from release-please-config.json extra-files: $manifest"

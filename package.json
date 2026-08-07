@@ -8,6 +8,7 @@
     "prepare": "husky",
     "check:context": "bash scripts/lint-skill-context.sh",
     "check:plugins": "sh scripts/validate-plugins.sh",
+    "check:portability": "bash scripts/check-agent-plugins.sh",
     "check:autonomy": "bash scripts/lint-autonomy.sh"
   },
   "devDependencies": {

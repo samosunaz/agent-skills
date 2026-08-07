@@ -14,7 +14,7 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "plugins/samuel/.claude-plugin/plugin.json",
+          "path": "plugins/samuel/plugin.json",
           "jsonpath": "$.version"
         },
         {

@@ -1,8 +1,8 @@
 # Automated Trigger — the Pipeline's Heartbeat
 
-How to make the autonomous pipeline **start itself**. The conductor (`../skills/workflow/conductor/SKILL.md`) and its launch recipe (`../skills/workflow/conductor/references/autonomous-run.md`) already drive an item to a draft PR unattended — but the *trigger* is manual: a human SSHes into a droplet and runs `claude -p "/samuel:conductor N --ship"`, or a bash loop over `pipeline:ready`. This reference adds the missing **heartbeat**: GitHub (or a routine) fires the loop on its own. That closes gap #1 of #8 — the conductor goes from *context-independent* to *process-independent*.
+How to make the autonomous pipeline **start itself**. The conductor (`../skills/conductor/SKILL.md`) and its launch recipe (`../skills/conductor/references/autonomous-run.md`) already drive an item to a draft PR unattended — but the *trigger* is manual: a human SSHes into a droplet and runs `claude -p "/samuel:conductor N --ship"`, or a bash loop over `pipeline:ready`. This reference adds the missing **heartbeat**: GitHub (or a routine) fires the loop on its own. That closes gap #1 of #8 — the conductor goes from *context-independent* to *process-independent*.
 
-> **This is a scaffold, not a live trigger.** The committed workflow **template** lives at `../skills/workflow/conductor/assets/conductor.yml`. A consumer repo copies it to `.github/workflows/`, wires the secrets, and turns it on. Nothing here arms a trigger automatically.
+> **This is a scaffold, not a live trigger.** The committed workflow **template** lives at `../skills/conductor/assets/conductor.yml`. A consumer repo copies it to `.github/workflows/`, wires the secrets, and turns it on. Nothing here arms a trigger automatically.
 
 ## The three mechanisms
 
@@ -44,7 +44,7 @@ on:
 Steps:
 
 1. **`actions/checkout@v4`** with `fetch-depth: 0` (the conductor needs full history for branching/diffs).
-2. **Pre-stage `~/.claude/settings.json`** — there is no first-class "install plugin" Action input, so write the settings file the plugin runtime reads. It carries `extraKnownMarketplaces` + `enabledPlugins` (the shape from `README.md` "Per-project setup") **plus** the `permissions` `allow`/`deny` allowlist from `../skills/workflow/conductor/references/autonomous-run.md` (the same tight list that bounds a manual unattended run). `deny` keeps `gh pr merge`/`ready`/`issue close` off the table.
+2. **Pre-stage `~/.claude/settings.json`** — there is no first-class "install plugin" Action input, so write the settings file the plugin runtime reads. It carries `extraKnownMarketplaces` + `enabledPlugins` (the shape from `README.md` "Per-project setup") **plus** the `permissions` `allow`/`deny` allowlist from `../skills/conductor/references/autonomous-run.md` (the same tight list that bounds a manual unattended run). `deny` keeps `gh pr merge`/`ready`/`issue close` off the table.
 3. **`npm i -g @anthropic-ai/claude-code`** — the CLI is the invocation surface.
 4. **Resolve the target issue and run the conductor headlessly** — `github.event.issue.number` for the labeled event, `inputs.issue` for dispatch, or the `pipeline:ready` loop for `schedule`. The command is **verbatim** the canonical recipe from `autonomous-run.md`:
    ```bash
@@ -67,7 +67,7 @@ Four brakes, two of turns and two of money:
 | `--max-budget-usd` | CLI, **per item** — kills the run when spend hits it | `ITEM_BUDGET_USD: "10"` |
 | sweep accumulator | the workflow's `schedule` loop, **between items** | `SWEEP_BUDGET_USD: "40"` |
 
-Both budgets are job-level `env` in the template — tune them per repo. The sweep cap only ever stops the *next* item; it cannot cut a run already in flight, which is why the parallel SSH recipe has no equivalent (`../skills/workflow/conductor/references/autonomous-run.md` § Parallel variant).
+Both budgets are job-level `env` in the template — tune them per repo. The sweep cap only ever stops the *next* item; it cannot cut a run already in flight, which is why the parallel SSH recipe has no equivalent (`../skills/conductor/references/autonomous-run.md` § Parallel variant).
 
 **Capture.** Every `claude -p` invocation runs `--output-format stream-json --verbose` into a `.jsonl` — `stream-json` hard-errors without `--verbose`. The last JSONL line is the result object (`total_cost_usd`, `num_turns`, `usage.input_tokens`/`output_tokens`, `subtype`, `is_error`); `jq` reads it into one TSV row per item. A run killed by a cap can die **before** emitting `result` — that row is `aborted`, charged the full item cap, so the accumulator never fails open.
 
@@ -79,7 +79,7 @@ The two paths differ in one detail: the SSH recipes `tee`, because the file land
 
 **Bootstrap** (part of activation, alongside the secrets): nothing to do by hand — the workflow runs `gh label create conductor:log --force` and creates the issue on its first run. Create them early only if you want the issue pinned. Keep that issue **open**; closing it makes the next run open a second one and split the timeline.
 
-The conductor also posts its own Stop/Exit Report there on autonomous runs — the narrative half (reason, assumptions, next human step) next to the mechanical rollup (`../skills/workflow/conductor/SKILL.md` § Stop / Exit Report).
+The conductor also posts its own Stop/Exit Report there on autonomous runs — the narrative half (reason, assumptions, next human step) next to the mechanical rollup (`../skills/conductor/SKILL.md` § Stop / Exit Report).
 
 ### Post-CI-check job `ci-check`
 
@@ -99,11 +99,11 @@ A cheap `run:`-only job (`needs: conductor`) — no agent, no Opus sitting idle 
 
 ## CI is equivalent isolation
 
-A hosted runner uses a normal `actions/checkout` — **not** a git worktree — so the conductor's SAFETY GATE would abort in CI today (it requires a worktree under `worktrees/`). The gate is therefore extended (see `../skills/workflow/conductor/SKILL.md` SAFETY GATE and `../skills/workflow/start-task/SKILL.md`): isolation is satisfied by a worktree **OR** by `GITHUB_ACTIONS=true` **AND** a non-`main`/`master` branch. The ephemeral runner + a dedicated feature branch are equivalent isolation. A **local** `main`/non-worktree checkout is still refused — the relaxation is CI-only. In CI, `start-task` creates the branch in the current checkout (no `git worktree add`).
+A hosted runner uses a normal `actions/checkout` — **not** a git worktree — so the conductor's SAFETY GATE would abort in CI today (it requires a worktree under `worktrees/`). The gate is therefore extended (see `../skills/conductor/SKILL.md` SAFETY GATE and `../skills/start-task/SKILL.md`): isolation is satisfied by a worktree **OR** by `GITHUB_ACTIONS=true` **AND** a non-`main`/`master` branch. The ephemeral runner + a dedicated feature branch are equivalent isolation. A **local** `main`/non-worktree checkout is still refused — the relaxation is CI-only. In CI, `start-task` creates the branch in the current checkout (no `git worktree add`).
 
 ## Morning review
 
-Same as a manual unattended run: the night leaves draft PRs; review them with `gh pr list --draft` / `gh pr view` / `gh pr checks` / `gh issue view --comments`, then mark ready + merge by hand. The full sequence is in `../skills/workflow/conductor/references/autonomous-run.md` ("Morning review"). Start from the `conductor:log` issue — its last comment says what the run cost and which items it claims to have shipped.
+Same as a manual unattended run: the night leaves draft PRs; review them with `gh pr list --draft` / `gh pr view` / `gh pr checks` / `gh issue view --comments`, then mark ready + merge by hand. The full sequence is in `../skills/conductor/references/autonomous-run.md` ("Morning review"). Start from the `conductor:log` issue — its last comment says what the run cost and which items it claims to have shipped.
 
 ### Cost per accepted change
 
@@ -139,7 +139,7 @@ If a machine is already configured with the plugin + `gh` + the allowlist (e.g. 
 
 ## See also
 
-- `../skills/workflow/conductor/assets/conductor.yml` — the committed workflow template (the artifact this reference explains).
-- `../skills/workflow/conductor/references/autonomous-run.md` — the manual launch recipe, the permission allowlist, and the morning review (this reference is the automatic *trigger* upstream of it).
-- `../skills/workflow/conductor/SKILL.md` — the conductor + the CI-aware SAFETY GATE.
+- `../skills/conductor/assets/conductor.yml` — the committed workflow template (the artifact this reference explains).
+- `../skills/conductor/references/autonomous-run.md` — the manual launch recipe, the permission allowlist, and the morning review (this reference is the automatic *trigger* upstream of it).
+- `../skills/conductor/SKILL.md` — the conductor + the CI-aware SAFETY GATE.
 - `./github-operations.md` — the `gh` adapter (`pipeline:ready` query, labels, PR ops).

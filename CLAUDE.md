@@ -8,32 +8,32 @@ A skill registry for AI coding agents (Claude Code + Codex) for Samuel Osuna's p
 
 ## Multi-Platform Support
 
-This repo targets **Claude Code** and **OpenAI Codex** from one shared skill source. Each plugin under `plugins/<name>/` carries both manifests; the `SKILL.md` files are shared verbatim.
+This repo targets **Claude Code** and **OpenAI Codex** from one shared skill source, and conforms to [**Agent Plugins 1.0.0**](https://github.com/agentplugins/agent-plugins-spec) — the portable package standard both clients read (ADR 0005). Each plugin under `plugins/<name>/` carries a portable root manifest plus one client-specific file; the `SKILL.md` files are shared verbatim.
 
 | Aspect | Claude Code | Codex |
 |---|---|---|
 | Discovery | `.claude-plugin/marketplace.json` | `.agents/plugins/marketplace.json` |
-| Plugin manifest | `plugins/*/.claude-plugin/plugin.json` | `plugins/*/.codex-plugin/plugin.json` |
+| Plugin manifest | `plugins/*/.claude-plugin/plugin.json` → symlink to `plugins/*/plugin.json` | `plugins/*/.codex-plugin/plugin.json` |
 | Skill source | Shared `SKILL.md` format | Shared `SKILL.md` format |
 | Agents | `agents/*.md` per plugin | Not supported |
 | Instructions | `CLAUDE.md` | `AGENTS.md` (symlink → `CLAUDE.md`) |
 
-Adding or renaming a skill needs no sync step — the plugin dir is the only source. Adding a **plugin** touches four files: both marketplaces, its two manifests, and `release-please-config.json` `extra-files` (a manifest missing from `extra-files` freezes that plugin's version silently; `scripts/validate-plugins.sh` fails the pre-commit hook on that gap and on version drift).
+Adding or renaming a skill needs no sync step — the plugin dir is the only source. Adding a **plugin** touches five files: both marketplaces, its root manifest, its Codex manifest, and `release-please-config.json` `extra-files` (a manifest missing from `extra-files` freezes that plugin's version silently; `scripts/validate-plugins.sh` fails the pre-commit hook on that gap and on version drift).
 
 Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) resolve only under Claude Code — Codex needs the path passed another way.
 
-**The two manifests are not interchangeable.** Same `name`/`version`/`description`, different shape:
+**Three manifest files, two contents.** `plugin.json` at the plugin root is the portable one (§5): a **closed** field set — `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, `extensions`, and nothing else. `.claude-plugin/plugin.json` is a **symlink to `../plugin.json`**, so Claude Code and a conformant client never drift. Codex needs two fields the closed schema forbids, so `.codex-plugin/plugin.json` stays a separate regular file:
 
-| Field | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` |
+| Field | `plugin.json` (portable) | `.codex-plugin/plugin.json` |
 |---|---|---|
-| `skills` | array of group dirs (`["./skills/pipeline", …]`) | **string** path (`"./skills/"`) |
-| `interface` | not used | required block: `displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `capabilities`, `defaultPrompt` |
+| `skills` | not permitted — discovery is positional (§7.1) | **string** path (`"./skills/"`) |
+| `interface` | not permitted | required block: `displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `capabilities`, `defaultPrompt` |
+
+`scripts/check-agent-plugins.sh` gates the four rules a client enforces at load time (root manifest, skill depth, path containment, resolvable relative references) in the pre-commit hook.
 
 The Codex marketplace entry needs `policy.installation` **and** `policy.authentication` (`ON_INSTALL` \| `ON_USE`) plus `category` on every plugin — the validator mirrors the workspace ingestion schema. Its `source.path` is relative to the **repo root**, not to the marketplace file: `./plugins/<name>`, never `../../plugins/<name>`. Spec: [`plugin-json-spec.md`](https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/plugin-creator/references/plugin-json-spec.md).
 
 Codex's optional companion files are `.mcp.json` (`mcpServers`) and `.app.json` (`apps`) — this repo declares neither, and `hooks` is rejected outright by the validator. There is no OpenAPI document anywhere in the plugin contract; the only YAML is a per-skill `<skill>/agents/openai.yaml` carrying Codex-side presentation metadata (`interface.display_name`, `interface.short_description`, optional `icon_small`/`icon_large`/`brand_color`/`default_prompt`, `policy.allow_implicit_invocation`, `dependencies.tools`). It is optional and unused here; the `agents/` directory at plugin root is Claude sub-agents, unrelated.
-
-Verify with the upstream validator, not by eye: `scripts/validate_plugin.py` from the same spec directory. Known deviation — it walks `skills/` only one level deep, so this repo's grouped layout (`skills/<group>/<skill>/SKILL.md`) makes it report seven groups as "missing `SKILL.md`". That is a scaffolding-linter artifact, not a runtime break: Codex's real loader is a recursive walk with `MAX_SCAN_DEPTH = 6` (`codex-rs/ext/skills/src/loader/`), so it finds every nested skill. Flatten only if a marketplace ever gates submission on that script.
 
 ## Repository Structure
 
@@ -47,25 +47,31 @@ agent-skills/
 │   └── plugins/marketplace.json  # Codex marketplace
 ├── plugins/
 │   └── samuel/                   # Personal dev workflow skills
-│       ├── .claude-plugin/plugin.json
-│       ├── .codex-plugin/plugin.json
+│       ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
+│       ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
+│       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates)
-│       └── skills/
-│           ├── pipeline/         # codebase-documentation, spec, plan, refine-plan, analyze, implement, validate
-│           ├── git/              # create-atomic-commit, remove-slop, pr-self-audit, address-pr-comments, session-handoff
-│           ├── workflow/         # kickoff, next, start-task, conductor, waves, wave-prep, done, progress, retro, team-orchestrate
-│           ├── product/          # feature-dossier (living product capability catalog), mermaid (diagram standard)
-│           ├── design/           # motion-brief (animation intent → implementation-ready spec)
-│           ├── contract/         # api-request, api-contract (backend ↔ web|mobile API handoff)
-│           └── meta/             # find-unknowns, repo-audit, create-review-md, create-constitution, update-constitution
+│       └── skills/               # 33 skills, one dir each (flat — §7.1)
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
 
+Skills are flat because §7.1 discovers only the immediate children of `skills/`. The **groups** they used to sit in survive as documentation — the section headings below, and the tables in `README.md`:
+
+| Group | Skills |
+|---|---|
+| pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, validate |
+| git | create-atomic-commit, remove-slop, pr-self-audit, address-pr-comments, session-handoff |
+| workflow | roadmap, kickoff, next, start-task, conductor, waves, wave-prep, done, progress, retro, team-orchestrate |
+| product | feature-dossier, mermaid |
+| design | motion-brief |
+| contract | api-request, api-contract |
+| meta | find-unknowns, repo-audit, create-review-md, create-constitution, update-constitution |
+
 ## Skill Anatomy
 
-Every skill lives in `plugins/samuel/skills/<group>/<name>/` with a required `SKILL.md` containing YAML frontmatter (`name`, `description`, `allowed-tools`) and agent instructions. Optional subdirectories: `scripts/`, `references/`, `assets/`.
+Every skill lives in `plugins/samuel/skills/<name>/` with a required `SKILL.md` containing YAML frontmatter (`name`, `description`, `allowed-tools`) and agent instructions. Optional subdirectories: `scripts/`, `references/`, `assets/`. Nothing below that first level is discovered, so a skill never nests another skill.
 
 Skills are namespaced by plugin: `/samuel:commit`, `/samuel:plan`, etc.
 
@@ -93,7 +99,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 ## Autonomous Runs: the Conductor
 
-- **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + allowlist + multi-item loop: `plugins/samuel/skills/workflow/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/workflow/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
+- **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + allowlist + multi-item loop: `plugins/samuel/skills/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
 
 ## Meta Skills
 
@@ -115,7 +121,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 - **`/samuel:progress`** — Personal dashboard: item status, velocity, blockers (GitHub Issues).
 - **`/samuel:retro`** — Personal retrospective from GitHub Issues/PRs + git history.
 - **`/samuel:team-orchestrate`** — Spawn multi-session Claude Code agent teams (review/debug/feature/research archetypes). Use for parallel work streams that need peer messaging and persistent sessions. Different from `/samuel:codebase-documentation`, which is a one-shot subagent fan-out.
-- **`/samuel:waves`** — **Attended multi-issue wave coordinator** over Orca: computes execution waves from GitHub's **native `blockedBy` graph** (`reference/github-operations.md` § Issue dependencies), dispatches one Orca worktree + worker per unblocked `pipeline:ready` issue (Codex default; claude-conductor variant for taste/hard items), supervises to **draft PRs**, and the **human merge releases the next wave** from fresh `origin/main`. Two human gates (WAVE PLAN approval, merge-as-release); authority ceiling per ADR 0004; run report to `conductor:log` (ADR 0003). Boundary: `/samuel:conductor` is the per-item engine it dispatches (never reimplements); `/samuel:team-orchestrate` is Claude peers that converse — wave workers are isolated implementers. Anti-double-scheduler: an Orca automation may invoke waves; waves never schedules itself. Attended-only until #29 (TTL). Protocol: `plugins/samuel/skills/workflow/waves/references/wave-protocol.md`.
+- **`/samuel:waves`** — **Attended multi-issue wave coordinator** over Orca: computes execution waves from GitHub's **native `blockedBy` graph** (`reference/github-operations.md` § Issue dependencies), dispatches one Orca worktree + worker per unblocked `pipeline:ready` issue (Codex default; claude-conductor variant for taste/hard items), supervises to **draft PRs**, and the **human merge releases the next wave** from fresh `origin/main`. Two human gates (WAVE PLAN approval, merge-as-release); authority ceiling per ADR 0004; run report to `conductor:log` (ADR 0003). Boundary: `/samuel:conductor` is the per-item engine it dispatches (never reimplements); `/samuel:team-orchestrate` is Claude peers that converse — wave workers are isolated implementers. Anti-double-scheduler: an Orca automation may invoke waves; waves never schedules itself. Attended-only until #29 (TTL). Protocol: `plugins/samuel/skills/waves/references/wave-protocol.md`.
 - **`/samuel:wave-prep`** — **Backlog → wave-set preparer**, the retro sweep waves' passive INTAKE assumes already happened: sweeps open `pipeline:*` issues (or `label:`/`milestone:`/explicit set), classifies wave-ready / plan-missing / excluded, infers inter-issue dependencies from the Executor Plans (explicit refs > artifact sequencing > file overlap — overlap is a **soft conflict**, reported but never declared as an edge), and after the **EDGE PLAN checkpoint** (with cycle check — GitHub accepts cycles; waves would deadlock) declares the missing native `blockedBy` edges read-then-add via the adapter. Routes at close: dispatch `/samuel:waves <set>` / `/samuel:plan N` for the unplanned. Writes edges only — never labels, comments, or dispatch; `--dry-run` writes nothing. Complements birth-time declaration (`plan` Phase 4, `roadmap` multi-item): prep writes the graph, waves reads it.
 
 ## Product Documentation

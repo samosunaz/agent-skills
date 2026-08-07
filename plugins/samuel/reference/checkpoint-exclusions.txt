@@ -15,23 +15,23 @@
 # afterwards, in their own turn, with no option list to answer.
 plugins/ops/skills/catchup/SKILL.md
 plugins/ops/skills/pr-radar/SKILL.md
-plugins/samuel/skills/workflow/progress/SKILL.md
+plugins/samuel/skills/progress/SKILL.md
 
 # Read-only analysis. Severity-tagged findings, no auto-edits, nothing to approve.
-plugins/samuel/skills/pipeline/analyze/SKILL.md
+plugins/samuel/skills/analyze/SKILL.md
 
 # Waits, but never on a decision: it collects the open-ended research question
 # and joins subagents. SKILL.md:116 asks for follow-ups after presenting —
 # input collection, not a gate.
-plugins/samuel/skills/pipeline/codebase-documentation/SKILL.md
+plugins/samuel/skills/codebase-documentation/SKILL.md
 
 # Applies its fixes directly and reports afterwards (SKILL.md:139, :151).
 # A summary is not a gate.
-plugins/samuel/skills/git/remove-slop/SKILL.md
+plugins/samuel/skills/remove-slop/SKILL.md
 
 # The autonomous driver. It hard-stops and hands off; it never asks a question,
 # by design — see interaction-tools.md § Boundary.
-plugins/samuel/skills/workflow/conductor/SKILL.md
+plugins/samuel/skills/conductor/SKILL.md
 
 # Reference material — the org diagram standard, no execution and no gate.
-plugins/samuel/skills/product/mermaid/SKILL.md
+plugins/samuel/skills/mermaid/SKILL.md
