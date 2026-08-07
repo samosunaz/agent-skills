@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.0.0](https://github.com/samosunaz/agent-skills/compare/v3.11.1...v4.0.0) (2026-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **plugins:** skills moved from plugins/samuel/skills/<group>/<name>/ to plugins/samuel/skills/<name>/. Any external path reference breaks; skill invocation does not.
+
+### 🚀 Features
+
+* **plugins:** conform to Agent Plugins 1.0.0 ([bbea2bb](https://github.com/samosunaz/agent-skills/commit/bbea2bbb9edf34df3a704b6ca500ca06187cc3f7))
+
+
+### 📄 Documentation
+
+* describe the flat skill layout and the portable manifest ([5a0e5c6](https://github.com/samosunaz/agent-skills/commit/5a0e5c6684ca4d301c09c17ab12aef6b425f9c63))
+* **readme:** add version badges and drop the personalized framing ([#4](https://github.com/samosunaz/agent-skills/issues/4)) ([f1ff3ed](https://github.com/samosunaz/agent-skills/commit/f1ff3edb64a6f433928d907be1f559422abf77df))
+* translate the diagram vocabulary and the last domain nouns ([d1333f2](https://github.com/samosunaz/agent-skills/commit/d1333f2cd8db6b507a94426444dc85fd94a15fba))
+
+
+### ☁️ Continuous Integration
+
+* gate Agent Plugins conformance in the pre-commit hook ([73ee363](https://github.com/samosunaz/agent-skills/commit/73ee363c795cba900f6a2556628e1a0f69c433f2))
+
 ## [3.11.1](https://github.com/samosunaz/agent-skills/compare/v3.11.0...v3.11.1) (2026-08-07)
 
 
