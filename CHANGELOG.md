@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/samosunaz/agent-skills/compare/v4.2.0...v4.3.0) (2026-08-09)
+
+
+### 🚀 Features
+
+* **samuel:** teach the pipeline to sign the gate instead of re-running it ([#9](https://github.com/samosunaz/agent-skills/issues/9)) ([f78ac60](https://github.com/samosunaz/agent-skills/commit/f78ac609d7ba7e9c304da788cc6e7d79c5c794b7))
+
 ## [4.2.0](https://github.com/samosunaz/agent-skills/compare/v4.1.0...v4.2.0) (2026-08-09)
 
 
