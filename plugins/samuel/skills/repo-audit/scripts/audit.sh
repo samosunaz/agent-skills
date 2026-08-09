@@ -77,6 +77,16 @@ if [ -f .github/PULL_REQUEST_TEMPLATE.md ] && ls .github/ISSUE_TEMPLATE/*.md >/d
 else
   opt "tldr-templates" "missing — items opened in the GitHub UI skip the TL;DR block"
 fi
+# Cross-session messaging is a machine property, not a repo one — but waves and the
+# conductor's escalation channel silently degrade below 2.1.224, so the audit reports it.
+CCVER=$(claude --version 2>/dev/null | awk '{print $1}')
+if [ -z "${CCVER:-}" ]; then
+  opt "cross-session" "claude CLI not on PATH — peer messaging unverifiable"
+elif printf '2.1.224\n%s\n' "$CCVER" | sort -V | head -1 | grep -qx '2.1.224'; then
+  opt "cross-session" "claude $CCVER — peer messaging available (needs >= 2.1.224)"
+else
+  opt "cross-session" "claude $CCVER < 2.1.224 — waves/conductor peer messaging unavailable; upgrade"
+fi
 if ls release-please-config.json >/dev/null 2>&1 || ls .github/workflows/release-please*.yml >/dev/null 2>&1; then
   opt "release-please" "configured"
 else

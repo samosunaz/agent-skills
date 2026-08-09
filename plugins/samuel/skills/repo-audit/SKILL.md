@@ -1,6 +1,6 @@
 ---
 name: repo-audit
-description: "Substrate drift detector for samuel consumer repos: deterministic checks (samuel.md, gh auth/repo, pipeline+roadmap+promo labels, .claude gitignored, CLAUDE.md; optional: constitution, REVIEW.md, conductor heartbeat, release-please, squash merge, TL;DR templates) + a semantic pass over CLAUDE.md. Report-only. Trigger on 'repo audit', 'audit repo', 'substrate drift', 'drift check'."
+description: "Substrate drift detector for samuel consumer repos: deterministic checks (samuel.md, gh auth/repo, pipeline+roadmap+promo labels, .claude gitignored, CLAUDE.md; optional: constitution, REVIEW.md, conductor heartbeat, release-please, squash merge, TL;DR templates, cross-session messaging) + a semantic pass over CLAUDE.md. Report-only. Trigger on 'repo audit', 'audit repo', 'substrate drift', 'drift check'."
 allowed-tools: Bash(bash *) Bash(gh api *) Bash(gh issue *) Bash(gh repo *) Bash(gh auth *) Bash(gh label *) Bash(git *) Bash(awk *) Bash(test *) Bash(date *) Read AskUserQuestion
 ---
 
