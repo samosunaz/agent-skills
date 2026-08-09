@@ -478,6 +478,16 @@ The repo's CI (e.g. `.github/workflows/ci.yml` running `bun run gate`) is the ga
 1. **Local, before the PR:** the conductor/validate runs the project's gate command (`bun run gate` or equivalent) and refuses to open a non-draft PR on a red gate. Fail fast, locally.
 2. **Remote, on the PR:** CI re-runs on push. `gh pr checks N -R owner/repo` reports status. Merge only on green — that decision stays human.
 
+### Signed-off checks — when checkpoint 2 is local
+
+A repo may retire a CI job whose only work is re-running what checkpoint 1 already ran, and require a **signed commit status** in its place: `gh signoff gate` ([basecamp/gh-signoff](https://github.com/basecamp/gh-signoff)) writes the `signoff/gate` status, and `gh signoff install gate` makes branch protection require it. Declared per repo as `signoff` in `.claude/samuel.md` (`tracker.md`); absent — the common case — checkpoint 2 stays wholly remote. `/samuel:done` emits it in Step 3 **after `git push`**: the extension refuses a commit that is not on a remote.
+
+Three rules, because a signed check and an executed check are indistinguishable on the PR page:
+
+- **Sign only what ran.** The command names the contexts the local gate covers and nothing else. A job that still runs remotely — a browser e2e suite, a cross-platform matrix — keeps its own required check. Signing that one locally swaps a real verification for a claim about it, and nothing on the PR shows the swap.
+- **Sign only the gated SHA.** `/samuel:validate` records the SHA its gate ran against; `/samuel:done` refuses to sign when `HEAD` has moved past it. Otherwise the status attests a commit no gate ever saw.
+- **A signed check is not independent evidence.** Whoever verifies work they did not do — the human at merge, the waves coordinator at `worker_done` — reads the checks that actually executed. An agent signing its own PR has asserted, not verified; the assertion is worth exactly the gate output recorded in `validation.md` behind it.
+
 ## Gotchas
 
 _Add a line each time Claude trips on something._

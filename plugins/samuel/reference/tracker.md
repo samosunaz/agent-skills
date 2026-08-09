@@ -13,6 +13,7 @@ A tiny, durable, per-repo config read by skills that run **before** a task exist
 tracker: github            # legacy detection key — anything else means "not migrated"
 repo: owner/name           # the explicit owner/name for gh (never parsed from the SSH-alias origin)
 security_scan: gitleaks git --redact --no-banner   # optional — the security step /samuel:validate runs
+# signoff: gh signoff gate # optional — uncomment to opt in; the command /samuel:done runs after the push
 # autonomy: attended-auto  # optional — uncomment to opt in; absent = interactive
 ---
 
@@ -25,6 +26,8 @@ never parsed from the SSH-alias origin.
 
 `security_scan` is **optional** and **repo-scoped**: the exact secret-scan / SAST command `/samuel:validate` runs as part of its gate step, which must exit non-zero on findings. Absent is the default and the common case — validate then reports the skip explicitly instead of staying quiet about it. Unlike the build gate (which comes from the plan's `Validation → Automated` line and can differ per task), the scanner is a property of the repo, so it lives here. Full gloss: `template/samuel.md`.
 
+`signoff` is **optional** and **repo-scoped**: the exact command `/samuel:done` runs after the push (Step 3) to assert the local gate on the pushed commit — `gh signoff gate` and friends, when the repo has deliberately traded a CI job for the local one. Absent is the default and the common case: CI alone is the remote checkpoint. Two rules travel with it, both in `reference/github-operations.md` § CI as the merge gate: it names **only** the contexts the local gate actually covers, and it is not emitted when `HEAD` moved past the SHA `/samuel:validate` gated. Full gloss: `template/samuel.md`.
+
 `autonomy` is **optional** and selects how the run treats a soft checkpoint: `interactive` (ask — the default when absent) or `attended-auto` (take the obvious default and announce it). It is the one field here that also has a **global** fallback: `~/.claude/samuel.md` supplies it for every repo that doesn't override it, since it describes how its owner likes to work rather than anything about the repo. `autonomous` is deliberately not settable — that level belongs to `/samuel:conductor` and its SAFETY GATE. Levels, the gate-by-gate table, and the recording contract: `reference/autonomy.md`.
 
 Read a field in a skill's `## Context` (expansion-free):
@@ -36,7 +39,7 @@ Read a field in a skill's `## Context` (expansion-free):
 
 `autonomy` is the exception to that one-file shape — it falls through to the global file before defaulting, so it reads as a chain (the exact line lives in `reference/autonomy.md` § Resolution and is what `scripts/lint-autonomy.sh` checks for).
 
-**The second `sub()` is not optional on any field of this file.** `template/samuel.md` ships every field with an inline gloss, and a repo that copies it verbatim keeps them — so an unstripped read of `repo` returns `owner/name           # explicit owner/name for gh (…)`, which `gh` rejects. One idiom for all three fields (`tracker`, `repo`, `security_scan`), so the next skill that copies a read can't pick the wrong one. The awk program stays single-quoted, so its `$` never reaches the shell.
+**The second `sub()` is not optional on any field of this file.** `template/samuel.md` ships every field with an inline gloss, and a repo that copies it verbatim keeps them — so an unstripped read of `repo` returns `owner/name           # explicit owner/name for gh (…)`, which `gh` rejects. One idiom for every command-valued field (`tracker`, `repo`, `security_scan`, `signoff`), so the next skill that copies a read can't pick the wrong one. The awk program stays single-quoted, so its `$` never reaches the shell.
 
 > This applies to `.claude/samuel.md` only. `.claude/task-context.md` is written by the skills and never carries an inline gloss — its reads stay at the single `sub()` documented in `reference/task-context.md`.
 

@@ -1,7 +1,7 @@
 ---
 name: validate
 description: Validate the implementation against the plan, verify acceptance criteria, run the project gate, resolve & seal the journal, and analyze documentation impact. Mandatory final step before done.
-allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(gh *) Bash(awk *) Bash(test *) Bash(bun *) Bash(npm *) Bash(pnpm *) Bash(node *) Bash(gitleaks *) Bash(semgrep *) Read Edit Write Agent AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git rev-parse *) Bash(gh *) Bash(awk *) Bash(test *) Bash(bun *) Bash(npm *) Bash(pnpm *) Bash(node *) Bash(gitleaks *) Bash(semgrep *) Read Edit Write Agent AskUserQuestion
 ---
 
 # Validate
@@ -13,6 +13,7 @@ Verify the implementation satisfies the plan and the Brief's Acceptance Criteria
 ## Context
 
 - Current branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
+- HEAD SHA: !`git rev-parse HEAD 2>/dev/null || echo "NO_HEAD"`
 - Recent commits: !`git log --oneline -n 20 2>/dev/null || echo "No commits"`
 - Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/task-context.md 2>/dev/null || echo "NO_REPO"`
 - Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
@@ -48,7 +49,7 @@ Load the plan (Issue Executor Plan) and identify what should have changed. Spawn
 
 ## Step 2: Run the gate + verify criteria
 
-1. **Run the project gate** — the `Validation → Automated` command from the plan (e.g. `bun run gate`: typecheck+lint+build+guardrails). Capture real output. **This is the local merge gate** — a red gate blocks PASS.
+1. **Run the project gate** — the `Validation → Automated` command from the plan (e.g. `bun run gate`: typecheck+lint+build+guardrails). Capture real output **and the `HEAD SHA` it ran against** (Context). **This is the local merge gate** — a red gate blocks PASS. The SHA goes in the report: it is what `/samuel:done` compares against before emitting a `signoff` status, so a commit added after this step can never inherit this gate's verdict (adapter § Signed-off checks).
 2. **Run the security scan** — `Security scan` in Context (from `.claude/samuel.md`, `../../reference/tracker.md`). A command → run it **exactly as written**; **non-zero exit = FAIL**, weighted like a red gate. `NO_SCAN` → skip **explicitly** ("no security scan configured — skipping"), the same degradable pattern as REVIEW.md below; never invent a command. Courtesy check on `NO_SCAN` only: if `.gitleaks.toml` / `.semgrep*` exists at the repo root, add an **informational** note — "scan config detected but not wired — add `security_scan:` to `.claude/samuel.md`" — and never gate on it.
 3. **Verify each Brief Acceptance Criterion** and the plan's DoD: run the check, record pass/fail with actual output. Flip satisfied AC `- [ ]`→`- [x]` in the Brief (fetch body → splice → `gh issue edit --body-file`). If the plan declares an **e2e tier**: verify it was honored — the declared journey exists, runs green, and matches the tier (green/yellow/manual-only).
 4. **Manual criteria**: list what needs human testing, with steps.
@@ -81,6 +82,7 @@ The reviewer returns `APPROVE | REQUEST CHANGES` + findings (`severity · catego
 > Computed: red gate, **failing security scan**, **or** any reviewer Blocker → FAIL · reviewer Important (no Blocker) → PASS WITH NOTES · else PASS. A `SKIP`ped scan is neutral.
 
 ### Gate
+- **Gated SHA**: `{HEAD SHA at Step 2}`
 - [PASS/FAIL] `{gate command}` — {summary of output}
 - [PASS/FAIL/SKIP] security: `{security_scan command}` — {summary}   _(SKIP when no `security_scan` in `.claude/samuel.md`)_
 
