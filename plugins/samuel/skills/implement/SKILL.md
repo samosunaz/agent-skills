@@ -1,7 +1,7 @@
 ---
 name: implement
 description: Execute a self-contained Executor Plan step-by-step with human verification between phases, keeping a living Implementation Notes journal. Use when ready to implement a planned item.
-allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(gh *) Bash(awk *) Bash(test *) Read Edit Write Agent AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(gh *) Bash(awk *) Bash(test *) Read Edit Write Agent AskUserQuestion ListAgents SendMessage
 ---
 
 # Implement Plan
@@ -88,6 +88,8 @@ Post these updates? (Y/N/Edit)
 ```
 
 **WAIT for approval.** Then post one `Upstream decision` comment per affected issue and apply the label rules (§ Blast radius), record the outcome on the journal entry's `Affects` line (e.g. `#45 (commented, demoted), #46 (commented)`), and suggest `/samuel:refine-plan {affected issue}` for each invalidated plan — never edit another issue's plan from here.
+
+An `INVALIDATED` issue labelled `pipeline:in-progress` has a session executing that plan right now, and a comment does not reach it — after posting, check the peer roster and send that session one line pointing at the comment (§ Blast radius → Notify the live session). It rides this same approval; it is part of the cross-issue write, not a lighter action outside it.
 
 No parent and no dependents → note "blast radius: none" on the journal entry and move on. (Conductor: **never post to other issues unattended** — fold the impact map into the handoff/stop report; the human posts after review.)
 

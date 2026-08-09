@@ -372,10 +372,20 @@ Label rules, by the affected issue's state:
 - Now blocked on unresolved follow-up work → `pipeline:blocked`.
 - `pipeline:in-progress` (another session is working it) → comment only; never touch its labels.
 
+### Notify the live session — after the comment, never instead of it
+
+The `pipeline:in-progress` row above is the case the comment serves worst: another session is executing that plan **right now** and will not re-read the Issue before it finishes. When such an issue is `invalidated`, check the peer roster for a session working it — the worktree convention makes the name `issue-{N}` (`./cross-session.md` § Addressing) — and send one line:
+
+```
+[decision] #{N} — a decision on #{A} invalidates {what}. Stop before your next edit and re-read the issue. {decision comment URL}
+```
+
+Order is the rule, not a preference: post the comment first, then point at it. The message carries no authority — the receiving session verifies against the Issue and decides. It cannot reach a Codex worker, a session on another machine, or a session that has finished, which is why the comment remains the mechanism and this remains an accelerant.
+
 ### Safety & idempotence
 
-- **Checkpoint before writing**: posting to other issues is outward-facing — `/samuel:implement` presents the full impact map and WAITs for approval before any cross-issue write.
-- **Never cross-post unattended**: a conductor run folds the candidate impact map into its handoff/stop report instead; the human posts after review.
+- **Checkpoint before writing**: posting to other issues is outward-facing — `/samuel:implement` presents the full impact map and WAITs for approval before any cross-issue write. The peer message rides the same approval; it is part of the cross-issue write, not a separate lighter action.
+- **Never cross-post unattended**: a conductor run folds the candidate impact map into its handoff/stop report instead; the human posts after review. It **may** still send the peer message above, anchored to a comment on **its own** issue rather than the one it is forbidden to write — an ephemeral warning to a session that would otherwise keep building on an invalidated plan is exactly what the run can offer while the cross-issue write waits for a human.
 - **Idempotent re-runs**: before posting on an issue, list its comments and skip if an `Upstream decision — from #{A}` for the same decision already exists (list-first, skip-and-report).
 
 ## Closing — dossier & doc follow-ups
