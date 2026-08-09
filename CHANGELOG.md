@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/samosunaz/agent-skills/compare/v4.1.0...v4.2.0) (2026-08-09)
+
+
+### 🚀 Features
+
+* adopt cross-session messaging as the pipeline's interrupt channel ([#7](https://github.com/samosunaz/agent-skills/issues/7)) ([ce1a123](https://github.com/samosunaz/agent-skills/commit/ce1a1235e89ea3abd5999ad30a51b997d1990b9f))
+
 ## [4.1.0](https://github.com/samosunaz/agent-skills/compare/v4.0.0...v4.1.0) (2026-08-07)
 
 
