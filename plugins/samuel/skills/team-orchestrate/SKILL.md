@@ -1,7 +1,7 @@
 ---
 name: team-orchestrate
 description: "Orchestrate Claude Code agent teams (multi-session parallel agents with shared task list and inter-agent messaging) for code review, debugging with competing hypotheses, multi-module features, or multi-angle research. Use whenever the work has independent parallelizable streams, when teammates need to challenge each other's findings, or when the user mentions 'agent team', 'spawn teammates', 'swarm', 'parallel review', 'team mode', 'orchestrate agents'. Different from /samuel:codebase-documentation (single-session parallel subagents) — use this when teammates must communicate, persist across turns, or be addressed individually."
-allowed-tools: Bash Read TeamCreate TeamDelete SendMessage TaskCreate TaskUpdate TaskList TaskGet AskUserQuestion
+allowed-tools: Bash Read TeamCreate TeamDelete SendMessage ListAgents TaskCreate TaskUpdate TaskList TaskGet AskUserQuestion
 ---
 
 # Team Orchestrate
@@ -26,7 +26,10 @@ Pick the right primitive — teams have real coordination overhead and ~4× toke
 |---|---|
 | One-shot codebase investigation, results summarized back | `/samuel:codebase-documentation` |
 | Short focused query, throwaway worker | `Agent` tool (subagents) |
+| Sessions you already started yourself, that just need to tell each other something | **plain cross-session messaging** — `ListAgents` + `SendMessage`, no team, no flag, no tmux (`../../reference/cross-session.md`) |
 | Multiple independent streams, peer communication, persistent sessions, addressable teammates | **This skill** |
+
+The third row is the one that most often makes this skill unnecessary. Since Claude Code 2.1.224 any two of your sessions on one machine can message each other with nothing enabled, so "my sessions should talk" is no longer a reason to spawn a team. What a team still owns, and messaging does not: the **shared task list** (`TaskCreate`/`TaskList` with `blockedBy`), structured protocol messages, which stay inside the team, and a lifecycle the lead controls — spawn, plan approval, shutdown. Reach for a team when you need those; reach for a message when you need a sentence delivered.
 
 Do **not** spawn a team for: sequential work, same-file edits, single workstream, or routine tasks. The coordination cost will exceed the benefit.
 
@@ -130,4 +133,6 @@ _Add a line each time Claude trips on something._
 - "Hallway testing" pattern: teammates produce code that passes tests but contains fallbacks like `// TODO: real impl, returning null for now`. Audit deliverables for stubs before declaring done.
 - Validation is the bottleneck, not orchestration. A vague spec paralyzed across 5 teammates produces 5× the chaos. Sharpen the spec before spawning.
 - Permission prompts multiply with team size. Pre-authorize common ops or accept that interactive approval will fragment your attention.
+- Teammates are **not** listed by `ListAgents` — the lead reaches them through the team roster, and `SendMessage` serves both. Denying `SendMessage` to block peer messaging also kills teammate messaging; the tool has no separate specifier.
+- A team is the wrong answer to "my sessions should talk to each other". That works with no flag and no tmux since 2.1.224 — see the alternatives table above before paying the team's ~4× token cost.
 - `skills` and `mcpServers` from a subagent definition are NOT applied when used as a teammate — the teammate loads from project + user settings instead.
