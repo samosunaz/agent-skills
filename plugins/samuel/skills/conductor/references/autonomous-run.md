@@ -35,11 +35,13 @@ Prefer a tight `allow`/`deny`. Put this in the worktree's `.claude/settings.json
       "Bash(gh issue comment *)", "Bash(gh issue create *)",
       "Bash(gh pr create *)", "Bash(gh pr view *)", "Bash(gh pr list *)", "Bash(gh pr checks *)",
       "Bash(gh repo view *)", "Bash(gh label *)",
+      "Bash(gh signoff *)",                     // only when .claude/samuel.md declares `signoff`
       "Bash(bun *)", "Bash(npm *)", "Bash(pnpm *)", "Bash(node *)",
       "Bash(gitleaks *)", "Bash(semgrep *)"  // the security_scan command — see below
     ],
     "deny": [
       "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh issue close *)",
+      "Bash(gh signoff install*)",              // reconfigures branch protection — human-only
       "Bash(git push --force*)", "Bash(git push -f*)",
       "Bash(rm -rf *)", "Bash(curl *)", "Bash(wget *)", "WebFetch",
       "Bash(* migrate deploy*)", "Bash(* db:drop*)"
@@ -51,6 +53,8 @@ Prefer a tight `allow`/`deny`. Put this in the worktree's `.claude/settings.json
 `deny` wins over `allow`. The conductor can open a **draft** PR but cannot mark it ready, merge it, or close the Issue — those are the human's. Adjust build commands to your toolchain. (Review mode: drop `git push *` and the `gh pr *` allows entirely.)
 
 **If `.claude/samuel.md` sets `security_scan`, its command must be allowlisted here.** A headless run cannot prompt for approval, so an unlisted scanner is denied, `/samuel:validate` reports the scan as skipped, and a `SKIP` weighs nothing in `Overall` — the run passes without ever scanning, in the one mode where nobody is watching. The two entries above cover `gitleaks`/`semgrep`; a repo-script wrapper (`bun run scan`) is already covered by the toolchain allows.
+
+**`signoff` fails the other way, which is why it needs no equivalent warning.** An unlisted signoff command is denied, the draft PR stays unsigned, its required check stays red, and nothing merges — loud and safe, the opposite of a scan that silently doesn't run. `gh signoff install` is denied outright at every level: it rewrites branch protection, which is a repo-configuration decision and never a run's to make.
 
 ## 3. No production credentials in the environment
 

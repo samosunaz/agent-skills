@@ -1,7 +1,7 @@
 ---
 name: done
 description: "Close the loop — open a PR (Closes #N), mark the item done, and clean up. Supports --draft for autonomous runs. Trigger on 'done', 'finished', 'ship it', 'open the PR'."
-allowed-tools: Bash(git branch *) Bash(git config *) Bash(git rev-parse *) Bash(git remote *) Bash(git log *) Bash(git diff *) Bash(git merge-base *) Bash(git checkout *) Bash(git push *) Bash(git pull *) Bash(gh pr *) Bash(gh issue *) Bash(gh label *) Bash(awk *) Read Agent AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git config *) Bash(git rev-parse *) Bash(git remote *) Bash(git log *) Bash(git diff *) Bash(git merge-base *) Bash(git checkout *) Bash(git push *) Bash(git pull *) Bash(gh pr *) Bash(gh issue *) Bash(gh label *) Bash(gh signoff *) Bash(awk *) Read Agent AskUserQuestion
 ---
 
 # Done — Close the Loop
@@ -9,7 +9,7 @@ allowed-tools: Bash(git branch *) Bash(git config *) Bash(git rev-parse *) Bash(
 Open the PR, mark the Issue done, and clean up. The inverse of `start-task`. Supports `--draft` for unattended runs (the agent opens a draft PR, CI runs, the human merges).
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
-> **Autonomy:** which gates below auto-advance, and what gets recorded instead of asked — `../../reference/autonomy.md`. Every outward action in this skill (push, PR, merge, ready) stays gated at **every** level. An **unattended** run — headless `claude -p`, CI, or `/samuel:conductor` — is `autonomous` and ignores the `Autonomy:` value in Context.
+> **Autonomy:** which gates below auto-advance, and what gets recorded instead of asked — `../../reference/autonomy.md`. Every outward action in this skill (push, PR, signoff, merge, ready) stays gated at **every** level. An **unattended** run — headless `claude -p`, CI, or `/samuel:conductor` — is `autonomous` and ignores the `Autonomy:` value in Context.
 
 ## CRITICAL RULES
 
@@ -27,6 +27,7 @@ Open the PR, mark the Issue done, and clean up. The inverse of `start-task`. Sup
 - Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
 - Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
 - HEAD SHA: !`git rev-parse HEAD 2>/dev/null || echo "NO_HEAD"`
+- Signoff: !`awk '/^signoff:/{sub(/^[^:]*: */,"");sub(/[ \t]*#.*$/,"");print;f=1}END{if(!f)print"NO_SIGNOFF"}' .claude/samuel.md 2>/dev/null || echo "NO_SIGNOFF"`
 - Commits since main: !`git log --oneline origin/main..HEAD 2>/dev/null || echo "No commits"`
 - Files changed: !`git diff --stat origin/main..HEAD 2>/dev/null || echo ""`
 
@@ -100,7 +101,16 @@ gh pr create -R {repo} --base main --head {branch} \
 - Code cited in the body → **SHA permalinks** (adapter § Linking); the push above just made the branch SHA linkable.
 - Then: `gh issue edit {item} -R {repo} --add-label pipeline:in-review --remove-label pipeline:in-progress`.
 
-Present the PR URL (note **draft** if applicable: "CI will run; mark ready & merge when satisfied").
+### Signoff
+
+`Signoff` in Context is `NO_SIGNOFF` → skip **silently**: this repo's checkpoint 2 is wholly remote, which is the default. A command → run it **exactly as written** (never invent contexts it doesn't name), after the push above, and only when **both** hold:
+
+- `{feature_dir}/validation.md` reports `PASS` or `PASS WITH NOTES`, and
+- its **Gated SHA** equals the `HEAD SHA` in Context.
+
+Either one missing is a **skip, not a failure** of this step — including a draft PR opened on a red gate, which is allowed and must stay unsigned. Say which one blocked it in the presentation below ("gate ran against `{sha}`, HEAD is `{sha}` — not signed; re-run `/samuel:validate`"), and never sign a SHA no gate saw. Why the guards exist, and why a signed check is not independent evidence: adapter § Signed-off checks.
+
+Present the PR URL (note **draft** if applicable: "CI will run; mark ready & merge when satisfied") and the signoff outcome when a command was declared.
 
 When the run was **autonomous** (the diff is agent-authored), additionally suggest the human run `/samuel:find-unknowns --quiz {PR}` before reviewing or merging — a comprehension gate on code nobody read line-by-line. The agent never runs it on its own work: a quiz the author grades itself is theater.
 

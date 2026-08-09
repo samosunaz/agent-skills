@@ -16,6 +16,10 @@
 # list below AND install the scanner in a step before the run — otherwise
 # /samuel:validate reports the scan as skipped and the gate passes without it.
 #
+# If it sets `signoff`, add `gh extension install basecamp/gh-signoff` as a step
+# before the run. Without it the draft PR stays unsigned and its required check
+# stays red — visible, unlike a skipped scan, so it needs no gate of its own.
+#
 # Option B (self-hosted on the droplet): change `runs-on: ubuntu-latest` to
 # `runs-on: self-hosted`. That is the ONLY diff — the `claude -p` invocation is identical.
 
@@ -79,11 +83,13 @@ jobs:
                 "Bash(gh issue comment *)", "Bash(gh issue create *)",
                 "Bash(gh pr create *)", "Bash(gh pr view *)", "Bash(gh pr list *)",
                 "Bash(gh pr checks *)", "Bash(gh repo view *)", "Bash(gh label *)",
+                "Bash(gh signoff *)",
                 "Bash(bun *)", "Bash(npm *)", "Bash(pnpm *)", "Bash(node *)",
                 "Bash(gitleaks *)", "Bash(semgrep *)"
               ],
               "deny": [
                 "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh issue close *)",
+                "Bash(gh signoff install*)",
                 "Bash(git push --force*)", "Bash(git push -f*)",
                 "Bash(rm -rf *)", "Bash(curl *)", "Bash(wget *)", "WebFetch",
                 "Bash(* migrate deploy*)", "Bash(* db:drop*)"
