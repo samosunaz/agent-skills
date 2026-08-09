@@ -114,6 +114,8 @@ claude -p "/samuel:conductor 42 --ship /goal ship a draft PR with a green gate; 
 
 Every run is capped and accounted for: the last line of the transcript carries `total_cost_usd`, `num_turns` and `usage`, and the run report lands on a rolling `conductor:log` issue. Loop over the `pipeline:ready` inbox to clear a backlog overnight. Recipe + guardrails: [`autonomous-run.md`](plugins/samuel/skills/conductor/references/autonomous-run.md). Or let GitHub fire the loop on its own — on a schedule or when an issue becomes `pipeline:ready` — with the committed workflow template: [`automated-trigger.md`](plugins/samuel/reference/automated-trigger.md).
 
+**Sessions that interrupt each other** *(Claude Code ≥ 2.1.224, macOS/Linux)* — a run no longer has to wait for the next Issue read to learn that the ground moved. A merge tells the sibling worktree to rebase; a decision tells the session executing the invalidated plan to stop; an unattended conductor escalates a blocker and keeps working instead of guessing or stopping. GitHub stays the source of truth and every flow still works when a message is dropped: this is the interrupt, not the record. A message never satisfies a checkpoint, never raises a run's autonomy, and is verified against the Issue before anyone acts on it ([ADR 0006](docs/decisions/0006-cross-session-message-is-an-input-never-a-checkpoint.md)). One trap does need wiring — a headless `claude -p` worker holds every inbound message forever unless it is launched with `--settings '{"crossSessionInbound":"accept"}'`. Addressing, the message contract, and the safety rules: [`cross-session.md`](plugins/samuel/reference/cross-session.md).
+
 ## Structure
 
 ```
@@ -168,7 +170,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:done`](plugins/samuel/skills/done/SKILL.md) | Open a PR (`Closes #N`, `--draft` for autonomous runs) synthesizing the journal; mark the item done; cleanup. |
 | [`/samuel:progress`](plugins/samuel/skills/progress/SKILL.md) | Personal dashboard: item status, velocity, blockers (GitHub Issues). |
 | [`/samuel:retro`](plugins/samuel/skills/retro/SKILL.md) | Personal retrospective from GitHub Issues/PRs + git history. |
-| [`/samuel:team-orchestrate`](plugins/samuel/skills/team-orchestrate/SKILL.md) | Spawn multi-session Claude Code agent teams for parallel work streams. |
+| [`/samuel:team-orchestrate`](plugins/samuel/skills/team-orchestrate/SKILL.md) | Spawn multi-session Claude Code agent teams for parallel work streams — when you need a shared task list and a lead-controlled lifecycle, not just sessions that talk (that works on its own since 2.1.224). |
 | [`/samuel:waves`](plugins/samuel/skills/waves/SKILL.md) | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
 | [`/samuel:wave-prep`](plugins/samuel/skills/wave-prep/SKILL.md) | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
 

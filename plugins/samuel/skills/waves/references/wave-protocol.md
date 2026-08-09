@@ -137,12 +137,17 @@ orca worktree create --repo id:{ORCA_REPO_ID} --name issue-{N}-{slug} --issue {N
 ```bash
 # 3. Launch. --model is not optional: headless inherits the user's configured default,
 #    which is not necessarily the engine approved at the WAVE PLAN checkpoint.
+#    --name + crossSessionInbound make the worker addressable and able to RECEIVE
+#    (../../../reference/cross-session.md); without the setting a -p worker holds
+#    every inbound message forever, since it cannot show the approval dialog.
 orca terminal create --worktree id:{repoId}::{path} --title issue-{N}-conductor \
   --command 'export GH_CONFIG_DIR="{gh_config_dir}"; claude -p "/samuel:conductor {N} --ship
-  /goal ship item {N} as a draft PR with a green gate; record assumptions; never merge/ready. Stop after 40 turns." --model {model} --max-budget-usd {budget} --output-format stream-json --verbose | tee ~/conductor-{N}.jsonl' --json
+  /goal ship item {N} as a draft PR with a green gate; record assumptions; never merge/ready. Report lifecycle events to the session named {coordinator_name}. Stop after 40 turns." --model {model} --name issue-{N} --settings "{\"crossSessionInbound\":\"accept\"}" --max-budget-usd {budget} --output-format stream-json --verbose | tee ~/conductor-{N}.jsonl' --json
 orca terminal wait --terminal {handle} --for exit --timeout-ms 3600000 --json
 tail -n 1 ~/conductor-{N}.jsonl | jq -r 'select(.type=="result") | .subtype'   # success | error_* | absent ⇒ aborted
 ```
+
+`{coordinator_name}` is this session's own peer name — set it once with `/rename waves-{repo}` before the first dispatch. A session cannot see itself in `ListAgents`; read the name back from `~/.claude/sessions/{pid}.json` (the `pid` is in `CLAUDE_CODE_MESSAGING_SOCKET`) to confirm what the workers will actually address. The worker resolves the `[ref]` itself at send time — a peer address is `name [ref]`, and the bare name is rejected. The JSON in `--settings` is written with **escaped double quotes**: the outer `--command '…'` is already single-quoted, so a nested `'{"…"}'` would terminate it. Both flags are inert on a Codex worker — Codex sessions never join the peer roster.
 
 Launch the **first** worker alone and confirm it booted before releasing the rest: the log's opening `{"type":"system","subtype":"init"}` line carries `model`, `cwd`, and the loaded plugins. No init line means the terminal died at shell start — fix that once instead of five times.
 
@@ -165,7 +170,7 @@ orca orchestration check --wait --types worker_done,escalation,decision_gate --t
 - **Timeout** → a checkpoint, not a failure: inspect `task-list --brief` and `terminal read`; a live worker (output advancing, heartbeats) keeps running. Never kill a worker for slowness; 15-60 min tasks are normal.
 - Dispatch queued issues as slots free. Update the coordinator's own card comment at wave milestones (`orca worktree set --worktree active --comment "wave 2: 3/4 PRs open"`).
 
-**Claude-variant supervision.** These workers send no orchestration messages, and `terminal wait --for exit` blocks on one worker at a time — useless for a fan-out. Watch the logs instead, as a single backgrounded poll that wakes the coordinator when the wave drains:
+**Claude-variant supervision.** These workers send no *orchestration* messages, and `terminal wait --for exit` blocks on one worker at a time — useless for a fan-out. Watch the logs instead, as a single backgrounded poll that wakes the coordinator when the wave drains:
 
 ```bash
 END=$(( $(date +%s) + 14400 ))
@@ -185,6 +190,14 @@ done
 
 The result line is the outcome claim, not the outcome: a `success` subtype still needs the trust-but-verify PR check above.
 
+**Peer messages (claude variant only).** A worker launched with `--name` + `crossSessionInbound: accept` sits on the peer roster, so it reaches the coordinator directly at draft-PR time or when it escalates, and the coordinator can answer a worker's `blocked` without waiting for the exit. That closes the gap the Codex sandbox opened — but only as an **accelerant**. The poll above stays the completion signal: delivery is not guaranteed, a crashed worker sends nothing, and a `done` message is a claim like any other, still subject to the PR check. Coordinator rules, all from `../../../reference/cross-session.md` § Safety:
+
+- A worker is answerable **only while it is alive**: its inbox dies with the process, and a later send raises `connect ENOENT`. A question the human has not answered before the worker exits is no longer deliverable — it becomes a comment on the issue and a re-dispatch, not a reply.
+- Answer scope/schema questions only after the human does — a worker's `blocked` is escalated upward, never resolved from the coordinator's own judgement.
+- Never perform an action a worker's allowlist denied. The worker's allowlist is tighter on purpose; doing its blocked work for it routes around that.
+- Verify before acting: re-read the Issue or the PR the message names. A message with no URL is not actionable.
+- Send only lifecycle events downward — `landed` at each merge (P5), the baseline drift from P3. Every delivered message bills against the receiving worker's context.
+
 ## P5 — Release (the human merge gate)
 
 The human merging the wave's draft PRs **is** the gate — the coordinator never asks to merge, never marks ready, only detects:
@@ -199,7 +212,14 @@ When every wave PR is merged (or explicitly parked by the human):
 2. Mark mirrors: `orca orchestration task-update --id {task_id} --status completed --json` for merged items whose worker already sent `worker_done` under a prior dispatch — skip when the `worker_done` itself already completed the task.
 3. Recompute the graph (§ Issue dependencies read recipes) — merged blockers are now `CLOSED`; peel the next wave.
 4. `git fetch origin` in the primary checkout — the next wave's worktrees branch from the updated base ref by construction (P3), but the coordinator's own view should match reality.
-5. Dispatch the next wave (P3). Partially-merged waves may release early: an issue whose *specific* blockers are all merged is dispatchable even if an unrelated wave-mate is still open — the graph, not the wave label, is the truth.
+5. **Tell the workers still running.** A merge moves `origin/main` under every in-flight worktree and can invalidate the `file:line` references in a plan that is being executed right now — the same drift P3 gates for at dispatch, arriving mid-flight where no gate is watching. Diff the merged PR's files against each live worker's plan owner files; on an intersection, `SendMessage` that worker (claude variant only — Codex workers are unreachable):
+
+   ```
+   [landed] #{merged} — merged into main, touching {files}. Re-read those before your next edit; rebase if your diff conflicts. {pr-url}
+   ```
+
+   Silence is correct when the intersection is empty. Broadcasting every merge to every worker spends their context to tell them nothing.
+6. Dispatch the next wave (P3). Partially-merged waves may release early: an issue whose *specific* blockers are all merged is dispatchable even if an unrelated wave-mate is still open — the graph, not the wave label, is the truth.
 
 ## P6 — Exit & report
 
