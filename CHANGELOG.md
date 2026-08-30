@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.0](https://github.com/samosunaz/agent-skills/compare/v4.4.0...v4.5.0) (2026-08-30)
+
+
+### 🚀 Features
+
+* **samuel:** add IAAS, a convergent audit loop over one item ([#20](https://github.com/samosunaz/agent-skills/issues/20)) ([b696bb0](https://github.com/samosunaz/agent-skills/commit/b696bb0cff7c875a88c2e548057e54a281c16962))
+
 ## [4.4.0](https://github.com/samosunaz/agent-skills/compare/v4.3.0...v4.4.0) (2026-08-30)
 
 
