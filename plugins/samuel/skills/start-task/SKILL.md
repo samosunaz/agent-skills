@@ -1,7 +1,7 @@
 ---
 name: start-task
 description: Pick a work item (GitHub Issue), create a branch, and inject task context. Use when a dev is ready to start implementing an item.
-allowed-tools: Bash(git branch *) Bash(git config *) Bash(git status *) Bash(git checkout *) Bash(git stash *) Bash(git rev-parse *) Bash(git worktree *) Bash(gh *) Bash(awk *) Bash(test *) Read Write Edit AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git config *) Bash(git status *) Bash(git checkout *) Bash(git stash *) Bash(git rev-parse *) Bash(git worktree *) Bash(gh *) Bash(awk *) Bash(test *) Bash(printenv *) Bash(which *) Bash(orca repo *) Bash(orca worktree *) Bash(jq *) Read Write Edit AskUserQuestion
 ---
 
 # Start Task
@@ -34,6 +34,9 @@ Pick a work item, prepare the dev environment (branch/worktree), and inject pipe
 - gh default repo: !`gh repo set-default --view 2>/dev/null || echo "NONE"`
 - CWD: !`pwd`
 - Worktrees: !`git worktree list 2>/dev/null || echo ""`
+- CI runner: !`printenv GITHUB_ACTIONS 2>/dev/null || echo "false"`
+- Orca worktree: !`printenv ORCA_WORKTREE_ID 2>/dev/null || echo "none"`
+- Orca CLI: !`which orca >/dev/null 2>&1 && echo "present" || echo "none"`
 
 > **Tracker**: `../../reference/tracker.md`. Adapter: `../../reference/github-operations.md`.
 > **Pipeline state**: this skill bootstraps `.claude/task-context.md` — see `../../reference/task-context.md`.
@@ -79,13 +82,28 @@ Create it? (Y / Rename / choose mode)
 
 **WAIT for confirmation.** (Autonomous bootstrap: default to **worktree** — the conductor's safety gate requires isolation.) (attended-auto: take the mode the context recommends and announce it with its reason — **branch** when the repo needs no dependency install and no session is live in a worktree, **worktree** otherwise. Not a fixed worktree: that is the conductor's SAFETY GATE talking, and an attended run that lands in a worktree costs a new session in another path — more friction, not less. Renaming the branch stays a question at every level.)
 
+**Isolation is per environment.** The Context block detects which one hosts the session; the mechanism follows from it. Recipe and rationale: `../../reference/worktree-isolation.md`.
+
+| Environment | Signal in Context | Mechanism |
+|---|---|---|
+| CI runner | `CI runner: true` | Branch in place, **never** `git worktree add` |
+| Orca | `Orca worktree` and `Orca CLI` both ≠ `none` | `orca worktree create` — then normalize the branch it returns |
+| Local | neither of the above | `EnterWorktree` where the harness exposes it, otherwise `git worktree add` |
+
+**The table governs worktree mode only** — it says *how* to make a worktree once one is wanted, not whether to. Branch mode stays the interactive default and still means a branch in the current checkout. Codex has no `EnterWorktree`, which is why the Local row names `git worktree add` as the mechanism there.
+
+CI is evaluated first — a runner is a runner even when an environment leaks `ORCA_*` into it. Orca needs both signals because either alone lies: `ORCA_*` is inherited by child shells, and the CLI on the `PATH` proves installation, not membership.
+
 **In CI (`GITHUB_ACTIONS=true`):** skip the worktree — create the branch in the current checkout (`git checkout -b {branch}`). The ephemeral runner + a dedicated branch are the isolation the conductor SAFETY GATE accepts (see `../../reference/automated-trigger.md`); `gh` authenticates via the runner's `GH_TOKEN`, no interactive login.
+
+**In Orca:** resolve the repo id by **path** (`--repo name:` matches Orca's `displayName`, not the GitHub repo), create with `--issue {item}`, then rename the returned branch with the **two-argument** `git branch -m {created} {wanted}`. The one-argument form renames the *calling* checkout's branch and succeeds silently. Full recipe: `../../reference/worktree-isolation.md`. If the create fails, **stop and report** — never fall back to the local mechanism.
 
 ```bash
 # branch mode (and CI):
 git checkout -b {branch}
-# worktree mode:
+# worktree mode, local:
 git worktree add ../{repo}-{item} {branch}
+# worktree mode, Orca: see reference/worktree-isolation.md
 ```
 
 ## Step 3: LABEL SETUP (first item of a new repo)
@@ -164,6 +182,11 @@ _Add a line each time Claude trips on something._
 - Never parse the origin remote for owner/repo (SSH alias breaks it) — use the stored `repo` + `gh repo set-default`.
 - `.claude/` may not exist — create it before writing `task-context.md` or `samuel.md`.
 - Worktree mode changes the CWD — remind the user to open a new session at the worktree path. Autonomous runs REQUIRE worktree isolation.
+- **`git branch -m {name}` renames the CALLER, not the new worktree** — `orca worktree create` does not move the session, so the one-argument form retargets whatever the calling checkout has out, and succeeds silently because the wanted name is free. A pickup from a main checkout renames `main` and reports success. Always the two-argument form.
+- **Orca renames the branch it creates** — it prefixes the `gitUsername` recorded on the repo (`orca repo list`) and collapses `/` to `-`. Read the real branch from the `--json` `result.worktree.branch`; reconstructing the rule breaks the next time the setting differs.
+- **Orca errors return `ok:false` with exit code `0`** — branch on `.ok`, never on `$?`.
+- **`ORCA_*` variables are inherited by child shells**, so the env var alone never proves the runtime is reachable — that is why detection needs the binary too.
+- **`which` writes "not found" to stdout in zsh**, not stderr, so `2>/dev/null || echo "none"` leaks a second line in the branch the fallback exists for. Probe with `which x >/dev/null 2>&1 && echo "present" || echo "none"`.
 - Label creation is one-shot per repo — skip if already present.
 - `spec_required` defaults to `false`. Only `true` when capturing WHAT/WHY genuinely de-risks the work.
 - `gh repo set-default --view` prints the resolved repo or errors — the `|| echo NONE` keeps Context clean.
