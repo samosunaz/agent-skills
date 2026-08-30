@@ -113,6 +113,12 @@ gh api repos/$OWNER/$NAME/issues/{number}/comments --paginate \
 
 Processed review IDs = union of the `Reviews:` lines across all markers; unprocessed = FETCH surface 1 minus processed. Same arithmetic for top-level comment IDs (`Comments:` line). Pass number `{P}` = prior marker count + 1.
 
+### Recognizing a review from `/samuel:pr-self-audit`
+
+A review whose body starts with `<!-- samuel:review-pass` came from this pipeline's reviewer side, and its marker lists the finding IDs that pass raised (`findings={B1,I2,N1}`) — the IDs a `Resolution` table can then dispose of one by one. Spec: `../../pr-self-audit/references/review-output.md` § Passes.
+
+**Match it with `startswith` on the prefix, never `contains` on a closed form.** The author marker above is a closed comment, so `contains("<!-- samuel:address-pass -->")` works for it; the review marker carries `P=` and `findings=` inside, so the same closed form matches no body at all. The two markers do not take the same predicate.
+
 ### Marker format
 
 ```markdown
