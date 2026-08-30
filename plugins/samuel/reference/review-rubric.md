@@ -53,7 +53,7 @@ Review **only code added or modified** in this change. Never flag pre-existing p
 - Anything a linter / formatter / type-checker already catches.
 - Pre-existing code not touched by this change.
 - Speculative "could be a problem if…" without a concrete trigger.
-- Missing tests, unless an Acceptance Criterion explicitly requires them.
+- Missing tests, unless an Acceptance Criterion explicitly requires them, or the plan declared the seam in `### Testing seams` and the diff leaves it uncovered — an approved seam is a stated criterion, so report it as unmet (`testing-seams.md`).
 - Subjective architecture opinions.
 
 ## Validating a finding (before you report it)

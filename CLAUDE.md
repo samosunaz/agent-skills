@@ -52,7 +52,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session)
-│       └── skills/               # 34 skills, one dir each (flat — §7.1)
+│       └── skills/               # 35 skills, one dir each (flat — §7.1)
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -61,7 +61,7 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 
 | Group | Skills |
 |---|---|
-| pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, validate |
+| pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
 | git | create-atomic-commit, remove-slop, pr-self-audit, address-pr-comments, session-handoff |
 | workflow | roadmap, kickoff, next, start-task, conductor, waves, wave-prep, done, progress, retro, team-orchestrate |
 | product | feature-dossier, mermaid, tldr |
@@ -90,6 +90,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 3. **`/samuel:plan`** — 5-phase interactive planning with forced human checkpoints. Reads the spec when present + runs a Constitution Check when `CONSTITUTION.md` exists. Writes the **Brief + Executor Plan** to the GitHub Issue body; see `reference/plan-templates.md`. Waves-aware: declares native `blockedBy` edges to sibling issues at write time (`reference/github-operations.md` § Issue dependencies).
 4. **`/samuel:refine-plan`** — Surgical edits to existing plans based on feedback.
 5. **`/samuel:analyze`** (optional, read-only) — Cross-artifact consistency check (spec/research/plan/tasks/constitution). Severity-tagged findings, no auto-edits. Recommended for multi-story or constitution-sensitive features.
+5.5. **`/samuel:tdd`** (optional) — Write tests at the seams the plan declared, one behaviour per red-green cycle. Refuses to invent a seam the human never confirmed: seams are agreed at `/samuel:plan` Checkpoint 3 and persist in the Executor Plan under `### Testing seams`. A repo with no test runner emits `none — repo has no test suite` and no gate requires one. Seam rules, the three anti-patterns with their observable tells, and the emission contract: `plugins/samuel/reference/testing-seams.md`.
 6. **`/samuel:implement`** — Sequential task execution with human verification between phases. Keeps a **living Implementation Notes journal** (`implementation-notes.md`: D/V/T/Q entries) for sub-threshold choices. Monitors context for FIC handoff triggers.
 7. **`/samuel:validate`** — Verifies implementation against success criteria, resolves the journal's open questions, **seals** the journal, and runs documentation impact analysis. Runs an optional repo-scoped **`security_scan`** (secret-scan/SAST command in `.claude/samuel.md`) alongside the gate — a non-zero exit is a FAIL, an absent field an explicit SKIP.
 

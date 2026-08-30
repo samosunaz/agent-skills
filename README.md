@@ -133,7 +133,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 34 skills, one directory each
+│       └── skills/               # 35 skills, one directory each
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -155,6 +155,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:plan`](plugins/samuel/skills/plan/SKILL.md) | 5-phase interactive planning with forced human checkpoints + Constitution Check. |
 | [`/samuel:refine-plan`](plugins/samuel/skills/refine-plan/SKILL.md) | Surgical edits to existing plans based on feedback. |
 | [`/samuel:analyze`](plugins/samuel/skills/analyze/SKILL.md) *(optional)* | Read-only cross-artifact consistency check (spec/research/plan/tasks/constitution). |
+| [`/samuel:tdd`](plugins/samuel/skills/tdd/SKILL.md) *(optional)* | Write tests at the seams the plan declared, one behaviour per red-green cycle. Refuses an unconfirmed seam. |
 | [`/samuel:implement`](plugins/samuel/skills/implement/SKILL.md) | Sequential task execution with human verification + living Implementation Notes journal. |
 | [`/samuel:validate`](plugins/samuel/skills/validate/SKILL.md) | Verifies against success criteria, seals the journal, runs documentation impact analysis. |
 

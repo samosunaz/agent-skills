@@ -53,6 +53,8 @@ For each Step in order (skip any with an unmet dependency → blocked list):
 
 **a. Implement** the change described — exact files, following the plan's Guardrails. Comments you write are **timeless**: they state a constraint the code can't show, never the narrative of this change (taxonomy + examples: `../../reference/code-comments.md`). Stay inside the plan; if reality diverges, go to (e).
 
+Tests go only at the seams the plan declared in `### Testing seams` — the human approved that list at Checkpoint 3, and approving a seam is what authorizes a test there. A Step that needs a seam the plan never declared is a plan-reality mismatch: STOP and surface it per (e). A plan with **no `### Testing seams` section at all** predates the contract: it constrains nothing, so name the seam you would use and ask, rather than stopping. Discipline and anti-patterns: `../../reference/testing-seams.md`.
+
 **b. Verify** the Step's automated check. Run it; capture output.
 
 **c. Track acceptance criteria** as outcomes are met: flip the matching Brief AC `- [ ]`→`- [x]` (fetch body → splice → `gh issue edit --body-file`). Optionally `gh issue comment` a short progress note for big steps.
