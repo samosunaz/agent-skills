@@ -2,11 +2,11 @@
 
 How to run `/samuel:conductor` unattended — on a **remote droplet** (the primary target: SSH in, read Issues, execute) or a **local Mac** (overnight). The conductor is the orchestration; this is the wrapper that keeps the blast radius contained.
 
-> Ship mode writes code **and opens a draft PR** without per-phase human review. Everything below is the price of that. Do not skip the isolation or the allowlist. Merge always stays human.
+> Ship mode writes code **and opens a draft PR** without per-phase human review. Everything below is the price of that. Do not skip the isolation or the deny list. Merge always stays human.
 
 ## 0. Automatic trigger (upstream)
 
-This recipe is the **manual** launch (you start `claude -p`). To have GitHub fire the loop on its own — on a schedule or the moment an issue becomes `pipeline:ready` — see `../../../reference/automated-trigger.md`. It ships a committed workflow template (`../assets/conductor.yml`) that runs **exactly** the `claude -p` invocation in §4 below; the isolation and the allowlist here still apply (in CI, the ephemeral runner + a dedicated branch are the equivalent isolation). Everything below is what that trigger drives.
+This recipe is the **manual** launch (you start `claude -p`). To have GitHub fire the loop on its own — on a schedule or the moment an issue becomes `pipeline:ready` — see `../../../reference/automated-trigger.md`. It ships a committed workflow template (`../assets/conductor.yml`) that runs **exactly** the `claude -p` invocation in §4 below; the isolation and the deny list here still apply (in CI, the ephemeral runner + a dedicated branch are the equivalent isolation). Everything below is what that trigger drives.
 
 ## 1. Isolate the blast radius (mandatory)
 
@@ -19,42 +19,78 @@ git -C <worktree> branch --show-current  # must be a feature/* branch
 
 The SAFETY GATE aborts on a local main checkout or `main`/`master` (in CI, a non-main branch on the ephemeral runner is equivalent isolation — see `../../../reference/automated-trigger.md`).
 
-## 2. Permission allowlist (instead of --dangerously-skip-permissions)
+## 2. Permission barrier: bypass mode + a committed deny list
 
-Prefer a tight `allow`/`deny`. Put this in the worktree's `.claude/settings.json`. Note the **draft-PR authority** for ship mode, and that merge/ready/close are denied:
+**An allowlist does not get you an unattended run.** A subshell is not allowlistable by any rule — the permission engine does not decompose `( … )`, so `echo … && (cat X || echo Y)` is blocked even when every binary in it is allowed. The model improvises compound commands constantly, so a pure allowlist leaves the run stalled on denials it cannot satisfy. `--permission-mode dontAsk` does not rescue it either: it denies without asking.
+
+What works is **the bypass permission mode plus the `deny` list** — deny still wins under bypass, both via `--disallowedTools` and from a `--settings` file. The blast radius stays contained by the blacklist while the agent stops tripping on its own shell syntax.
+
+| Command | Allowlist covers its binaries | Result |
+|---|---|---|
+| `echo … && cat X` | yes | runs |
+| `echo … && (cat X \|\| echo Y)` | yes | **blocked** |
+| the same, `--permission-mode dontAsk` | yes | blocked (denies without asking) |
+| `cat X` under bypass + a `deny` of `cat` | — | **blocked** |
+
+**Measured on Claude Code 2.1.226 and not re-measured since.** It is the same engine behaviour the subshell rule in CLAUDE.md § Shell Commands for Runtime Context rests on, so the two stand or fall together — if a later version starts decomposing `( … )`, both claims need re-scoping to a version range rather than deletion.
+
+The deny file, not the mode, is what keeps the blast radius contained. Keep it in a file the daily interactive session never loads — a committed `.claude/autonomous.json` read only via `--settings`, **not** `.claude/settings.json`. It is a blacklist, so it must be wider than the allowlist it replaces: PR merge/ready/close, `gh api`, force-push and pushes to `main`, network egress, and on mobile repos the commands that launch the app.
+
+One deny file per mode, both committed; each launch loads its own with `--settings`. Commit them — they are policy, not local state, and a run that cannot find its file runs with no barrier at all.
+
+**Review mode** — `.claude/autonomous.json`. Its authority ceiling is structural: never push, never `gh pr`, at all.
 
 ```jsonc
 {
   "permissions": {
-    "allow": [
-      "Read", "Edit", "Write", "Glob", "Grep", "Skill", "Agent",
-      "Bash(git add *)", "Bash(git commit *)", "Bash(git status *)",
-      "Bash(git diff *)", "Bash(git log *)", "Bash(git branch *)",
-      "Bash(git push *)",                       // ship mode pushes the feature branch
-      "Bash(gh issue view *)", "Bash(gh issue list *)", "Bash(gh issue edit *)",
-      "Bash(gh issue comment *)", "Bash(gh issue create *)",
-      "Bash(gh pr create *)", "Bash(gh pr view *)", "Bash(gh pr list *)", "Bash(gh pr checks *)",
-      "Bash(gh repo view *)", "Bash(gh label *)",
-      "Bash(gh signoff *)",                     // only when .claude/samuel.md declares `signoff`
-      "Bash(bun *)", "Bash(npm *)", "Bash(pnpm *)", "Bash(node *)",
-      "Bash(gitleaks *)", "Bash(semgrep *)"  // the security_scan command — see below
-    ],
     "deny": [
-      "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh issue close *)",
-      "Bash(gh signoff install*)",              // reconfigures branch protection — human-only
-      "Bash(git push --force*)", "Bash(git push -f*)",
-      "Bash(rm -rf *)", "Bash(curl *)", "Bash(wget *)", "WebFetch",
-      "Bash(* migrate deploy*)", "Bash(* db:drop*)"
+      "Bash(git push *)", "Bash(gh pr *)",       // the review-mode ceiling, enforced not just stated
+      "Bash(gh issue close *)", "Bash(gh issue delete *)",
+      "Bash(gh api *)",
+      "Bash(gh signoff install*)",               // rewrites branch protection — human-only
+      "Bash(rm -rf *)",
+      "Bash(curl *)", "Bash(wget *)", "WebFetch", "WebSearch",
+      "Bash(* migrate deploy*)", "Bash(* db:drop*)",
+      // mobile repos only — the commands that launch the app on a simulator/device:
+      "Bash(* simctl *)", "Bash(* devicectl *)", "Bash(adb install *)", "Bash(* gradlew installDebug*)"
     ]
   }
 }
 ```
 
-`deny` wins over `allow`. The conductor can open a **draft** PR but cannot mark it ready, merge it, or close the Issue — those are the human's. Adjust build commands to your toolchain. (Review mode: drop `git push *` and the `gh pr *` allows entirely.)
+The dispatched skills write to the Issue with `gh issue view/edit/comment`, so the namespace stays reachable — but `close`/`delete` are denied (closing stays with the merged PR's `Closes #N`) and `gh api` is denied wholesale (arbitrary REST reaches the merge and delete endpoints; the pipeline's only use, setting the Issue Type, happens at capture, before any autonomous run).
 
-**If `.claude/samuel.md` sets `security_scan`, its command must be allowlisted here.** A headless run cannot prompt for approval, so an unlisted scanner is denied, `/samuel:validate` reports the scan as skipped, and a `SKIP` weighs nothing in `Overall` — the run passes without ever scanning, in the one mode where nobody is watching. The two entries above cover `gitleaks`/`semgrep`; a repo-script wrapper (`bun run scan`) is already covered by the toolchain allows.
+### Ship-mode variant (`--ship`)
 
-**`signoff` fails the other way, which is why it needs no equivalent warning.** An unlisted signoff command is denied, the draft PR stays unsigned, its required check stays red, and nothing merges — loud and safe, the opposite of a scan that silently doesn't run. `gh signoff install` is denied outright at every level: it rewrites branch protection, which is a repo-configuration decision and never a run's to make.
+Ship mode needs exactly two more capabilities — push the branch and open a **draft** PR. `.claude/autonomous-ship.json` is the same set with the two blanket entries replaced by surgical ones:
+
+```jsonc
+{
+  "permissions": {
+    "deny": [
+      "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh pr close *)",
+      "Bash(gh pr edit *)", "Bash(gh pr review *)",
+      "Bash(git push --force*)", "Bash(git push -f *)",
+      "Bash(git push * main*)", "Bash(git push * master*)",
+      "Bash(gh issue close *)", "Bash(gh issue delete *)",
+      "Bash(gh api *)",
+      "Bash(gh signoff install*)",
+      "Bash(rm -rf *)",
+      "Bash(curl *)", "Bash(wget *)", "WebFetch", "WebSearch",
+      "Bash(* migrate deploy*)", "Bash(* db:drop*)",
+      "Bash(* simctl *)", "Bash(* devicectl *)", "Bash(adb install *)", "Bash(* gradlew installDebug*)"
+    ]
+  }
+}
+```
+
+The structural guarantee: the agent can open a draft (`gh pr create --draft`) but `merge`/`ready`/`close`/`edit`/`review` are unreachable — marking ready and merging stay human, enforced by the deny list and not just the skill text. Deny entries match the command string, so the four push patterns cover the obvious spellings and nothing more; **branch protection on `main` is what actually makes a force-push impossible** — the patterns are the near miss, the protection is the wall.
+
+### What the switch to a blacklist changed
+
+**`security_scan` no longer needs an entry, and that inverts its failure mode.** Under the old allowlist an unlisted scanner was denied, `/samuel:validate` reported the scan as skipped, and a `SKIP` weighed nothing in `Overall` — the run passed without ever scanning. Under bypass + deny the scanner runs, because nothing denies it. Do not add it to the deny list, and keep reading validate's scan line: a `SKIP` now means the field is absent from `.claude/samuel.md`, not that a permission blocked it.
+
+**`signoff` still fails loud, which is why it needs no warning.** Nothing denies `gh signoff gate`, so it runs; `gh signoff install` stays denied at every level, because it rewrites branch protection and that is a repo-configuration decision, never a run's to make.
 
 ## 3. No production credentials in the environment
 
@@ -87,6 +123,8 @@ claude -p \
    /goal item $ITEM → branch → implement → validate with a real green gate → open a DRAFT PR.
    Record every unattended assumption to GitHub + journal + a handoff. Do NOT mark the PR
    ready, merge, or close the issue. Stop after 40 turns if not reached." \
+  --permission-mode bypassPermissions \
+  --settings .claude/autonomous-ship.json \
   --max-budget-usd 10 \
   --output-format stream-json --verbose \
   | tee ~/conductor-$ITEM.jsonl
@@ -115,6 +153,8 @@ for n in $(gh issue list --state open --label "pipeline:ready" --json number --j
     "/samuel:conductor $n --ship
      /goal ship item $n as a draft PR with a green gate; record assumptions; never merge/ready.
      Stop after 40 turns." \
+    --permission-mode bypassPermissions \
+    --settings .claude/autonomous-ship.json \
     --max-budget-usd "$ITEM_BUDGET_USD" \
     --output-format stream-json --verbose \
     | tee ~/conductor-$n.jsonl || true
@@ -180,6 +220,8 @@ cat > ~/conductor-item.sh <<'SH'
 n="$1"
 claude -p "/samuel:conductor $n --ship
   /goal ship a draft PR with a green gate; never merge. Stop after 40 turns." \
+  --permission-mode bypassPermissions \
+  --settings .claude/autonomous-ship.json \
   --max-budget-usd "${ITEM_BUDGET_USD:-10}" \
   --output-format stream-json --verbose \
   | tee "$HOME/conductor-$n.jsonl" || true
@@ -224,6 +266,7 @@ Tie wake-state to the process so it releases when done:
 ```bash
 cd <worktree>
 caffeinate -i -- claude -p "/samuel:conductor 42 --ship /goal … Stop after 40 turns." \
+  --permission-mode bypassPermissions --settings .claude/autonomous-ship.json \
   --max-budget-usd 10 --output-format stream-json --verbose \
   | tee ~/conductor-$(date +%F).jsonl
 ```
@@ -250,6 +293,7 @@ gh pr merge <n> -R owner/repo --squash                 # merge → Closes #item 
 
 ## Failure modes to expect
 
+- **Empty run: exit 0, zero turns, no output.** Two different causes share this signature, and the exit code does not separate them. **Check the declarations first**: a binary a skill's injected `## Context` command runs that its own `allowed-tools` never declared is denied, and headless that denial is silent (`scripts/lint-skill-context.sh` rule 3 exists for exactly this). Only after that check rule out a launch problem — the wrong cwd (it must be inside the repo) or a `--settings` file the run could not find. Rewriting the prompt is the last thing to try, not the first.
 - **Drift across compactions** — mitigated by FIC handoffs, not eliminated. Keep items small (the plan sizing rule).
 - **Confident wrong assumptions** run unattended — the cost of autonomy. GitHub issue comments + journal are the audit.
 - **Red gate or reviewer Blocker, draft PR suppressed** — ship mode opens a PR only on `Overall: PASS` (gate green + no reviewer Blocker from validate Step 2.5); a red gate or an unresolved Blocker yields a handoff describing the failure instead. That's correct.
