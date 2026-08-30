@@ -65,7 +65,9 @@ Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {c
 2. Identify dependencies between Steps — **and between this item and sibling issues** (an epic split, an upstream decision, another open item whose merged code this plan assumes). Step order lives in the plan; inter-issue order is a native `blockedBy` edge, declared in Phase 4.
 3. Define **success criteria**: automated (the gate command) + manual. If the target repo has an e2e app, decide the journey's **e2e tier** now (green/yellow/manual-only, per the repo's e2e standard doc) and record it in the plan's Validation section.
 
-**Checkpoint 3**: present Steps, criteria, out-of-scope. **WAIT for approval.**
+4. Derive the **testing seams** — where the tests for this change observe behavior — when the repo has a test runner (a `test` script, a `phpunit.xml`/`pytest.ini`, a test target in the gate command). Prefer seams already under test and cite the prior art `file:line`. No runner → the section is `none — repo has no test suite`. Rules: `../../reference/testing-seams.md`.
+
+**Checkpoint 3**: present Steps, criteria, the testing seams, out-of-scope. **WAIT for approval.** Seams are agreed here, before the plan is written — approving one authorizes tests to be written there and nowhere else.
 
 ## Phase 4: WRITE
 

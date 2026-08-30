@@ -56,6 +56,15 @@ who never saw the chat understands the problem. No unresolved external reference
 {The chosen design, stated decisively. If alternatives were weighed, name the
 choice and the one-line reason — the executor does not re-litigate it.}
 
+### Testing seams
+- `path or signature` — existing | new — prior art `file:line`
+{One line per seam: where the tests for this change observe behavior. Agreed with
+the human at Checkpoint 3, before the Steps exist. Selection rules and the three
+anti-patterns: `reference/testing-seams.md`.
+When the repo has no test runner, emit exactly: `none — repo has no test suite`.
+Distinct from the `e2e tier` line below — that classifies the journey, this places
+the tests beneath it.}
+
 ### Steps
 1. **{imperative title}** — `path/to/file.ts` — {exact change}.
    Verify: {command or observable result}.
@@ -68,7 +77,7 @@ If a step depends on a prior one, say so. No "figure out X" — the plan decides
 ### Guardrails
 {Repo conventions embedded so the executor needs no outside knowledge. e.g.:}
 - kebab-case filenames; comments & docs in English.
-- No tests unless a step explicitly adds one.
+- No tests outside the seams declared in `### Testing seams`.
 - Prefer platform-native primitives ({e.g. Cloudflare Workers/D1/DO}) over deps.
 - Do not commit/push/PR outside the run's authority (the harness handles that).
 
@@ -101,6 +110,7 @@ A plan is ready for unattended pickup only if **all** hold. This is the improve-
 - **Decisions are made, not deferred.** No open questions in the plan. If something is genuinely undecided, it belongs in the Brief as a blocker (`pipeline:blocked`), not in the plan.
 - **Steps are independently checkable.** Each has a verification an agent can run. "Refactor the service" is not a step; "extract `parsePayload` from `handler.ts:40-72` into `parse.ts`, keep the signature; verify `bun run typecheck`" is.
 - **The gate command is exact and present.** The executor must know precisely how to prove it's done.
+- **Testing seams are declared.** In a repo with a test runner, `### Testing seams` names where the tests land, agreed with the human. Mandatory there — an executor left to choose seams alone picks them next to the code it just wrote, which is the coupling `reference/testing-seams.md` exists to prevent. In a repo without a runner the section still appears, carrying `none — repo has no test suite`.
 - **Guardrails are embedded.** Repo conventions live in the plan, not in the executor's assumed knowledge.
 
 > Litmus test: hand the Executor Plan to a fresh agent with only repo access and no chat. If it can finish without asking a question, the plan is good. If it would stall, the plan is incomplete — fix it before marking the item `ready`.
