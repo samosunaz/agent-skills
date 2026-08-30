@@ -103,10 +103,13 @@ rm -rf "$tmp"
 # parentheticals is fixed, so rewriting one to serve attended-auto trips this.
 # The pattern must not match `# Conductor (Autonomous Pipeline Driver)`, the
 # conductor's own H1 — counting a title as a bypass inflated this to 10.
+# The number moves only when a skill gains a genuinely new autonomy gate, and
+# the bump belongs in that skill's own commit: 9 → 10 for the /samuel:iaas
+# round-ceiling CONFIRM.
 marks=$(grep -rn '(Conductor: \|(Autonomous: \|(Autonomous bootstrap: ' --include=SKILL.md plugins | wc -l | tr -d ' ')
-[ "$marks" -eq 9 ] \
-  && echo "G5 PASS — conductor bypass intact (9 parentheticals)" \
-  || { echo "G5 FAIL — expected 9 conductor/autonomous parentheticals, found $marks"; fail=1; }
+[ "$marks" -eq 10 ] \
+  && echo "G5 PASS — conductor bypass intact (10 parentheticals)" \
+  || { echo "G5 FAIL — expected 10 conductor/autonomous parentheticals, found $marks"; fail=1; }
 
 # G6 — cross-check, not a count: read the gates autonomy.md promises to move
 # (its table rows minus the ones marked **waits**) and require each skill to

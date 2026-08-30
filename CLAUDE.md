@@ -52,7 +52,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session)
-│       └── skills/               # 35 skills, one dir each (flat — §7.1)
+│       └── skills/               # 36 skills, one dir each (flat — §7.1)
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -63,7 +63,7 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 |---|---|
 | pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
 | git | create-atomic-commit, remove-slop, pr-self-audit, address-pr-comments, session-handoff |
-| workflow | roadmap, kickoff, next, start-task, conductor, waves, wave-prep, done, progress, retro, team-orchestrate |
+| workflow | roadmap, kickoff, next, start-task, conductor, iaas, waves, wave-prep, done, progress, retro, team-orchestrate |
 | product | feature-dossier, mermaid, tldr |
 | design | motion-brief |
 | contract | api-request, api-contract |
@@ -100,7 +100,9 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 ## Autonomous Runs: the Conductor
 
-- **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + allowlist + multi-item loop: `plugins/samuel/skills/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
+- **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + the permission barrier (bypass mode + a committed deny list) + multi-item loop: `plugins/samuel/skills/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
+
+- **`/samuel:iaas`** — Drives **one item** through **Implement → [Audit → Address] × N → Simplify**, each phase its own headless process with **fresh context** (the auditor never saw the implementer's reasoning, so it judges the diff instead of the story). Reimplements nothing: the phases are `implement`+`done --draft`, `pr-self-audit`, `address-pr-comments`, `remove-slop`, and **GitHub is the channel between them** — the pass markers on the PR are what make round 2 a delta instead of a repeat. The round ceiling comes from `--rounds N` or from the item's **size chip** (S→1, M→2, L→3, `plugins/samuel/reference/plan-templates.md` § Sizing); a ceiling is a maximum, never a target. Four stop rules, and the report always names which fired: converged (no Blocker/Important), ceiling reached, **not converging** (the same `file:line` re-raised after a claimed fix), or an **empty audit** — a broken channel, never a clean verdict. Authority stops at the draft PR (`--ready` opts into marking it ready; merge is never automated, ADR 0004). Run accounting goes to the same `conductor:log` issue, plus a `rounds` column. Contracts, the chain and model routing: `plugins/samuel/skills/iaas/references/phase-contracts.md`.
 
 ## Meta Skills
 
