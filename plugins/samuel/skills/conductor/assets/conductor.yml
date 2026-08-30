@@ -62,7 +62,12 @@ jobs:
         with:
           fetch-depth: 0            # full history — the conductor branches and diffs
 
-      - name: Pre-stage Claude Code plugin + permission allowlist
+      # The deny list is the barrier, not an allowlist: no allowlist rule matches a
+      # subshell, and the model writes them constantly (autonomous-run.md § 2).
+      # Writing it into ~/.claude/settings.json is safe HERE and only here — the
+      # runner is ephemeral and has no interactive session to contaminate. On a
+      # workstation it belongs in a committed file loaded with --settings.
+      - name: Pre-stage Claude Code plugin + permission barrier
         run: |
           mkdir -p ~/.claude
           cat > ~/.claude/settings.json <<'JSON'
@@ -74,24 +79,16 @@ jobs:
             },
             "enabledPlugins": { "samuel@samuel-skills": true },
             "permissions": {
-              "allow": [
-                "Read", "Edit", "Write", "Glob", "Grep", "Skill", "Agent",
-                "Bash(git add *)", "Bash(git commit *)", "Bash(git status *)",
-                "Bash(git diff *)", "Bash(git log *)", "Bash(git branch *)",
-                "Bash(git checkout *)", "Bash(git push *)",
-                "Bash(gh issue view *)", "Bash(gh issue list *)", "Bash(gh issue edit *)",
-                "Bash(gh issue comment *)", "Bash(gh issue create *)",
-                "Bash(gh pr create *)", "Bash(gh pr view *)", "Bash(gh pr list *)",
-                "Bash(gh pr checks *)", "Bash(gh repo view *)", "Bash(gh label *)",
-                "Bash(gh signoff *)",
-                "Bash(bun *)", "Bash(npm *)", "Bash(pnpm *)", "Bash(node *)",
-                "Bash(gitleaks *)", "Bash(semgrep *)"
-              ],
               "deny": [
-                "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh issue close *)",
+                "Bash(gh pr merge *)", "Bash(gh pr ready *)", "Bash(gh pr close *)",
+                "Bash(gh pr edit *)", "Bash(gh pr review *)",
+                "Bash(git push --force*)", "Bash(git push -f *)",
+                "Bash(git push * main*)", "Bash(git push * master*)",
+                "Bash(gh issue close *)", "Bash(gh issue delete *)",
+                "Bash(gh api *)",
                 "Bash(gh signoff install*)",
-                "Bash(git push --force*)", "Bash(git push -f*)",
-                "Bash(rm -rf *)", "Bash(curl *)", "Bash(wget *)", "WebFetch",
+                "Bash(rm -rf *)",
+                "Bash(curl *)", "Bash(wget *)", "WebFetch", "WebSearch",
                 "Bash(* migrate deploy*)", "Bash(* db:drop*)"
               ]
             }
@@ -134,6 +131,7 @@ jobs:
             claude -p "/samuel:conductor $n --ship
               /goal ship a draft PR with a green gate; record assumptions; never merge/ready.
               Stop after 40 turns." \
+              --permission-mode bypassPermissions \
               --max-turns 50 \
               --max-budget-usd "$ITEM_BUDGET_USD" \
               --output-format stream-json --verbose \

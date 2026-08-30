@@ -44,7 +44,7 @@ on:
 Steps:
 
 1. **`actions/checkout@v4`** with `fetch-depth: 0` (the conductor needs full history for branching/diffs).
-2. **Pre-stage `~/.claude/settings.json`** — there is no first-class "install plugin" Action input, so write the settings file the plugin runtime reads. It carries `extraKnownMarketplaces` + `enabledPlugins` (the shape from `README.md` "Per-project setup") **plus** the `permissions` `allow`/`deny` allowlist from `../skills/conductor/references/autonomous-run.md` (the same tight list that bounds a manual unattended run). `deny` keeps `gh pr merge`/`ready`/`issue close` off the table.
+2. **Pre-stage `~/.claude/settings.json`** — there is no first-class "install plugin" Action input, so write the settings file the plugin runtime reads. It carries `extraKnownMarketplaces` + `enabledPlugins` (the shape from `README.md` "Per-project setup") **plus** the `permissions` `deny` list from `../skills/conductor/references/autonomous-run.md` § 2 (the same barrier that bounds a manual unattended run), with the run launched in bypass permission mode. An allowlist is not the mechanism: no rule matches a subshell, so a pure allowlist stalls the run — `deny` still wins under bypass, and it is what keeps `gh pr merge`/`ready`/`issue close` off the table. Writing it into `~/.claude/settings.json` is safe on a runner and only there: the runner is ephemeral and has no interactive session to contaminate.
 3. **`npm i -g @anthropic-ai/claude-code`** — the CLI is the invocation surface.
 4. **Resolve the target issue and run the conductor headlessly** — `github.event.issue.number` for the labeled event, `inputs.issue` for dispatch, or the `pipeline:ready` loop for `schedule`. The command is **verbatim** the canonical recipe from `autonomous-run.md`:
    ```bash
@@ -135,11 +135,11 @@ Identical workflow; **only `runs-on:` changes** to `self-hosted` (or a runner la
 
 ## C — Claude Code routine (brief)
 
-If a machine is already configured with the plugin + `gh` + the allowlist (e.g. the droplet, or a dev box), a Claude Code **routine** (`/schedule`) can run the same `claude -p "/samuel:conductor … --ship"` on a cron without any GitHub Actions YAML. Lightest weight, but it depends on that machine staying up and configured — it does **not** remove the hardware dependency the way A does. Use it for a quick local heartbeat; prefer A/B for a durable, repo-owned trigger.
+If a machine is already configured with the plugin + `gh` + the deny list (e.g. the droplet, or a dev box), a Claude Code **routine** (`/schedule`) can run the same `claude -p "/samuel:conductor … --ship"` on a cron without any GitHub Actions YAML. Lightest weight, but it depends on that machine staying up and configured — it does **not** remove the hardware dependency the way A does. Use it for a quick local heartbeat; prefer A/B for a durable, repo-owned trigger.
 
 ## See also
 
 - `../skills/conductor/assets/conductor.yml` — the committed workflow template (the artifact this reference explains).
-- `../skills/conductor/references/autonomous-run.md` — the manual launch recipe, the permission allowlist, and the morning review (this reference is the automatic *trigger* upstream of it).
+- `../skills/conductor/references/autonomous-run.md` — the manual launch recipe, the permission barrier (bypass mode + a committed deny list), and the morning review (this reference is the automatic *trigger* upstream of it).
 - `../skills/conductor/SKILL.md` — the conductor + the CI-aware SAFETY GATE.
 - `./github-operations.md` — the `gh` adapter (`pipeline:ready` query, labels, PR ops).
