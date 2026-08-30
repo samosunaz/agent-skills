@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
-# Validate plugin and marketplace manifests with `claude plugin validate --strict`,
+# Validate plugin and marketplace manifests with `claude plugin validate`,
 # and assert every plugin manifest is version-tracked by release-please.
-# Strict mode fails on unrecognized fields and missing metadata, not just errors.
+# Strict mode (plugin manifests) fails on unrecognized fields and missing
+# metadata, not just errors.
 #
 # The Codex marketplace (.agents/plugins/marketplace.json) is intentionally NOT
 # validated here: it carries Codex-specific fields (e.g. `policy`) that Claude's
@@ -49,4 +50,9 @@ for plugin in plugins/*/; do
   claude plugin validate "$plugin" --strict
 done
 
-claude plugin validate .claude-plugin/marketplace.json --strict
+# The marketplace read is deliberately not strict: the plugin manifest it points at
+# is a symlink to the portable root manifest (a regular file would fork from it the
+# next time release-please rewrites the blob it bumps), and the validator cannot
+# inspect a symlinked source, so it emits a warning --strict promotes to an error.
+# The loop above already validates that target strictly.
+claude plugin validate .claude-plugin/marketplace.json
