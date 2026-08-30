@@ -6,7 +6,7 @@
 
 <!-- x-release-please-start-version -->
 
-![Version](https://img.shields.io/badge/version-4.3.0_-seagreen?style=for-the-badge&logo=git&logoColor=seagreen)
+![Version](https://img.shields.io/badge/version-4.4.0_-seagreen?style=for-the-badge&logo=git&logoColor=seagreen)
 
 <!-- x-release-please-end -->
 

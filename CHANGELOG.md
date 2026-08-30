@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.4.0](https://github.com/samosunaz/agent-skills/compare/v4.3.0...v4.4.0) (2026-08-30)
+
+
+### 🚀 Features
+
+* **samuel:** add the solution-fit axis to the review rubric ([#14](https://github.com/samosunaz/agent-skills/issues/14)) ([6c8d3c2](https://github.com/samosunaz/agent-skills/commit/6c8d3c2f8e4bf531b4883a0e62f90cc14fb072a8))
+* **samuel:** decide where tests go via human-agreed testing seams ([#17](https://github.com/samosunaz/agent-skills/issues/17)) ([27e5842](https://github.com/samosunaz/agent-skills/commit/27e5842556a42f6f2d1d2d22232b80a7298dba4b))
+* **samuel:** declare the binaries injected context commands run ([#15](https://github.com/samosunaz/agent-skills/issues/15)) ([045d9ce](https://github.com/samosunaz/agent-skills/commit/045d9ced1fa331e169f6b91459ff004f0be338ac))
+* **samuel:** match the pickup worktree to its host environment ([#16](https://github.com/samosunaz/agent-skills/issues/16)) ([e3b05cc](https://github.com/samosunaz/agent-skills/commit/e3b05ccf26d7a37508b72038be5d9cb1a65d0782))
+* **samuel:** scope a repeat review to what changed and derive its event ([#18](https://github.com/samosunaz/agent-skills/issues/18)) ([82384c4](https://github.com/samosunaz/agent-skills/commit/82384c4e6647fff0138bb93363791762b62c4821))
+
+
+### 🩹 Fixes
+
+* **samuel:** correct the permission barrier an unattended run needs ([#19](https://github.com/samosunaz/agent-skills/issues/19)) ([b4c65e3](https://github.com/samosunaz/agent-skills/commit/b4c65e344a8cebe17d47b50afe1c01e08537a6de))
+* stop the pre-commit gate from failing on the symlinked manifest ([#12](https://github.com/samosunaz/agent-skills/issues/12)) ([c34dfef](https://github.com/samosunaz/agent-skills/commit/c34dfef8f89b7fc3df641983dbe2d0fd24fb5402))
+
 ## [4.3.0](https://github.com/samosunaz/agent-skills/compare/v4.2.0...v4.3.0) (2026-08-09)
 
 
