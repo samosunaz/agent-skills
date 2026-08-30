@@ -8,12 +8,14 @@ allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git remo
 
 Review a pull request for real bugs, security vulnerabilities, logic errors, and convention compliance. **High-signal only** — every flagged issue should be something a senior engineer would catch.
 
+> **Output spoke**: `references/review-output.md` — pass markers and delta scope, the report format, how the native event is derived from the verdict, and the publish/confirm mechanics.
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
 ## Context
 
 - Current branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - Git user: !`git config user.name 2>/dev/null || echo "unknown"`
+- gh login: !`gh api user --jq .login 2>/dev/null || echo "unknown"`
 - Remote: !`git remote get-url origin 2>/dev/null || echo "No remote"`
 - PR list: !`gh pr list --state open --json number,title,headRefName,url --limit 5 2>/dev/null || echo "No PRs or gh not configured"`
 - Project CLAUDE.md: !`head -10 CLAUDE.md 2>/dev/null || echo "No CLAUDE.md"`
@@ -87,6 +89,16 @@ gh pr diff {number}
 gh pr diff {number} --name-only
 ```
 
+### Load prior review passes
+
+```bash
+gh pr view {number} --json reviews,author,headRefOid
+```
+
+Filter `reviews[]` for bodies starting with `<!-- samuel:review-pass` and keep your own (Context's `gh login`). Your own passes + 1 is `P`. None → `P` = 1 and this is a full sweep.
+
+**With a prior pass of your own, this run is a delta**: review what changed since that pass's `commit.oid`, and re-verify the IDs its marker listed against the code at the current head. The rest is not re-litigated. Recipe and the exact `startswith` guard: `references/review-output.md` § Passes.
+
 ### Load project conventions
 
 Read in priority order (stop at first found):
@@ -151,69 +163,26 @@ File link format: `[{file}:{line}](https://github.com/{REPO}/blob/{HEAD_SHA}/{fi
 
 ### Review report format
 
-```markdown
-## Review: {PR title} (#{number})
+Rendered from `references/review-output.md` § Review report format. Two lines are not optional: the
+`<!-- samuel:review-pass P={P} findings={...} -->` marker opens the body, and in delta mode the scope
+line follows it. Every finding heading carries its ID (`B{n}` / `I{n}` / `N{n}`) — that is what makes
+it addressable from the next pass and from the author side.
 
-**Reviewer**: {git user}
-**Branch**: {head} → {base}
-**Files**: {N} modified, +{additions}/-{deletions}
+### Derive the event
 
----
-
-### Verdict: {APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES}
-
-{1-2 sentence summary}
-
----
-
-{if findings:}
-### Findings
-
-#### [severity] {finding title}
-**File**: [`{file}:{line}`](https://github.com/{owner}/{repo}/blob/{head_sha}/{file}#L{line})
-**Category**: {Bug/Security/Logic/Convention/Fit}
-**Impact**: {what happens if not fixed}
-
-**Current code:**
-```{lang}
-{problematic code from diff}
-```
-
-**Suggestion:**
-```{lang}
-{fixed code}
-```
-
-**Why**: {brief explanation}
-
----
-
-### Summary
-
-| Severity | Count |
-|----------|-------|
-| Blocker | {n} |
-| Important | {n} |
-| Nit | {n} |
-```
+The verdict is the decision; the native event follows from it mechanically (APPROVE → `APPROVE`,
+APPROVE WITH COMMENTS → `COMMENT`, REQUEST CHANGES → `REQUEST_CHANGES`). Two conditions alter it and
+both are said out loud at the checkpoint: **your own PR** forces `COMMENT` (GitHub answers 422
+otherwise — the common case here), and **clearing your own previous `CHANGES_REQUESTED`** needs an
+`APPROVE`, which nothing else substitutes. Table and the first-hand-verification rule:
+`references/review-output.md` § The event is derived from the verdict.
 
 ### Present to user
 
-```
-Review complete for PR #{number}: {title}
-
-Verdict: {verdict}
-{n} findings: {n} 🔴, {n} 🟡, {n} 🔵
-
-{full report}
-
----
-
-Options:
-1. Publish as review on GitHub (with inline comments)
-2. Show here only (do not publish)
-3. Adjust before publishing
-```
+Render the checkpoint per `references/review-output.md` § Present to user: verdict **and** derived
+event, the forced-`COMMENT` or block-clearing note when either applies, the finding counts, the full
+report, then the four options. The menu never offers the event — disagreeing with the event is
+disagreeing with the verdict, which is what option 2 collects.
 
 **WAIT for user choice.**
 
@@ -221,39 +190,11 @@ Options:
 
 ## Step 6: PUBLISH (if user chooses)
 
-### Post GitHub review with inline comments
-
-Post the review summary AND all inline comments in a **single request** using the reviews endpoint:
-
-```bash
-gh api repos/{owner}/{repo}/pulls/{number}/reviews \
-  --method POST --input - <<'JSON'
-{
-  "commit_id": "{head_sha}",
-  "event": "COMMENT",
-  "body": "{summary review}",
-  "comments": [
-    {
-      "path": "{file}",
-      "position": {position_in_diff},
-      "body": "{finding with suggestion block}"
-    }
-  ]
-}
-JSON
-```
-
-**`position`** = line number within the diff hunk (not the file). Count from the start of the hunk including context lines.
-
-**Do NOT use** `POST /pulls/{n}/comments` (individual comment endpoint) — only the reviews endpoint supports inline comments with positioning.
-
-**Suggestion blocks** (committable fixes):
-
-````markdown
-```suggestion
-{fixed code}
-```
-````
+Summary and every inline comment go in **one single** POST to the reviews endpoint, carrying the
+`event` already resolved at the checkpoint. Then **read `reviewDecision` back** and report what
+GitHub actually recorded — an `APPROVE` that leaves the PR at `REVIEW_REQUIRED` is a fact the reviewer
+needs now, not at merge time. Payload, the `position` rule, the individual-comment endpoint to avoid,
+and the confirm block: `references/review-output.md` § Publish and § Confirm.
 
 ---
 
@@ -267,6 +208,12 @@ Projects can create a `REVIEW.md` at the repo root to customize review behavior;
 
 _Add a line each time Claude trips on something._
 
+- **Match the pass marker with `startswith` on the prefix.** `contains("<!-- samuel:review-pass -->")` matches nothing: the real marker carries `P=` and `findings=` inside it, so the closed form never appears in any body.
+- **A repeat review with no scope line lies by omission.** "No findings" reads as "I reviewed everything" when the pass only looked at a delta. The line is mandatory whenever `P` > 1.
+- **The event is not a second question.** It follows from the verdict. Asking the user which event to send invites an answer that contradicts the verdict already shown.
+- **`event` on your own PR must be `COMMENT`** — GitHub answers 422 to `APPROVE`/`REQUEST_CHANGES` on a PR you authored, which is the normal case for a self-audit.
+- **Read `reviewDecision` back after publishing.** The event you sent and the state GitHub recorded diverge when another reviewer is pending or branch protection intervenes; report the mismatch instead of reporting success.
+- Finding IDs are never reused across passes on the same PR — the marker's `findings=` list is what the next pass re-verifies.
 - `gh api` for inline comments needs `commit_id` (HEAD SHA of PR), not the merge base.
 - `gh pr diff` output can be huge — for PRs with 50+ files, focus on the most critical ones first.
 - REVIEW.md rules override defaults — always check if it exists before applying standard criteria.
