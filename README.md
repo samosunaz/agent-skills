@@ -133,7 +133,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 35 skills, one directory each
+│       └── skills/               # 36 skills, one directory each
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -168,6 +168,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:next`](plugins/samuel/skills/next/SKILL.md) | Pull the next prioritized work item (GitHub Issues). |
 | [`/samuel:start-task`](plugins/samuel/skills/start-task/SKILL.md) | Pick an item, create branch/worktree, bootstrap task-context + feature dir. |
 | [`/samuel:conductor`](plugins/samuel/skills/conductor/SKILL.md) | Drive the pipeline unattended (cloud/overnight); `--ship` opens a draft PR. Safety gate: isolated worktree or a CI runner on a non-main branch. Budget caps + a run report per run. |
+| [`/samuel:iaas`](plugins/samuel/skills/iaas/SKILL.md) | Drive one item through Implement → [Audit → Address] × N → Simplify, each phase a fresh headless process. Round ceiling from `--rounds` or the size chip; stops on convergence, not on a count. |
 | [`/samuel:done`](plugins/samuel/skills/done/SKILL.md) | Open a PR (`Closes #N`, `--draft` for autonomous runs) synthesizing the journal; mark the item done; cleanup. |
 | [`/samuel:progress`](plugins/samuel/skills/progress/SKILL.md) | Personal dashboard: item status, velocity, blockers (GitHub Issues). |
 | [`/samuel:retro`](plugins/samuel/skills/retro/SKILL.md) | Personal retrospective from GitHub Issues/PRs + git history. |
