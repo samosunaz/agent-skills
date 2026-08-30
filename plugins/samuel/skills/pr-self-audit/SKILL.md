@@ -106,7 +106,7 @@ Spawn review agents in a **single message** (model: sonnet) for maximum coverage
 |-----------------|-------|-------------|
 | `implementation-analyzer` | **Bugs & Logic** | Null refs, off-by-one, wrong conditions, missing returns, dead code paths, type errors, incorrect imports. Wrong operator, inverted condition, missing edge case handling. |
 | `implementation-analyzer` | **Security** | Injection (SQL, XSS, command), auth/authz gaps, secrets in code, unsafe deserialization, path traversal, missing input validation at system boundaries, data exposure in logs/responses. |
-| `pattern-scanner` | **Convention compliance** | Does the PR follow patterns established in the codebase? New patterns that diverge from existing ones? CLAUDE.md/REVIEW.md rule violations? |
+| `pattern-scanner` | **Convention & Solution fit** | Does the PR follow patterns established in the codebase? New patterns that diverge from existing ones? CLAUDE.md/REVIEW.md rule violations? Hand-rolled code duplicating a framework/stdlib/installed-dep API (name the exact API)? New dependency for a trivial need? Abstraction with a single caller no requirement asks for? Public-contract change (response shape, event payload, destructive migration) without a back-compat path? |
 
 **Each agent receives:**
 - The full PR diff
@@ -132,7 +132,7 @@ Apply the rubric's four-point finding check (`../../reference/review-rubric.md` 
 
 ## Step 4: CLASSIFY
 
-Assign **severity** (🔴 Blocker / 🟡 Important / 🔵 Nit) and **category** (Bug / Security / Logic / Convention) per `../../reference/review-rubric.md`. Only 🔴 Blocker blocks merge; 🔵 Nits are informational.
+Assign **severity** (🔴 Blocker / 🟡 Important / 🔵 Nit) and **category** (Bug / Security / Logic / Convention / Fit) per `../../reference/review-rubric.md` (Fit checks: § Solution fit there). Only 🔴 Blocker blocks merge; 🔵 Nits are informational.
 
 ---
 
@@ -171,7 +171,7 @@ File link format: `[{file}:{line}](https://github.com/{REPO}/blob/{HEAD_SHA}/{fi
 
 #### [severity] {finding title}
 **File**: [`{file}:{line}`](https://github.com/{owner}/{repo}/blob/{head_sha}/{file}#L{line})
-**Category**: {Bug/Security/Logic/Convention}
+**Category**: {Bug/Security/Logic/Convention/Fit}
 **Impact**: {what happens if not fixed}
 
 **Current code:**
