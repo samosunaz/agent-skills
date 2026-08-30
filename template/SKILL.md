@@ -1,7 +1,7 @@
 ---
 name: template-skill
 description: Replace with description of the skill and when the agent should use it. Include 2-3 trigger phrases.
-allowed-tools: Read
+allowed-tools: Bash(git branch *) Read
 ---
 
 # Skill Name
