@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.6.0](https://github.com/samosunaz/agent-skills/compare/v4.5.1...v4.6.0) (2026-09-05)
+
+
+### 🚀 Features
+
+* **samuel:** close the ack gaps the autonomy review found ([#25](https://github.com/samosunaz/agent-skills/issues/25)) ([343698f](https://github.com/samosunaz/agent-skills/commit/343698f27c3a2aca155845cad625a1d29f9b78fa))
+* **samuel:** direct lane — an S with no behaviour change skips plan, worker and audit loop ([#27](https://github.com/samosunaz/agent-skills/issues/27)) ([cd4f99f](https://github.com/samosunaz/agent-skills/commit/cd4f99fd8f228dddc660e506be8b1e97f6354ae2))
+
 ## [4.5.1](https://github.com/samosunaz/agent-skills/compare/v4.5.0...v4.5.1) (2026-09-05)
 
 
