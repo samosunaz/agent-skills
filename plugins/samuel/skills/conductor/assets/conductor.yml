@@ -121,7 +121,7 @@ jobs:
             local res cost turns tokens subtype is_error outcome
             echo "=== conductor #$n ==="
             # No --model: model IDs rotate. To pin, uncomment and use the current Opus id:
-            #   --model claude-opus-4-8
+            #   --model <current Opus id>
             # `--output-format stream-json` is a hard error without `--verbose`.
             # Redirect, never tee: --verbose emits every message AND every tool
             # result, so piping it to stdout would publish whatever the agent

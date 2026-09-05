@@ -52,7 +52,7 @@ Steps:
      /goal ship a draft PR with a green gate; record assumptions; never merge/ready.
      Stop after 40 turns." --max-turns 50
    ```
-   `--max-turns 50` is a hard backstop **above** the `/goal` "Stop after 40 turns" brake. No `--model` — IDs rotate; the template leaves a commented pin (`# --model claude-opus-4-8  # use the current Opus id`).
+   `--max-turns 50` is a hard backstop **above** the `/goal` "Stop after 40 turns" brake. No `--model` — IDs rotate; the template leaves a commented pin (`# --model <current Opus id>`).
 5. **Post the run report** (`if: always()`) — the `conductor:log` comment + `$GITHUB_STEP_SUMMARY` table described under § Caps & run accounting.
 6. **Upload conductor transcripts** — `actions/upload-artifact@v4`, **private repos only**, 3-day retention. See the exposure note in § Caps & run accounting.
 
