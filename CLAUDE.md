@@ -237,3 +237,4 @@ Every skill has a `## Gotchas` section that grows over time. Add a line each tim
 - `allowed-tools` in frontmatter — declare every tool the skill needs.
 - **Subagents get no plugin base-dir at runtime** — inject reference content (e.g. a rubric) into the subagent's prompt; a relative path in an agent def won't resolve in the target repo.
 - All skills must have `## Gotchas` — starts empty, grows with use.
+- **A role boundary is one `## Role boundary` paragraph with its reason** — never a caps header or a `What NOT to Do` list. Current models take the register literally, and a prohibition list anchors toward the failures it names.
