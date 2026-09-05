@@ -71,7 +71,7 @@ If only one is available, still confirm. (attended-auto: pull it without asking,
 
 ## Rules
 
-- **No auto-assignment.** Always show options and let the user choose.
+- **No silent pick.** With more than one candidate, show the options at every level. With exactly one, `attended-auto` pulls it and says so (§ 2).
 - **Context awareness.** Show in-progress items before offering new ones.
 - **Dependency respect.** Never offer an item with an open dependency.
 - **Priority first.** High priority always on top.

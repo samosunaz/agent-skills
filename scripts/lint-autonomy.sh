@@ -22,13 +22,14 @@ targets="plugins/samuel/skills/implement/SKILL.md
 plugins/samuel/skills/done/SKILL.md
 plugins/samuel/skills/next/SKILL.md
 plugins/samuel/skills/start-task/SKILL.md
-plugins/samuel/skills/session-handoff/SKILL.md"
+plugins/samuel/skills/session-handoff/SKILL.md
+plugins/samuel/skills/create-atomic-commit/SKILL.md"
 missing=0
 for f in $targets; do
   grep -q '^- Autonomy: ' "$f" || { echo "G2 FAIL — no Autonomy context read: $f"; missing=1; }
   grep -q 'reference/autonomy.md' "$f" || { echo "G2 FAIL — no autonomy.md pointer: $f"; missing=1; }
 done
-[ "$missing" -eq 0 ] && echo "G2 PASS — 5/5 skills read the key" || fail=1
+[ "$missing" -eq 0 ] && echo "G2 PASS — 6/6 skills read the key" || fail=1
 
 # G2b — the shipped read lines are byte-identical to the one autonomy.md
 # documents. Without this the G4 probe below tests a private copy: a skill can
@@ -42,7 +43,7 @@ else
     [ "$(grep -h '^- Autonomy: !' "$f")" = "$canon" ] \
       || { echo "G2b FAIL — read line drifted from autonomy.md § Resolution: $f"; drift=1; }
   done
-  [ "$drift" -eq 0 ] && echo "G2b PASS — 5/5 read lines match the documented one" || fail=1
+  [ "$drift" -eq 0 ] && echo "G2b PASS — 6/6 read lines match the documented one" || fail=1
 fi
 
 # G2c — every skill states the unattended override next to its pointer. The read
@@ -58,7 +59,7 @@ for f in $targets; do
   grep -q 'claude -p' "$f" \
     || { echo "G2c FAIL — unattended clause names only the conductor: $f"; over=1; }
 done
-[ "$over" -eq 0 ] && echo "G2c PASS — 5/5 skills carry the unattended override" || fail=1
+[ "$over" -eq 0 ] && echo "G2c PASS — 6/6 skills carry the unattended override" || fail=1
 
 # G3 — the spoke exists.
 [ -f plugins/samuel/reference/autonomy.md ] \
@@ -105,11 +106,12 @@ rm -rf "$tmp"
 # conductor's own H1 — counting a title as a bypass inflated this to 10.
 # The number moves only when a skill gains a genuinely new autonomy gate, and
 # the bump belongs in that skill's own commit: 9 → 10 for the /samuel:iaas
-# round-ceiling CONFIRM.
+# round-ceiling CONFIRM; 10 → 11 for the /samuel:implement legacy-seams clause
+# (§ Step 2 (a)).
 marks=$(grep -rn '(Conductor: \|(Autonomous: \|(Autonomous bootstrap: ' --include=SKILL.md plugins | wc -l | tr -d ' ')
-[ "$marks" -eq 10 ] \
-  && echo "G5 PASS — conductor bypass intact (10 parentheticals)" \
-  || { echo "G5 FAIL — expected 10 conductor/autonomous parentheticals, found $marks"; fail=1; }
+[ "$marks" -eq 11 ] \
+  && echo "G5 PASS — conductor bypass intact (11 parentheticals)" \
+  || { echo "G5 FAIL — expected 11 conductor/autonomous parentheticals, found $marks"; fail=1; }
 
 # G6 — cross-check, not a count: read the gates autonomy.md promises to move
 # (its table rows minus the ones marked **waits**) and require each skill to
@@ -123,6 +125,7 @@ skill_file() {
     next)            echo plugins/samuel/skills/next/SKILL.md ;;
     start-task)      echo plugins/samuel/skills/start-task/SKILL.md ;;
     session-handoff) echo plugins/samuel/skills/session-handoff/SKILL.md ;;
+    create-atomic-commit) echo plugins/samuel/skills/create-atomic-commit/SKILL.md ;;
     *)               echo "" ;;
   esac
 }
@@ -162,7 +165,7 @@ echo "$resolution" | grep -qi 'claude -p'                   || { echo "G7 FAIL �
 [ "$g7" -eq 0 ] && echo "G7 PASS — unattended precedence covers conductor + headless" || fail=1
 
 # G8 — the template ships the key INERT. A consumer repo that copies it verbatim
-# (which tracker.md explicitly anticipates) must get today's behaviour, not eight
+# (which tracker.md explicitly anticipates) must get today's behaviour, not ten
 # checkpoints switched off by a file nobody opted into.
 if grep -q '^autonomy:' template/samuel.md; then
   echo "G8 FAIL — template/samuel.md ships autonomy switched on; comment the line out"; fail=1

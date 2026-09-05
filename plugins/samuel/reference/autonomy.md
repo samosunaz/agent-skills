@@ -42,6 +42,7 @@ Cited by **section**, never by line: this table's own arrival shifted every line
 | `implement` | § Step 2 (g) — phase boundary | continue |
 | `implement` | § Step 2 (e) — plan-reality mismatch | **waits** — hard stop |
 | `implement` | § Step 2 (e.1) — blast-radius cross-post | **waits** — outward |
+| `implement` | § Step 2 (a) — legacy plan with no `### Testing seams` | the seam with prior art, journaled as `D-NNN` |
 | `done` | § Step 1 — confirm the item | proceed |
 | `done` | § Step 2 — DoD checklist | **waits** — outward: the last stop before § Step 3 pushes |
 | `done` | § Step 4 — durable knowledge (dossier, CLAUDE.md, README, REVIEW.md) | **waits** — never auto-edit |
@@ -51,12 +52,13 @@ Cited by **section**, never by line: this table's own arrival shifted every line
 | `start-task` | § Spec requirement | `false` |
 | `start-task` | § Dirty working tree | **waits** — uncommitted work |
 | `session-handoff` | § Step 3 — resume options (resume mode) | option 1, continue the task |
+| `create-atomic-commit` | § Process (2) — the commit plan | commit as planned; the `main` guard in § Process (0) still asks |
 
 `implement` § Step 2 (c) is deliberately **not** in this table: flipping an AC checkbox on the current Issue has no checkpoint at any level. § Hard stops covers the outward actions that leave the current Issue.
 
 **A full `implement` → `done` cycle under `attended-auto` still costs acks, by design — the two `done` rows above.** § Step 2 is the last stop before § Step 3 runs `git push` and `gh pr create`, and § Step 4 proposes edits to `CLAUDE.md` / `README.md` / `REVIEW.md` that are never auto-applied. Both were considered for auto-advance and rejected: a level built to remove acks that removes the one in front of publishing has inverted the guarantee it was supposed to preserve. Every other **soft** ack in the cycle is gone — the `**waits**` rows above (plan-reality mismatch, blast-radius cross-post, dirty working tree) bind at every level and this paragraph does not touch them.
 
-`/samuel:create-atomic-commit` is likewise absent from the table on purpose. `implement` § Step 2 (f) cites it for the message convention and commits inline; the skill is never dispatched from that path, so its own confirmation is not a gate this level has to move.
+`/samuel:create-atomic-commit` is in the table for the direct invocation only. `implement` § Step 2 (f) cites it for the message convention and commits inline, so that path never renders its confirmation; the row moves the ack a user meets when they invoke the skill themselves. A local commit is reversible with `git reset` and is not an outward action, which is what qualifies it. The `main` branch guard stays a question: the branch name is the user's call.
 
 Two of these reverse a rule that was written deliberately, so they are flagged rather than silently folded in:
 
@@ -87,7 +89,7 @@ What separates `attended-auto` from `autonomous` is *where the record goes*, and
 
 The chat line is the review surface. It names the gate and the value taken, in one line, at the moment it happens — not batched into a summary at the end, which is a report nobody reads against a decision nobody can still change cheaply.
 
-The journal row is narrower than it looks, and deliberately so. Taking the obvious default at a gate is not a decision — that is the premise the whole level rests on — so twelve of the thirteen gates above write nothing: four resolve before any journal exists (`next`, both `start-task` gates, `session-handoff`), and the rest merely continue work already agreed. The exception is `done` § Step 1, which journals when the item was resolved from anywhere other than `task-context.md`: there the default picked *which issue the PR closes*, and that is an ambiguity with a wrong answer. Under `autonomous` the column is `always` because the chat line has no reader — the journal is the only surface left.
+The journal row is narrower than it looks, and deliberately so. Taking the obvious default at a gate is not a decision — that is the premise the whole level rests on — so thirteen of the fifteen gates above write nothing: five resolve before any journal exists (`next`, both `start-task` gates, `session-handoff`, `create-atomic-commit`), and the rest merely continue work already agreed. The exceptions are `done` § Step 1, which journals when the item was resolved from anywhere other than `task-context.md`: there the default picked *which issue the PR closes*, and that is an ambiguity with a wrong answer; and `implement` § Step 2 (a), where the default picks a testing seam the plan never named. Under `autonomous` the column is `always` because the chat line has no reader — the journal is the only surface left.
 
 A run that writes a `D-NNN` per phase boundary is not being thorough; it is burying the entries that record real choices under a log of the level working as designed.
 
@@ -114,7 +116,7 @@ _Add a line each time Claude trips on something._
 - A skill that reads the key must also point here; the two go together and `scripts/lint-autonomy.sh` checks for both.
 - The gate table cites **sections, never lines**. Adding the two-line wiring block to a skill shifts every line below it, and this table is the only index of where the gates live — `lint-autonomy.sh` G6b rejects a `SKILL.md:NN` citation inside it.
 - A rule about accepted values belongs in the `awk`, not in a paragraph next to it. The resolved string is injected verbatim into `## Context` above parentheticals that branch on the literal word `Autonomous`; prose does not filter it.
-- Taking a gate default is **not** a `D-NNN`. Twelve of the thirteen gates write nothing — journal only when the default resolved a real ambiguity (§ Recording contract), or the entries that matter drown in a log of the level working.
+- Taking a gate default is **not** a `D-NNN`. Thirteen of the fifteen gates write nothing — journal only when the default resolved a real ambiguity (§ Recording contract), or the entries that matter drown in a log of the level working.
 - An **unattended** run is `autonomous` regardless of what the file says (§ Resolution, step 0) — and that means any headless `claude -p`, not just `/samuel:conductor`. The failures it prevents are both silent: a run that inherits `attended-auto`'s **waits** stalls at a gate nobody will answer, and one that keeps announcing writes its assumptions to a chat with no reader and no journal.
 - A `**waits**` row must correspond to a real, marked stop in the skill — a `**WAIT**`, a `HARD STOP`, or a "forced checkpoint". A row asserting a guard that does not exist is worse than a missing row: it reads as a green tick to anyone auditing whether outward actions are gated.
 - **This level grants no push authority.** `done` § Step 2 is the last stop before § Step 3 runs `git push` and `gh pr create`, and § Step 3 has no gate of its own. Auto-advancing the DoD checkpoint deletes the only confirmation in front of publishing — which makes the hard-stop list false in the one place it matters most. It was wired that way for one round and reverted.

@@ -40,7 +40,7 @@ Create or resume handoff documents for Frequent Intentional Compaction (FIC) —
 
 ## When to Create
 
-- Context is getting large and response quality may degrade
+- The harness emitted a context warning or already compacted once (the FIC trigger, `implement` § Context Management)
 - `/samuel:implement` completes a phase and you want a clean break
 - User explicitly requests a handoff
 - Switching to a different task/session

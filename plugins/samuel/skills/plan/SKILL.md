@@ -13,7 +13,7 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 ## Critical Rules
 
 1. **No Open Questions**: unresolved questions at end of Phase 2 → STOP and loop back. A plan with ambiguity cannot be picked up unattended.
-2. **Forced Checkpoints**: every phase ends with a user prompt. Do NOT auto-advance (except under `/samuel:conductor`, which records assumptions instead).
+2. **Forced Checkpoints**: every phase ends with a user prompt; Phase 4's prompt is Phase 5's ROUTE. Do NOT auto-advance (except under `/samuel:conductor`, which records assumptions instead).
 3. **Self-contained bar**: the Executor Plan must pass the quality bar in `plan-templates.md` — a fresh agent finishes it with no chat history.
 4. **Sub-agent model**: always `model: "sonnet"` for codebase agents.
 
@@ -92,7 +92,7 @@ Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {c
 
 Edit `.claude/task-context.md`: `phase: plan`, `last_updated: {today}`.
 
-**Checkpoint 4**: confirm the artifact was written (Issue URL). **WAIT.**
+**Checkpoint 4**: report the Issue URL and the label flip in one line and continue. The ROUTE question in Phase 5 is this phase's prompt: the write is verifiable from the URL and reversible with one more `gh issue edit`.
 
 ## Phase 5: PRESENT
 

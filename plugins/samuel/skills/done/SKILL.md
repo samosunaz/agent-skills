@@ -124,7 +124,7 @@ Set `.claude/task-context.md` → `phase: end`, `last_updated: {today}` (worktre
 
 ### Durable knowledge at close (storage map: `../../reference/tracker.md`)
 
-Homes for what outlives the task — evaluate each. Source: the journal (D/V/T/Q), `validation.md`, + this session.
+Homes for what outlives the task — evaluate each. Source: the journal (D/V/T/Q), `validation.md`, + this session. Evaluate all five, then render **one** checkpoint (multi-select) listing every candidate with its target file and a one-line Why. No candidates: say `Durable knowledge: none` and continue; a checkpoint with nothing to approve is not rendered. Autonomous runs list the candidates instead, as each item says.
 
 **1. ADRs** (`docs/decisions/`) — the *reasoning*. Confirm any *durable/architectural* decision was written as an ADR (`docs/decisions/NNNN-slug.md`) committed on the branch, not left only as an Issue comment. If one was escalated in the journal but no ADR exists, write it now so it rides this PR.
 
@@ -138,15 +138,15 @@ Homes for what outlives the task — evaluate each. Source: the journal (D/V/T/Q
   ```
 
 **3. CLAUDE.md learnings** — the *operating instruction*. Scan the journal + session for a **project-wide, generic** learning that would help *future* implementations — a build/test gotcha, a config/env quirk, a discovered command or workflow, a convention or re-architecture. **NOT** the task itself, **NOT** a one-off fix, **NOT** an architectural decision (that's an ADR) or a product capability (that's the dossier). Adopt `claude-md-management`'s discipline: keep only what's project-specific, recurring, and concise — **one line per concept** (`pattern` — brief why); drop obvious info, generic best-practice, and one-offs (the validation bar: "would a new session find this helpful, and is it the most concise form?").
-- *Interactive*: propose the exact diff to the right file — root `CLAUDE.md` (team, in git), a module `CLAUDE.md`, or `.claude.local.md` (personal/gitignored) — each with a one-line **Why**, forced checkpoint, **never auto-edit**. Approved edits ride this PR. If `claude-md-management` is installed, you may delegate the refinement to `/claude-md-management:revise-claude-md`.
+- *Interactive*: propose the exact diff to the right file — root `CLAUDE.md` (team, in git), a module `CLAUDE.md`, or `.claude.local.md` (personal/gitignored) — each with a one-line **Why**, in the single checkpoint above, **never auto-edit**. Approved edits ride this PR. If `claude-md-management` is installed, you may delegate the refinement to `/claude-md-management:revise-claude-md`.
 - *Autonomous (`--draft`)*: do **NOT** edit CLAUDE.md (global, high-impact, affects every future session). List the candidate line(s) + target file in the stop report and PR body for human review.
 
 **4. README.md** — the *human front door*. Did this change alter how a human **installs, configures, runs, or understands** the project? (A new dependency/prerequisite, a required env var, a new command/script, a significant user-facing capability, changed setup/quickstart.) If yes, propose a **surgical** update to the matching section per `../../reference/readme-guidelines.md` (structure + philosophy + the promotion filter). **NOT** internal refactors/bugfixes (invisible to a getting-started human), a gotcha for agents (→ CLAUDE.md), or a capability's deep doc (→ its dossier — the README gets only the one-line pointer, handled by `/samuel:feature-dossier`).
-- *Interactive*: propose the exact diff to the right section with a one-line **Why**, forced checkpoint, **never auto-edit**; approved edits ride this PR.
+- *Interactive*: propose the exact diff to the right section with a one-line **Why**, in the single checkpoint above, **never auto-edit**; approved edits ride this PR.
 - *Autonomous (`--draft`)*: list the candidate + target section in the PR body / stop report; don't edit unattended.
 
 **5. REVIEW.md** (root, when present) — the *reviewer override*. Propose **one surgical bullet** in the fitting section when this cycle surfaced a repo-wide review rule: a Convention finding in `validation.md`, a Step 2.5 reviewer finding that generalizes beyond this diff, or a `remove-slop` pattern that keeps coming back. Cite the evidence (journal entry ID / validation finding) at the checkpoint; the committed bullet stays flat (schema v1) and respects the ≤30-line budget — **replacing a weaker rule beats growing the file**. Generation/regeneration stays `/samuel:create-review-md`; this is an append, never a rewrite.
-- *Interactive*: propose the bullet + its section, forced checkpoint; approved edits ride this PR.
+- *Interactive*: propose the bullet + its section in the single checkpoint above; approved edits ride this PR.
 - *Autonomous (`--draft`)*: list the candidate bullet in the PR body; don't edit unattended.
 
 **CONSTITUTION.md is detect-and-route, never edited here** — amendments carry governance (semver + Sync Impact Report) owned by `/samuel:update-constitution`. Candidate signals: a `Decision — constitution` comment on the Issue, a journal `V-NNN` referencing a MUST, a Complexity Tracking justification that recurs across items. *Interactive* → offer the skill as a post-close step. *Autonomous* → follow-up Issue titled `governance: constitution — {principle}`.
