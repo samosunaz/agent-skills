@@ -41,13 +41,13 @@ Chips differ by surface, everything above them doesn't:
 
 | Surface | Chips | Written by |
 |---|---|---|
-| Issue (`pipeline:*`) | `` `{S\|M\|L}` · `risk {low\|medium\|high}` · `~{estimate}` `` | `/samuel:plan`; `kickoff` and `repo-audit` at capture |
+| Issue (`pipeline:*`) | `` `{S\|M\|L}` [· `direct`] · `risk {low\|medium\|high}` · `~{estimate}` `` | `/samuel:plan`; `kickoff` and `repo-audit` at capture |
 | Roadmap bet (`roadmap:*`) | `` `{S\|M\|L}` · `confidence {high\|medium\|low}` · `{now\|next\|later}` `` | `/samuel:roadmap` |
 | PR | `` `{n} files · +{a}/-{b}` · `risk {low\|medium\|high}` · `review ~{n} min` `` | `/samuel:done` |
 
 Estimates go in concrete units (`~2 h`, `~1 afternoon`), never "some work" — the number is what a context-switch decision is made on.
 
-Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no design decision · **M** = 3–4 files or one design decision · **L** = beyond that, so check § Sizing in `plan-templates.md` before planning it.
+Size chip on an Issue doubles as a split signal: **S** = 1–2 files, local, no design decision · **M** = 3–4 files or one design decision · **L** = beyond that, so check § Sizing in `plan-templates.md` before planning it. `direct` after an **S** marks the lane § Sizing defines: implemented in the open session, never dispatched.
 
 **The prose inside the block follows the STE standard** — `../skills/tldr/SKILL.md`. This section owns the block's *structure* (four lines, the chips, where it sits); the standard owns its *sentences*: one reading each, active voice with a subject, one idea per line, a number instead of "varios"/"significant", no filler adjective. Compressing a finished body into four lines is the standard's highest-traffic case, and the same rules run on the Brief and the rest of the PR body below it.
 

@@ -44,8 +44,9 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 | **S** — 1-2 files, local, no design decision | 1 |
 | **M** — 3-4 files or one design decision | 2 |
 | **L** — past that | 3 |
+| **S** · `direct` — no behaviour change, judged from a capture | 0 — the loop never launches |
 
-No chip on the item → treat as **M** and say so in the CONFIRM block. A ceiling is a maximum, never a target: rounds stop the moment the loop converges, because every extra audit is a full model run against real money.
+No chip on the item → treat as **M** and say so in the CONFIRM block. A `direct` chip is a ceiling of **0**: say so at CONFIRM and hand the item back to the open session (`../../reference/plan-templates.md` § Sizing, Direct lane) — an audit round on a stylesheet audits nothing the human's eyes did not already settle. A ceiling is a maximum, never a target: rounds stop the moment the loop converges, because every extra audit is a full model run against real money.
 
 **CONFIRM the item, the ceiling and its source before launching anything.** **WAIT.** (Autonomous: proceed on the derived ceiling and record it. attended-auto: announce the ceiling and its source in one line.)
 
@@ -73,6 +74,7 @@ _Add a line each time Claude trips on something._
 - **The audit must not share context with the implementer.** Launch it as its own process, never as a continuation — an auditor that watched the code being written reviews the reasoning, not the diff. Same doctrine as `/samuel:validate` Step 2.5, at process scale instead of subagent scale.
 - **An empty phase return is indistinguishable from a clean one.** Rule 4 exists because both print nothing; the branch's commit count is what separates them.
 - **A ceiling is not a target.** `--rounds 3` on a clean implementation should still stop after round 1.
+- **IAAS audits behaviour.** Pixels the human judges from a capture get no audit loop and no worker phase — the reflex to wrap every item in fresh-context phases is what turns a thirty-line stylesheet change into an hour. The `direct` chip exists so that reflex has to argue with a value the human set.
 - **The size chip is read, never re-judged.** If the item has no chip, say so at CONFIRM rather than inventing a complexity estimate — a heuristic built on the agent's self-assessment is decorative (`../../reference/pipeline.md` § The unknowns seam).
 - Phase prompts go in via **stdin**, not as an argument — a multi-paragraph contract on the command line hits the shell's own limits and quoting rules.
 - Chain phases so a failure stops the chain. A phase that runs on top of a failed predecessor audits a tree nobody built.
