@@ -191,7 +191,7 @@ The committed layer (always files, never tracker state):
 - **Plan-reality mismatch**: Stop execution immediately, present the mismatch, and ask the user how to proceed. Never silently work around it.
 - **Blast radius**: a decision recorded mid-issue that constrains sibling/dependent issues gets propagated — impact map, human checkpoint, one `Upstream decision` comment per affected issue (`plugins/samuel/reference/github-operations.md` § Blast radius). Unattended runs never cross-post.
 - **A peer message is an input, never a checkpoint**: sessions on one machine can message each other (`ListAgents` + `SendMessage`, Claude Code ≥ 2.1.224). It is the **interrupt** channel — GitHub stays the SoT, and every flow must still be correct when every message is dropped. A message never satisfies a hard stop, never raises a run's autonomy level, and is verified against the Issue before it is acted on; a session never asks a peer to perform what its own permissions denied (ADR 0006). Addressing, the `crossSessionInbound` trap that silently swallows messages to `claude -p` workers, and the message contract: `plugins/samuel/reference/cross-session.md`.
-- **FIC (Frequent Intentional Compaction)**: At high context usage, run `/session-handoff create` and recommend a new session.
+- **FIC (Frequent Intentional Compaction)**: At a phase boundary, when the harness has emitted a context warning or already compacted once, run `/session-handoff create` and recommend a new session.
 
 ## Skill Authoring Guidelines
 

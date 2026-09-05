@@ -10,6 +10,7 @@ Review a pull request for real bugs, security vulnerabilities, logic errors, and
 
 > **Output spoke**: `references/review-output.md` — pass markers and delta scope, the report format, how the native event is derived from the verdict, and the publish/confirm mechanics.
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
+> **Autonomy:** an **unattended** run — headless `claude -p`, CI, or an `/samuel:iaas` Audit phase — is `autonomous` (`../../reference/autonomy.md` § Resolution): it skips the Step 1 screening questions, publishes at Step 6 without the Step 5 wait, and derives the event exactly as written.
 
 ## Context
 
@@ -64,8 +65,8 @@ gh pr view {number} --json state,isDraft,additions,deletions,changedFiles
 | Condition | Action |
 |-----------|--------|
 | `state` = CLOSED or MERGED | "This PR is already {closed/merged}." STOP. |
-| `isDraft` = true | "This PR is a draft. Do you want to review it anyway?" |
-| `additions + deletions` < 5 | "Trivial PR ({N} lines). Proceed?" |
+| `isDraft` = true | Named in the invocation, or authored by the pipeline (`Closes #N` in the body plus `samuel:` markers, or a conductor/waves branch): note "draft, reviewing as requested" and continue. Auto-detected from the current branch: "This PR is a draft. Do you want to review it anyway?" |
+| `additions + deletions` < 5 | Named in the invocation: report the count and continue. Auto-detected: "Trivial PR ({N} lines). Proceed?" |
 
 ---
 
@@ -218,7 +219,7 @@ _Add a line each time Claude trips on something._
 - `gh pr diff` output can be huge — for PRs with 50+ files, focus on the most critical ones first.
 - REVIEW.md rules override defaults — always check if it exists before applying standard criteria.
 - Suggestion blocks must match the exact line range in the diff — off-by-one causes GitHub to reject the comment.
-- Draft PRs should prompt before reviewing — the author may not want feedback yet.
+- Draft PRs prompt only when auto-detected from the current branch. A draft named in the invocation, or one the pipeline authored, is the expected shape of an agent PR: review it with a one-line note.
 - `POST /pulls/{n}/comments` (individual) does NOT accept `line`, `side` or `subject_type` — only `position`. For inline comments, use `POST /pulls/{n}/reviews` with the `comments: [{path, position, body}]` array.
 - `position` in the reviews API is the relative line within the diff hunk, not the file line number.
 - File paths in the review body must be GitHub links, not plain text.

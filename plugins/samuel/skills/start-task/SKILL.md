@@ -21,7 +21,7 @@ Pick a work item, prepare the dev environment (branch/worktree), and inject pipe
 
 ## Critical Rules
 
-1. **Never create a branch without user confirmation** — present detected values and wait. The wait is skipped under `/samuel:conductor` autonomous bootstrap, and under `attended-auto`, which announces the mode and reason instead of asking (`../../reference/autonomy.md` § Which gates move). Renaming the branch stays a question at every level.
+1. **Never create a branch without user confirmation** — present detected values and wait. The wait is skipped under `/samuel:conductor` autonomous bootstrap, and under `attended-auto`, which announces the mode and reason instead of asking (`../../reference/autonomy.md` § Which gates move). The user can still rename by replying; the skill announces the name and does not ask.
 2. **The Issue is the source of truth** — item details come from it, not from memory.
 
 ## Context
@@ -80,7 +80,7 @@ Mode: 1) branch (git checkout -b)   2) worktree (isolated — required for auton
 Create it? (Y / Rename / choose mode)
 ```
 
-**WAIT for confirmation.** (Autonomous bootstrap: default to **worktree** — the conductor's safety gate requires isolation.) (attended-auto: take the mode the context recommends and announce it with its reason — **branch** when the repo needs no dependency install and no session is live in a worktree, **worktree** otherwise. Not a fixed worktree: that is the conductor's SAFETY GATE talking, and an attended run that lands in a worktree costs a new session in another path — more friction, not less. Renaming the branch stays a question at every level.)
+**WAIT for confirmation.** (Autonomous bootstrap: default to **worktree** — the conductor's safety gate requires isolation.) (attended-auto: take the mode the context recommends and announce it with its reason — **branch** when the repo needs no dependency install and no session is live in a worktree, **worktree** otherwise. Not a fixed worktree: that is the conductor's SAFETY GATE talking, and an attended run that lands in a worktree costs a new session in another path — more friction, not less. The user can still rename by replying; the skill announces the name and does not ask.)
 
 **Isolation is per environment.** The Context block detects which one hosts the session; the mechanism follows from it. Recipe and rationale: `../../reference/worktree-isolation.md`.
 

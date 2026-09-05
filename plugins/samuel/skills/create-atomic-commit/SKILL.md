@@ -1,7 +1,7 @@
 ---
 name: create-atomic-commit
 description: Create git commits with user approval and no AI attribution. Reviews changes, plans atomic commits following conventional commits, and executes upon confirmation.
-allowed-tools: Bash(git branch *) Bash(git status *) Bash(git diff *) Bash(git log *) Bash(git add *) Bash(git commit *) Bash(git checkout *) Bash(cat *) Read Glob AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git status *) Bash(git diff *) Bash(git log *) Bash(git add *) Bash(git commit *) Bash(git checkout *) Bash(cat *) Bash(awk *) Read Glob AskUserQuestion
 ---
 
 # Commit Changes
@@ -9,10 +9,12 @@ allowed-tools: Bash(git branch *) Bash(git status *) Bash(git diff *) Bash(git l
 Create git commits for the changes made during this session.
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
+> **Autonomy:** which gates below auto-advance, and what gets announced instead of asked — `../../reference/autonomy.md`. An **unattended** run — headless `claude -p`, CI, or `/samuel:conductor` — is `autonomous` and ignores the `Autonomy:` value in Context.
 
 ## Context
 
 - Current branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
+- Autonomy: !`awk '/^autonomy:[ \t]*attended-auto[ \t]*(#.*)?$/{print"attended-auto";f=1;exit} /^autonomy:/{print"interactive";f=1;exit} END{if(!f)exit 1}' .claude/samuel.md 2>/dev/null || awk '/^autonomy:[ \t]*attended-auto[ \t]*(#.*)?$/{print"attended-auto";f=1;exit} /^autonomy:/{print"interactive";f=1;exit} END{if(!f)print"interactive"}' ~/.claude/samuel.md 2>/dev/null || echo "interactive"`
 - Working tree: !`git status --short 2>/dev/null || echo ""`
 - Staged changes: !`git diff --cached --stat 2>/dev/null || echo ""`
 - Unstaged changes: !`git diff --stat 2>/dev/null || echo ""`
@@ -33,7 +35,7 @@ If current branch is `main` or `master`:
 - **STOP. Do not commit.**
 - Analyze the staged/unstaged changes to understand their intent.
 - Suggest a branch name: `<type>/<short-description>` (e.g., `feat/session-persistence`, `fix/payment-timeout`).
-- Ask: **"You're on main. I suggest creating branch `<suggested-name>` before committing. Want me to create it, or do you have a different name?"**
+- Ask: **"You're on main. I suggest creating branch `<suggested-name>` before committing. Want me to create it, or do you have a different name?"** This question binds at every level: the branch name is the user's call, and an unattended run stops here instead of asking.
 - Once the user confirms, run `git checkout -b <branch-name>` and proceed.
 
 ### 0.5) Detect pipeline mode
@@ -95,13 +97,13 @@ Commit 2:
   Message: test(auth): add session persistence tests
 ```
 
-Ask: **"I plan to create [N] commit(s) with these changes. Shall I proceed?"**
+Ask: **"I plan to create [N] commit(s) with these changes. Shall I proceed?"** **WAIT.** (attended-auto: present the plan, commit, and say so in one line; an unattended run does the same and records it. A local commit is reversible with `git reset` and is not an outward action, which is what qualifies this gate; the branch guard in step 0 still asks.)
 
 ### 3) Execute upon confirmation
 
 - Use `git add` with **specific files** (never use `-A` or `.`)
 - Create commits with planned messages
-- Always use `--no-verify` unless the user explicitly requests hook validation
+- Use `--no-verify` only when the repo declares no pre-commit hook of its own (no `.husky/`, `.pre-commit-config.yaml`, `lefthook.yml`, `.git/hooks/pre-commit`, or a CLAUDE.md that names one) or the user asks for it. When the hook fails, show its output and stop.
 - Show the result with `git log --oneline -n [number]`
 
 ## Important
@@ -117,7 +119,7 @@ Ask: **"I plan to create [N] commit(s) with these changes. Shall I proceed?"**
 _Add a line each time Claude trips on something._
 
 - Commitlint config can live in `package.json` under `commitlint` key — not just dedicated files.
-- `--no-verify` is the default here. If hooks fail unexpectedly, the user probably wants them — ask.
+- Hooks run by default when the repo declares one; `--no-verify` is for hook-less repos or an explicit request. A failing hook is output to show, not a reason to retry with `--no-verify`.
 - When on main, always suggest a branch BEFORE committing. Never commit directly to main.
 - Scope must match `scope-enum` in commitlint config. Check before using a scope.
 - Pipeline body is for substantial commits only. Trivial changes (typos, imports) get standard one-line commits even in pipeline mode.
@@ -129,4 +131,3 @@ _Add a line each time Claude trips on something._
 - You have the full context of what was done in this session
 - Group related changes together
 - Keep commits focused and atomic when possible
-- The user trusts your judgment — they asked you to commit

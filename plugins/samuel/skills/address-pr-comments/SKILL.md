@@ -40,8 +40,8 @@ The closing gate of the delivery loop: after the PR is open, this turns review f
 ## CRITICAL RULES
 
 1. **Never silent-resolve a human thread.** Bots/own-pipeline can be resolved after fixing; a human comment always gets an explicit reply before resolving.
-2. **Checkpoint before applying.** Show the triage table + proposed fixes. WAIT for approval before touching code. This gate binds at every autonomy level — pushes to an open PR and replies to a reviewer are outward actions (`reference/autonomy.md`).
-3. **One atomic commit per logical group**, not one per comment. Conventional commit messages, no AI attribution, `--no-verify` (repo default, same as `/samuel:create-atomic-commit`).
+2. **Checkpoint before applying.** Show the triage table + proposed fixes. WAIT for approval before touching code. This gate binds at `interactive` and `attended-auto` because the push and the replies are outward actions (`reference/autonomy.md`). An **unattended** run launched with the explicit goal of addressing this PR — headless `claude -p`, an `/samuel:iaas` Address phase — carries that authority from its launch: it records the triage as the pass's Resolution comment and proceeds. Merge and ready are never in scope.
+3. **One atomic commit per logical group**, not one per comment. Conventional commit messages, no AI attribution; `--no-verify` only when the repo declares no pre-commit hook (same rule as `/samuel:create-atomic-commit`).
 4. **Don't act outside the comment scope.** Address what was raised. New issues found along the way go to a follow-up, not this pass.
 5. **No new constitution violations.** If `CONSTITUTION.md` is present, fixes must not introduce MUST violations (same gate as `/samuel:implement`). If a requested change would violate one, flag it instead of applying blindly.
 6. **Reply in the comment's language.** Match the reviewer — a human may review in any language; bots review in English.
@@ -148,7 +148,7 @@ Present the triage table and the proposed code changes BEFORE applying:
 
 ```
 Options:
-1. Apply everything as proposed
+1. Apply, commit, push, reply and resolve as proposed
 2. Apply only some (tell me which)
 3. Adjust the plan
 4. Reply/resolve only, no code changes
@@ -158,7 +158,7 @@ Options:
 
 ## Step 7: ADDRESS
 
-For approved **Actionable** items: apply edits, then `git add` + atomic commit per group (conventional, `--no-verify`). If `CONSTITUTION.md` is present, sanity-check the fix doesn't introduce a MUST violation before committing. Push to the PR branch. Capture the new HEAD SHA for reply permalinks.
+For approved **Actionable** items: apply edits, then `git add` + atomic commit per group (conventional; hooks run when the repo declares one). If `CONSTITUTION.md` is present, sanity-check the fix doesn't introduce a MUST violation before committing. Push to the PR branch. Capture the new HEAD SHA for reply permalinks.
 
 For **Reply** / **Discard** / **Outdated**: draft replies (honest, concise, in the reviewer's language). No code.
 
@@ -211,7 +211,7 @@ _Add a line each time Claude trips on something._
 ## Rules
 
 - **Author side, not reviewer.** This skill responds to feedback; it doesn't generate new findings (that's `/samuel:pr-self-audit`).
-- **Approval gates code.** No edit before the Step 6 checkpoint.
+- **Approval gates code.** No edit before the Step 6 checkpoint; an unattended run records it instead of asking (Rule 2).
 - **Honest over polite.** Reject nits with a reason; never fake "Done".
 - **Scope discipline.** Address raised comments only. Drive-by improvements become follow-ups.
 - **No AI attribution** in commits or replies.

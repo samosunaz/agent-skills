@@ -87,6 +87,8 @@ repo: owner/name           # explicit owner/name for gh
 
 `autonomy` selects how a **soft** checkpoint behaves: `interactive` asks and waits (the default), `attended-auto` takes the obvious default and announces it in one line. Hard stops — plan-reality mismatch, red gate, incomplete DoD, any outward action — keep waiting either way, and `autonomous` is not settable here (it belongs to `/samuel:conductor`). Gate-by-gate table: [`reference/autonomy.md`](plugins/samuel/reference/autonomy.md).
 
+**Auto mode:** the skills read the `autonomy` key with an `awk` one-liner injected at load. Claude Code's auto-mode classifier can deny that read even though every skill declares `Bash(awk *)` in `allowed-tools`, and the skill then aborts before it runs. Add `"Bash(awk *)"` to `permissions.allow` in `~/.claude/settings.json`: an explicit allow rule bypasses the classifier.
+
 Also run once: `gh repo set-default owner/name` (works behind SSH-alias / multi-account remotes — owner/repo is never parsed from origin). `/samuel:kickoff` and `/samuel:start-task` write this for you. Full model: [`reference/tracker.md`](plugins/samuel/reference/tracker.md).
 
 ## Usage

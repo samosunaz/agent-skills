@@ -53,7 +53,7 @@ For each Step in order (skip any with an unmet dependency → blocked list):
 
 **a. Implement** the change described — exact files, following the plan's Guardrails. Comments you write are **timeless**: they state a constraint the code can't show, never the narrative of this change (taxonomy + examples: `../../reference/code-comments.md`). Stay inside the plan; if reality diverges, go to (e).
 
-Tests go only at the seams the plan declared in `### Testing seams` — the human approved that list at Checkpoint 3, and approving a seam is what authorizes a test there. A Step that needs a seam the plan never declared is a plan-reality mismatch: STOP and surface it per (e). A plan with **no `### Testing seams` section at all** predates the contract: it constrains nothing, so name the seam you would use and ask, rather than stopping. Discipline and anti-patterns: `../../reference/testing-seams.md`.
+Tests go only at the seams the plan declared in `### Testing seams` — the human approved that list at Checkpoint 3, and approving a seam is what authorizes a test there. A Step that needs a seam the plan never declared is a plan-reality mismatch: STOP and surface it per (e). A plan with **no `### Testing seams` section at all** predates the contract: it constrains nothing, so name the seam you would use and ask, rather than stopping. (Conductor: pick the seam with prior art already under test, record a `D-NNN`, continue; no prior art becomes a `Q-NNN`, `Blocking: no`.) (attended-auto: the same seam, announced in one line, with the `D-NNN`.) Discipline and anti-patterns: `../../reference/testing-seams.md`.
 
 **b. Verify** the Step's automated check. Run it; capture output.
 
@@ -122,7 +122,7 @@ NEXT (mandatory): /samuel:validate
 
 ## Context Management (FIC)
 
-Monitor context after each phase. At high usage: run `/samuel:session-handoff create`, STOP, and recommend resuming in a fresh session. The journal + commits make resume clean. Never let degrading context produce sloppy code.
+Create a handoff only at a phase boundary, and only when the harness has emitted a context warning or already compacted once: run `/samuel:session-handoff create`, STOP, and recommend resuming in a fresh session. Otherwise finish the phase and continue. The journal + commits make resume clean.
 
 ## Important Guidelines
 
