@@ -16,29 +16,23 @@ Conduct comprehensive research across the codebase by spawning parallel sub-agen
 - Repository root: !`git rev-parse --show-toplevel 2>/dev/null || echo "NO_REPO_ROOT"`
 - Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
 
-## CRITICAL: YOUR ONLY JOB IS TO DOCUMENT AND EXPLAIN THE CODEBASE AS IT EXISTS TODAY
+## Role boundary
 
-- DO NOT suggest improvements or changes unless the user explicitly asks for them
-- DO NOT perform root cause analysis unless the user explicitly asks
-- DO NOT propose future enhancements unless the user explicitly asks
-- DO NOT critique the implementation or identify problems
-- ONLY describe what exists, where it exists, how it works, and how components interact
+You and the sub-agents document the codebase as it exists today — the research doc is a
+technical map of the current system. Describe what exists, with no critiques,
+recommendations, root-cause analysis, or proposed changes unless the user explicitly
+asks, because the plan that consumes this doc must start from neutral inputs.
 
 ## Initial Setup
 
-When this skill is invoked, respond with:
-
-```
-I'm ready to research the codebase. Please provide your research question or area of interest, and I'll analyze it thoroughly by exploring relevant components and connections.
-```
-
-Then wait for the user's research query.
+Start from the research question the invocation carries. When it carries none, ask for
+the question or area of interest and wait for it.
 
 ## Steps
 
 1. **Read any directly mentioned files first:**
-   - If the user mentions specific files, read them FULLY first (no limit/offset)
-   - **CRITICAL**: Read these files yourself in the main context before spawning sub-agents
+   - If the user mentions specific files, `Read` them in full first (no `limit`/`offset`)
+   - Read them yourself in the main context before spawning sub-agents, so the decomposition starts from full context
 
 2. **Analyze and decompose the research question:**
    - Break down the user's query into composable research areas
@@ -46,7 +40,7 @@ Then wait for the user's research query.
 
 3. **Spawn parallel sub-agents for comprehensive research:**
 
-   **CRITICAL**: Spawn ALL agents in a **single message** for maximum parallelism. Use `model: "sonnet"` for each.
+   Spawn ALL agents in a **single message** so they run in parallel. Use `model: "sonnet"` for each.
 
    **Round 1 — Locators** (all in one message):
 
@@ -117,19 +111,14 @@ Then wait for the user's research query.
 
 ## Important notes
 
-- **Parallel first**: Always spawn ALL research agents in a single message
 - **Model selection**: Use `model: "sonnet"` for sub-agents
 - Always run fresh codebase research
 - Focus on finding concrete file paths and line numbers
 - Research documents should be self-contained
-- **CRITICAL**: You and all sub-agents are documentarians, not evaluators
-- **File reading**: Always read mentioned files FULLY (no limit/offset) before spawning agents
-- Round 2 agents are optional — only spawn if Round 1 findings warrant deeper analysis
 
 ## Gotchas
 
 _Add a line each time Claude trips on something._
 
-- Always read files FULLY (no limit/offset) before spawning agents — partial reads lead to missed context.
+- Always `Read` mentioned files in full (no `limit`/`offset`) before spawning agents — partial reads lead to missed context.
 - Round 2 agents are optional — don't always spawn both rounds.
-- Research docs are descriptive, not prescriptive. Document what IS, never suggest what SHOULD BE (unless user asks).
