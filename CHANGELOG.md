@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.1](https://github.com/samosunaz/agent-skills/compare/v4.5.0...v4.5.1) (2026-09-05)
+
+
+### ♻️ Refactoring
+
+* **samuel:** retire Claude 4-era prompt cruft from the sub-agent roster ([#23](https://github.com/samosunaz/agent-skills/issues/23)) ([5906e8e](https://github.com/samosunaz/agent-skills/commit/5906e8e69a2157f3c4b5541ad303b69fd5dfb249))
+
 ## [4.5.0](https://github.com/samosunaz/agent-skills/compare/v4.4.0...v4.5.0) (2026-08-30)
 
 
