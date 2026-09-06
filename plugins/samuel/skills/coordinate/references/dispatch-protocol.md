@@ -109,7 +109,7 @@ Who-is-who in the Orca UI comes from the worktree name, not from the terminal ti
 orca orchestration worker-read --dispatch <dispatch_id> --limit 30 --json     # transcript when Orca can prove the session, else terminal tail
 ```
 
-Evidence of a start: the brief rendered as a **sent** message, a tool call, a file read, a `git` line. The brief sitting in the input box, or a bare prompt, is a lost Enter — one nudge, then read again:
+Evidence of a start: the brief rendered as a **sent** message, a tool call, a file read, a `git` line. Two failure signatures look alike and take opposite fixes. The brief sitting in the input box of a live TUI is a lost Enter — one nudge, then read again. A bare **shell** prompt with no TUI above it is a dead agent (the binary crashed at launch; the tail shows the crash line, e.g. `segmentation fault`, right before the prompt): a nudge lands in the shell and does nothing, `worker-stop` answers "not stopping" because nothing is running, and the dispatch still reads `ready` / `live` because the pane is alive. Capture the tail now (an exited terminal later returns an empty tail), then `worker-start --task <same> --retry-of <dispatch_id>` with explicit worktree/agent/model. The lost-Enter nudge:
 
 ```bash
 orca terminal send --terminal <handle> --text "" --enter --json
