@@ -2,9 +2,9 @@
 
 The three texts the coordinator writes for a worker. All three are English, self-contained, and assume the worker has **no chat history, no samuel skills unless the brief names one, and no coordinator to ask casually** — a worker in another terminal knows only what the brief says.
 
-## Run policy — `.claude/run-policy.md`
+## Run policy — `.claude/run-policy/{run_id}.md`
 
-Written at the first dispatch of a task or epic, re-read before every brief, **appended** to every brief verbatim under `STANDING CONSTRAINTS` — appended, not prepended: Orca's lifecycle preamble already takes the opening of what the worker sees, and 63 % of measured dispatches spent their whole visible opening on protocol before the task appeared. The task goes first. It exists because the same five constraints were retyped by the human on almost every dispatch for two weeks; a constraint that lives here is stated once and inherited by every worker until the human changes it. `.claude/` is gitignored in consumer repos (`/samuel:repo-audit` checks it), so the file never lands in a diff.
+Keyed by the Orca Run id this session bound in C2 — one file per run, never per checkout, because sibling coordinator sessions in the same checkout overwrite a shared path mid-brief (measured). Written at the first dispatch of a task or epic, re-read before every brief, **appended** to every brief verbatim under `STANDING CONSTRAINTS` — appended, not prepended: Orca's lifecycle preamble already takes the opening of what the worker sees, and 63 % of measured dispatches spent their whole visible opening on protocol before the task appeared. The task goes first. It exists because the same five constraints were retyped by the human on almost every dispatch for two weeks; a constraint that lives here is stated once and inherited by every worker until the human changes it. `.claude/` is gitignored in consumer repos (`/samuel:repo-audit` checks it), so the file never lands in a diff. The Run objective carries the same policy's first line (`coordinate: {task} · policy .claude/run-policy/{run_id}.md`) so `run-show` finds it after a compaction or from another session.
 
 ```markdown
 # Run policy — {task or epic} — {date}

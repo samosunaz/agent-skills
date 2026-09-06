@@ -43,7 +43,7 @@ Reuse rules: an **idle worker of the same task** takes the next Task via `worker
 orca orchestration run-create --objective "coordinate: {task, one line}" --json     # or run-use --run <id>
 ```
 
-Write `.claude/run-policy.md` if absent (template in `worker-brief.md`); read it back before writing each brief. Then one Task per worker, the **filled brief** as the spec, dependencies mirrored:
+Take the Run id from the `run-create`/`run-current` receipt and write `.claude/run-policy/{run_id}.md` if absent (template in `worker-brief.md`; `mkdir -p .claude/run-policy` first); read it back before writing each brief. Never `.claude/run-policy.md`: that path is shared by every session in the checkout and was overwritten by a sibling mid-brief. Then one Task per worker, the **filled brief** as the spec, dependencies mirrored:
 
 ```bash
 orca orchestration task-create --task-title "{name}" --spec "{brief with the run policy appended, verbatim}" --json
@@ -156,7 +156,7 @@ Release every settled worker before the next wait unless it takes the next task;
 
 ## C6 — Integrate, verify, report, clean up
 
-In the coordinator's checkout, never in a worker's:
+In a checkout no other session is using — the coordinator's own when it is alone there, otherwise a fresh `orca worktree create --name integrate-{task} --no-parent --json` (a shared working tree during a merge is two writers on one checkout) — never in a worker's:
 
 ```bash
 git fetch origin                                            # remote may have moved
@@ -176,7 +176,7 @@ Clean-up policy: worktrees of unmerged branches stay for review; released worker
 
 | Situation | Action |
 |---|---|
-| Session compacted or resumed mid-run | `run-current` + `task-list --brief` + `worker-list` rebuild the picture; `.claude/run-policy.md` rebuilds the constraints. Never reconstruct from scrollback. |
+| Session compacted or resumed mid-run | `run-current` + `task-list --brief` + `worker-list` rebuild the picture; `.claude/run-policy/{run_id}.md` (id from `run-current`) rebuilds the constraints. Never reconstruct from scrollback. |
 | Dispatch `outcome_unknown` | `worker-stop --dispatch <id>` then `worker-show`; still unknown ⇒ `worker-abandon` and say the terminal may be live. |
 | Worker died (quota, crash) | `worker-start --task <same> --retry-of <id>` with explicit worktree/agent/model; the dirty tree in the old worktree is inspected, not trusted. |
 | Wrong brief | New task, old one `--status failed`; never patch a running worker's contract through the terminal. |
