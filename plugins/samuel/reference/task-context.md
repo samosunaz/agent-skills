@@ -100,7 +100,7 @@ Required pattern when updating:
 | **Archive** | `/samuel:done` reads the feature dir (spec, plan, research, journal, validation) to synthesize the PR body and final summary before cleanup. |
 | **Delete** | `git worktree remove` deletes `.claude/task-context.md` along with the worktree. The GitHub PR + repo `CONSTITUTION.md` are the surviving record. |
 
-> **Delete only happens in worktree mode.** In a plain checkout nothing removes the file: it survives the merge still pointing at the finished item, and `phase: end` is indistinguishable from a task in progress. So **`phase: end` is a staleness signal, not a state** — a skill that reads `item` while the phase is `end` MUST verify the item is still open (`gh issue view {item} --json state`) before acting on it. A `CLOSED` item means orphaned context: re-resolve from the branch or ask, never trust the file. This is how `/samuel:done` came within one step of composing `Closes #25` for the work of #37.
+> **Delete only happens in worktree mode.** In a plain checkout nothing removes the file: it survives the merge still pointing at the finished item, and `phase: end` is indistinguishable from a task in progress. So **`phase: end` is a staleness signal, not a state** — a skill that reads `item` while the phase is `end` MUST verify the item is still open (`gh issue view {item} --json state`) before acting on it. A `CLOSED` item means orphaned context: re-resolve from the branch or ask, never trust the file. This is how `/samuel:done` once came within one step of composing a `Closes` line for the wrong issue.
 
 ## Compatibility
 
