@@ -14,12 +14,13 @@ Recipes live in `references/dispatch-protocol.md` (C0–C6); the brief, the run 
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
-**Boundary.** `/samuel:waves` executes a *set of planned issues* from the `blockedBy` graph; `/samuel:conductor` drives the *pipeline* for one issue; `/samuel:team-orchestrate` spawns Claude peers that converse. This skill takes **one task, planned or not**, and turns it into one to a few briefed workers plus your own review and integration. It never plans the product, never merges, and never reimplements those skills — when the task is a `pipeline:ready` issue, the worker's brief can simply be "run `/samuel:conductor N --ship`".
+**Boundary.** `/samuel:waves` executes a *set of planned issues* from the `blockedBy` graph; `/samuel:conductor` drives the *pipeline* for one issue; `/samuel:team-orchestrate` spawns Claude peers that converse. This skill takes **one task, planned or not**, and turns it into one to a few briefed workers plus your own review and integration. It never plans the product, never merges, and never reimplements those skills. **Workers talk Orca, not the pipeline**: a worker is an agent in an Orca terminal that receives a brief and answers through orchestration mail (`worker_done`, `ask`); when the task is a planned issue, the brief embeds the issue's Executor Plan verbatim and the worker implements it directly. `/samuel:conductor` inside a worker is opt-in (`--via conductor`) — it swaps Orca mail for a headless pipeline the coordinator can only observe from outside, so it is never the default.
 
 ## Mode
 
 ```
-/samuel:coordinate <task text | issue N>          — coordinate one task
+/samuel:coordinate <task text | issue N>          — coordinate one task (an issue's Executor Plan becomes the brief)
+/samuel:coordinate N --via conductor              — opt-in: the worker runs /samuel:conductor N --ship instead of an Orca-mail brief
 /samuel:coordinate … --effort xhigh               — raise every implementer to xhigh (reviewers already run there)
 /samuel:coordinate … --engine codex|claude        — force one engine for the implementers
 /samuel:coordinate status                          — inventory only: run, workers, worktrees, policy; no dispatch
