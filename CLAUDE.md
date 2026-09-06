@@ -52,7 +52,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
-│       └── skills/               # 37 skills, one dir each (flat — §7.1)
+│       └── skills/               # 38 skills, one dir each (flat — §7.1)
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -62,7 +62,7 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 | Group | Skills |
 |---|---|
 | pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
-| git | create-atomic-commit, remove-slop, pr-self-audit, address-pr-comments, session-handoff |
+| git | create-atomic-commit, remove-slop, interrogate, pr-self-audit, address-pr-comments, session-handoff |
 | workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, waves, wave-prep, done, progress, retro, team-orchestrate |
 | product | feature-dossier, mermaid, tldr |
 | design | motion-brief |
@@ -147,6 +147,7 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, *
 - **`/samuel:pr-self-audit`** — High-signal PR review: bugs, security, logic errors. Inline GitHub comments with suggestion blocks.
 - **`/samuel:address-pr-comments`** — Author side of the PR review gate: fetch feedback since the last pass (incremental, ID-based markers), verify each finding against the code, triage → fix → reply → resolve, close the pass with ONE `Resolution` comment. Primary scenario: addressing human review comments on agent-authored draft PRs (conductor/waves).
 - **`/samuel:session-handoff`** — Context compaction (FIC) for long sessions.
+- **`/samuel:interrogate`** — **First-principles pass before calling work done**: restate what the change is for in one sentence, then challenge every piece against it — is it necessary, what assumption does it rest on and is that assumption evidenced, can it be deleted entirely, what gets simpler once it is gone. Applies the cuts in a fixed preference (**delete > simplify > optimize > automate**), stops for one question only when a cut removes behaviour something else depends on, and reports a verdict table where `keep` needs a reason as much as `delete`. Concluding the work is already right and changing nothing is a valid outcome. Boundary: `remove-slop` cleans what should not have been written, `/simplify` tidies what stays; `interrogate` asks whether it should exist. `--plan` runs the same pass on an Executor Plan before implementing.
 - **`/samuel:remove-slop`** — Remove AI-generated code slop from the current branch. Checks dependency manifests for reinvented wheels and hallucinated imports.
 
 ## Sub-Agent Architecture
