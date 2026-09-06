@@ -135,7 +135,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 37 skills, one directory each
+│       └── skills/               # 38 skills, one directory each
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -201,6 +201,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:pr-self-audit`](plugins/samuel/skills/pr-self-audit/SKILL.md) | High-signal PR review: bugs, security, logic errors. |
 | [`/samuel:address-pr-comments`](plugins/samuel/skills/address-pr-comments/SKILL.md) | Author side of the review gate: triage, verify, fix, reply, resolve PR comments in incremental passes. |
 | [`/samuel:session-handoff`](plugins/samuel/skills/session-handoff/SKILL.md) | Context compaction (FIC) for long sessions. |
+| [`/samuel:interrogate`](plugins/samuel/skills/interrogate/SKILL.md) | First-principles pass before done: restate the purpose, challenge every piece (unnecessary? weak assumption? deletable? simpler without it?), apply cuts delete > simplify > optimize > automate — or report the work is already right and change nothing. |
 | [`/samuel:remove-slop`](plugins/samuel/skills/remove-slop/SKILL.md) | Remove AI-generated code slop from the current branch. |
 
 ### Contract
