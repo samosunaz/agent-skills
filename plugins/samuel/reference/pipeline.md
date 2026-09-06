@@ -1,6 +1,6 @@
 # Pipeline Flows — Reference Diagrams
 
-Visual reference for the `samuel` plugin pipeline. These Mermaid diagrams are the canonical map of how the skills chain, which artifacts each produces, and how the `.claude/task-context.md` `phase` advances. They double as agent documentation — read this before driving the pipeline or building on it.
+Visual reference for the `samuel` plugin pipeline. These Mermaid diagrams are the canonical map of how the skills chain, which artifacts each produces, and how the `.claude/task-context/{item}.md` `phase` advances. They double as agent documentation — read this before driving the pipeline or building on it.
 
 Bracketed steps `[ ]` are **optional gates** (`spec`, `analyze`). The pipeline degrades gracefully when they — and `CONSTITUTION.md` — are absent.
 
@@ -66,7 +66,7 @@ flowchart LR
 
 ## 3. Phase state machine
 
-The `phase` key in `.claude/task-context.md` is the single source of truth for where a feature is. This is what `/samuel:conductor` reads to decide the next step.
+The `phase` key in `.claude/task-context/{item}.md` is the single source of truth for where a feature is. This is what `/samuel:conductor` reads to decide the next step.
 
 ```mermaid
 stateDiagram-v2

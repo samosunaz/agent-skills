@@ -7,7 +7,12 @@
 #      Either way the skill crashes before the fallback can run.
 #   2. Never exit non-zero — an `|| echo "FALLBACK"` rescue or an
 #      echo-terminated compound (the runner treats non-zero as an error).
-#   3. Every binary declared in the skill's own allowed-tools. An undeclared one
+#   3. Every binary declared in the skill's own allowed-tools.
+#   4. Every task-context read carries the canonical resolver from
+#      reference/task-context.md § Reading, byte-identical. The resolver picks
+#      .claude/task-context/{item}.md from the branch number inside awk; a
+#      drifted copy silently reads another session's item — the collision the
+#      per-item layout exists to prevent. An undeclared one
 #      is denied on a repo with no matching allowlist, and headless that denial
 #      is silent: exit 0, zero turns, empty output — an overnight run looks
 #      successful having done nothing.
@@ -20,6 +25,14 @@ inj = re.compile(r'!`([^`]+)`')
 # Shell builtins never reach the permission engine, so they need no declaration.
 BUILTINS = {'echo', 'pwd', 'cd', 'true', 'false', ':'}
 errors = []
+# Rule 4's reference copy: the program inside the first `awk -v k=item` read in
+# the contract's own § Reading block. Extracted, never retyped, so the gate
+# cannot pass a private copy that drifted from the documented one.
+_spec = open('plugins/samuel/reference/task-context.md').read()
+_m = re.search(r"awk -v k=item -v d=NO_ITEM '([^']*)'", _spec)
+CANON = _m.group(1) if _m else None
+if CANON is None:
+    print('rule 4: reference/task-context.md § Reading has no canonical `awk -v k=item` read', file=sys.stderr); sys.exit(1)
 # template/SKILL.md is the file every new skill is copied from — the exemplar of
 # these rules has to sit inside the gate that enforces them.
 for path in sorted(glob.glob('plugins/**/SKILL.md', recursive=True) + glob.glob('template/SKILL.md')):
@@ -34,6 +47,11 @@ for path in sorted(glob.glob('plugins/**/SKILL.md', recursive=True) + glob.glob(
     for i, line in enumerate(text.splitlines(), 1):
         for cmd in inj.findall(line):
             c = cmd.strip()
+            # Rule 4: a task-context read is exactly `awk -v k=<key> -v d=<sentinel> '<canonical>' …`.
+            if 'task-context' in c and path != 'plugins/samuel/reference/task-context.md':
+                m4 = re.match(r"awk -v k=[a-z_]+ -v d=\S+ '([^']*)'", c)
+                if not m4 or m4.group(1) != CANON:
+                    errors.append(f"{path}:{i}: rule 4 — task-context read does not carry the canonical resolver (reference/task-context.md § Reading)")
             # Quoted strings are blanked once and reused by rules 1 and 3: an
             # awk program carries ( ) ; and | inside it, and reading those as
             # shell syntax would misjudge its own body.

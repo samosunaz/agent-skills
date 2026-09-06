@@ -28,11 +28,11 @@ A cross-artifact consistency pass over the work item (Brief + Executor Plan), an
 ## Context
 
 - Date: !`date '+%Y-%m-%d'`
-- Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/task-context.md 2>/dev/null || echo "NO_REPO"`
-- Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
-- Phase: !`awk '/^phase:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_PHASE"}' .claude/task-context.md 2>/dev/null || echo "NO_PHASE"`
+- Repo: !`awk -v k=repo -v d=NO_REPO 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_REPO"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_DIR"`
+- Phase: !`awk -v k=phase -v d=NO_PHASE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_PHASE"`
 - Constitution: !`test -f CONSTITUTION.md && echo "CONSTITUTION.md present" || echo "none"`
 
 > **Tracker**: `../../reference/tracker.md`. **State**: `../../reference/task-context.md`.
@@ -44,7 +44,7 @@ Resolve the plan and any spec/research from the Issue:
 - **Plan** — the `<!-- samuel:plan -->` section of `gh issue view {item} -R {repo} --json body`. **If no Executor Plan exists** (item still `pipeline:triage`), abort: `"No Executor Plan for {item}. Run /samuel:plan first, then come back."`
 - **Spec / research** (optional) — `{feature_dir}/spec.md`, `{feature_dir}/research.md` (Read/Glob).
 
-If `Feature: NO_FEATURE`, abort: `"No active feature in .claude/task-context.md. Run /samuel:start-task first."`
+If `Feature: NO_FEATURE`, abort: `"No active feature in .claude/task-context/{item}.md. Run /samuel:start-task first."`
 
 ## Phase 1: LOAD ARTIFACTS
 
@@ -182,7 +182,7 @@ If yes, for each top finding (CRITICAL → HIGH) prepare: the quoted current tex
 
 - **Reads**: the item Brief + Executor Plan (Issue body), optional `{feature_dir}/spec.md` + `research.md`, Issue decisions, `CONSTITUTION.md`.
 - **Modifies**: NOTHING. Read-only.
-- **Updates**: `.claude/task-context.md` is NOT touched by analyze (it's diagnostic). The conductor advances `phase` based on the user's follow-up action.
+- **Updates**: `.claude/task-context/{item}.md` is NOT touched by analyze (it's diagnostic). The conductor advances `phase` based on the user's follow-up action.
 - **Triggered by**: manual invocation or the conductor after `/samuel:plan` for non-trivial features.
 
 ## Gotchas

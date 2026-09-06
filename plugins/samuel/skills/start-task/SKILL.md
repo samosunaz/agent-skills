@@ -39,7 +39,7 @@ Pick a work item, prepare the dev environment (branch/worktree), and inject pipe
 - Orca CLI: !`which orca >/dev/null 2>&1 && echo "present" || echo "none"`
 
 > **Tracker**: `../../reference/tracker.md`. Adapter: `../../reference/github-operations.md`.
-> **Pipeline state**: this skill bootstraps `.claude/task-context.md` — see `../../reference/task-context.md`.
+> **Pipeline state**: this skill bootstraps `.claude/task-context/{item}.md` — see `../../reference/task-context.md`.
 
 ---
 
@@ -116,9 +116,9 @@ Ensure pipeline + `roadmap:*` + `type:*`/`priority:*` + `promo:*` labels exist (
 
 Ask once (default `false`): does this warrant a spec (WHAT/WHY before HOW)? Map to `spec_required: true|false`. (Autonomous bootstrap: respect a `spec_required` hint on the item; else `false`.) (attended-auto: same rule — honour a `spec_required` hint on the item, else `false`, announced in the setup summary. Nothing is lost by defaulting low: `/samuel:spec` runs standalone whenever the plan turns out to need it.)
 
-### Write `.claude/task-context.md`
+### Write `.claude/task-context/{item}.md`
 
-Derive `feature_slug` (kebab-case from the item title) and `feature_dir` = `docs/features/{slug}`. Detect `CONSTITUTION.md` at repo root → that path, else `none`.
+`mkdir -p .claude/task-context` first. A legacy `.claude/task-context.md` from an older plugin is migrated on sight — move it to `.claude/task-context/{its item}.md` and say so in one line — so the resolver never has to fall back to it again. Derive `feature_slug` (kebab-case from the item title) and `feature_dir` = `docs/features/{slug}`. Detect `CONSTITUTION.md` at repo root → that path, else `none`.
 
 ```markdown
 ---
@@ -159,7 +159,7 @@ Create `.claude/` first if missing. The frontmatter MUST be at the very top — 
 ```
 Item ready: #{item} — {title}
 Branch: {branch}   ·   Feature: {slug}   ·   Phase: setup   ·   spec_required: {bool}
-Context: .claude/task-context.md
+Context: .claude/task-context/{item}.md
 
 Next:
 {if not planned:}  /samuel:plan          — write the Brief + Executor Plan
@@ -172,7 +172,7 @@ Next:
 
 - **Clean starts.** Always start from a clean working tree. Stash or commit first.
 - **Branch naming.** `{type}/{item}-{slug}`, consistently.
-- **Context injection.** Always write `.claude/task-context.md` — it's the handoff to future/headless sessions.
+- **Context injection.** Always write `.claude/task-context/{item}.md` — it's the handoff to future/headless sessions.
 - **Status tracking.** Mark in-progress immediately so `/samuel:progress` reflects reality.
 
 ## Gotchas
@@ -180,7 +180,8 @@ Next:
 _Add a line each time Claude trips on something._
 
 - Never parse the origin remote for owner/repo (SSH alias breaks it) — use the stored `repo` + `gh repo set-default`.
-- `.claude/` may not exist — create it before writing `task-context.md` or `samuel.md`.
+- `.claude/` and `.claude/task-context/` may not exist — `mkdir -p` before writing `{item}.md` or `samuel.md`.
+- One file per item, named by the issue number, is what lets several sessions share a checkout; never write a checkout-level `.claude/task-context.md` again, even as a pointer.
 - Worktree mode changes the CWD — remind the user to open a new session at the worktree path. Autonomous runs REQUIRE worktree isolation.
 - **`git branch -m {name}` renames the CALLER, not the new worktree** — `orca worktree create` does not move the session, so the one-argument form retargets whatever the calling checkout has out, and succeeds silently because the wanted name is free. A pickup from a main checkout renames `main` and reports success. Always the two-argument form.
 - **Orca renames the branch it creates** — it prefixes the `gitUsername` recorded on the repo (`orca repo list`) and collapses `/` to `-`. Read the real branch from the `--json` `result.worktree.branch`; reconstructing the rule breaks the next time the setting differs.

@@ -8,7 +8,7 @@ allowed-tools: Bash(git rev-parse *) Bash(git branch *) Bash(date *) Bash(awk *)
 
 Generate the canonical Spec doc for a feature. The spec captures **WHAT** users need and **WHY** in plain language. Implementation details (HOW) belong in `/samuel:plan` later.
 
-Optional by design: only runs when `spec_required: true` in `.claude/task-context.md`. Bugs and small features skip it entirely and go straight from `/samuel:start-task` to `/samuel:plan`.
+Optional by design: only runs when `spec_required: true` in `.claude/task-context/{item}.md`. Bugs and small features skip it entirely and go straight from `/samuel:start-task` to `/samuel:plan`.
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
@@ -31,11 +31,11 @@ Optional by design: only runs when `spec_required: true` in `.claude/task-contex
 
 - Date: !`date '+%Y-%m-%d'`
 - Repo root: !`git rev-parse --show-toplevel 2>/dev/null || echo "NO_REPO_ROOT"`
-- Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
-- Spec required: !`awk '/^spec_required:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"unknown"}' .claude/task-context.md 2>/dev/null || echo "unknown"`
-- Constitution: !`awk '/^constitution:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"none"}' .claude/task-context.md 2>/dev/null || echo "none"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_DIR"`
+- Spec required: !`awk -v k=spec_required -v d=unknown 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "unknown"`
+- Constitution: !`awk -v k=constitution -v d=none 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "none"`
 
 > **Tracker**: `../../reference/tracker.md`. **State**: `../../reference/task-context.md`. The spec is a committed file.
 
@@ -56,7 +56,7 @@ WAIT for choice.
 
 ## Phase 1: GATHER
 
-1. **Read `.claude/task-context.md`** to confirm feature_slug, item, spec_required, constitution.
+1. **Read `.claude/task-context/{item}.md`** to confirm feature_slug, item, spec_required, constitution.
 2. **Read the work item** — `gh issue view {item} -R {repo}` (the Brief seeds the requirements). Use its TL;DR/Scope/AC.
 3. **Read the research doc** if `{feature_dir}/research.md` exists. Research informs scope but does NOT belong in the spec body — the spec stays implementation-agnostic.
 4. **Read `CONSTITUTION.md`** if present. Extract MUST/SHOULD principles.
@@ -97,7 +97,7 @@ Run the Spec Quality Checklist: no implementation details, focused on user value
 
 Persist the spec to `{feature_dir}/spec.md`: a committed file (`Write` to `docs/features/{slug}/spec.md`). Commit it on the branch so plan/analyze/validate and any headless session read it.
 
-Update `.claude/task-context.md` frontmatter via Edit: `phase: spec`, `last_updated: {today}`.
+Update `.claude/task-context/{item}.md` frontmatter via Edit: `phase: spec`, `last_updated: {today}`.
 
 ## Phase 6: PRESENT
 
@@ -118,7 +118,7 @@ Next: /samuel:plan — decomposes the spec into a technical plan with phases.
 ## Pipeline integration
 
 - **Read by**: `/samuel:plan` (UNDERSTAND), `/samuel:analyze` (consistency), `/samuel:validate` (independent verification).
-- **Modifies**: `{feature_dir}/spec.md`, `.claude/task-context.md` frontmatter.
+- **Modifies**: `{feature_dir}/spec.md`, `.claude/task-context/{item}.md` frontmatter.
 - **Triggered by**: `/samuel:start-task` when `spec_required: true`, or manual invocation.
 
 ## Gotchas

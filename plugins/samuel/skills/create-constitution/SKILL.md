@@ -83,7 +83,7 @@ Version: 1.0.0 · Ratified: {today}
 
 Next:
 1. git add CONSTITUTION.md && git commit -m "docs: ratify constitution v1.0.0"
-2. Set constitution: CONSTITUTION.md in .claude/task-context.md for active features (or it's auto-detected).
+2. Set constitution: CONSTITUTION.md in .claude/task-context/{item}.md for active features (or it's auto-detected).
 3. To amend later: /samuel:update-constitution
 ```
 
