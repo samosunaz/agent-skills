@@ -31,7 +31,7 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 | **I**mplement | `/samuel:implement` then `/samuel:done --draft` | commits, a **draft PR** |
 | **A**udit | `/samuel:pr-self-audit` | ONE PR review carrying a `<!-- samuel:review-pass P={P} … -->` marker |
 | **A**ddress | `/samuel:address-pr-comments` | fixes + ONE `## Resolution — pass {P}` comment |
-| **S**implify | `/samuel:remove-slop` | a de-slop commit over the branch diff, or nothing |
+| **S**implify | `/samuel:interrogate` then `/samuel:remove-slop` | delete what should not exist, then clean what stays — commits over the branch diff, or nothing |
 
 **GitHub is the channel between phases, not the session.** A fresh `claude -p` has no memory of the previous one, so the pass markers on the PR are the only thing that makes round 2 a delta instead of a repeat. That machinery already exists on both sides (`pr-self-audit` § Passes · `address-pr-comments` § Pass boundary) — IAAS depends on it and adds none of its own.
 

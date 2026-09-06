@@ -1,12 +1,14 @@
 ---
 name: interrogate
-description: "First-principles pass before calling work done: restate what the change is for, then challenge every piece against it — what is unnecessary, over-complicated or resting on a weak assumption; what can be deleted; what gets simpler once it is gone. Applies the cuts (delete > simplify > optimize > automate) and is allowed to conclude the work is fine and change nothing. Trigger on 'interrogate', 'first principles', 'challenge this', 'is this really done', 'what can we delete', 'cuestiona esto', 'qué sobra'."
+description: "The agent's own first-principles pass before it reports work as done — self-invoked at every close-out (implement Step 3, validate Step 2, iaas Simplify, coordinate C6), rarely typed by a human: restate what the change is for, then challenge every piece against it — what is unnecessary, over-complicated or resting on a weak assumption; what can be deleted; what gets simpler once it is gone. Applies the cuts (delete > simplify > optimize > automate) and is allowed to conclude the work is fine and change nothing. Trigger on 'interrogate', 'first principles', 'challenge this', 'is this really done', 'what can we delete', 'cuestiona esto', 'qué sobra'."
 allowed-tools: Bash(git branch *) Bash(git diff *) Bash(git merge-base *) Bash(git log *) Bash(git status *) Bash(tail *) Read Edit Write Grep Glob AskUserQuestion
 ---
 
 # Interrogate (First-Principles Pass Before Done)
 
 Think from first principles about what this change is trying to achieve, then interrogate what was built against that — before anyone calls it done. The output is a shorter, plainer change, or the honest finding that it is already as small as it should be.
+
+**Who runs it: the agent, on its own work.** This is the question the author asks before saying "done", not a review the human requests. Every close-out in the pipeline invokes it (`implement` Step 3, `validate` Step 2, `iaas` Simplify, `coordinate` C6); a human types it only to point it at something specific (a path, a plan). Its verdict line rides in whatever report the calling skill was about to print — never a separate ceremony.
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 

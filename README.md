@@ -201,7 +201,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:pr-self-audit`](plugins/samuel/skills/pr-self-audit/SKILL.md) | High-signal PR review: bugs, security, logic errors. |
 | [`/samuel:address-pr-comments`](plugins/samuel/skills/address-pr-comments/SKILL.md) | Author side of the review gate: triage, verify, fix, reply, resolve PR comments in incremental passes. |
 | [`/samuel:session-handoff`](plugins/samuel/skills/session-handoff/SKILL.md) | Context compaction (FIC) for long sessions. |
-| [`/samuel:interrogate`](plugins/samuel/skills/interrogate/SKILL.md) | First-principles pass before done: restate the purpose, challenge every piece (unnecessary? weak assumption? deletable? simpler without it?), apply cuts delete > simplify > optimize > automate — or report the work is already right and change nothing. |
+| [`/samuel:interrogate`](plugins/samuel/skills/interrogate/SKILL.md) | The agent's own first-principles pass before it reports done (self-invoked at every pipeline close-out): restate the purpose, challenge every piece (unnecessary? weak assumption? deletable? simpler without it?), apply cuts delete > simplify > optimize > automate — or report the work is already right and change nothing. |
 | [`/samuel:remove-slop`](plugins/samuel/skills/remove-slop/SKILL.md) | Remove AI-generated code slop from the current branch. |
 
 ### Contract

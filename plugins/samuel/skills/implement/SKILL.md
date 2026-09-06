@@ -111,11 +111,11 @@ Continue to Phase {N+1}? (Y/N)
 
 ## Step 3: Completion
 
-When all Steps are done:
+When all Steps are done, run `/samuel:interrogate` on the branch first — the author's own question, before `validate` asks the reviewer's. Its cuts are ordinary commits on the branch; a cut that removes behaviour something depends on is its one checkpoint. Then:
 
 ```
 All steps complete for {item}.
-AC: {n}/{total}   ·   Journal: D:n V:n T:n Q:{open}
+AC: {n}/{total}   ·   Journal: D:n V:n T:n Q:{open}   ·   Interrogate: {deleted n / simplified n | nothing to cut}
 
 NEXT (mandatory): /samuel:validate
 ```
