@@ -55,7 +55,8 @@ Files: `plugins/samuel/skills/coordinate/SKILL.md` (hub), `references/dispatch-p
 1. **Effort default**: implementers `high`, reviewers `xhigh`. The Herdr text says xhigh everywhere; the human's own dispatches said "opus 5 high, audit xhigh" far more often, and his effort discipline puts subagents at high. `--effort xhigh` raises implementers when wanted.
 2. **Codex model** is read from `~/.codex/config.toml` at launch (currently `gpt-6-astra`), not pinned in the skill; the routing table in the global CLAUDE.md still names `gpt-5.5`.
 3. **Direct lane stays in-session**: the Herdr rule "never implement yourself" yields to the existing `direct` chip for an S with no behaviour change, because the audit shows a worker costs more than the change there.
-4. **Run policy lives in `.claude/run-policy.md`**, per repo, gitignored — not in `samuel.md` (which is config the classifier blocks Claude from writing) and not in chat (which compacts).
+4. **Coordinator = flagship, workers = the rest.** The hub states it explicitly: the session that decides, briefs and signs off runs on the strongest model available and never implements; a non-flagship coordinator says so in the dispatch plan so the human can relaunch. This is the Herdr premise (Fable directs, Opus and Codex build) and the owner's routing table (Fable = orchestrator, never on mechanical volume), written into the skill because the skill is public and cannot assume the owner's global instructions.
+5. **Run policy lives in `.claude/run-policy.md`**, per repo, gitignored — not in `samuel.md` (which is config the classifier blocks Claude from writing) and not in chat (which compacts).
 
 ## Substrate hardening applied (2026-09-06, same session)
 
