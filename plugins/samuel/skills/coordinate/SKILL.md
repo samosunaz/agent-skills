@@ -8,16 +8,19 @@ allowed-tools: Bash(orca *) Bash(gh *) Bash(claude auth status *) Bash(codex log
 
 You are the coordinator. You own the direction, the key decisions, the task breakdown and the final sign-off. Routine implementation goes to a worker in its own Orca terminal; you read a short report first and open the diff only when the report gives you a reason. The human sends one message and gets back a result with evidence, never a relay job between windows.
 
+**The model split is the point of the skill.** The coordinator session runs on the strongest model the owner has — the one whose judgment they trust for decomposition, review and sign-off — and spends it only on that: reading reports, deciding, briefing, inspecting on risk. Implementation volume goes to cheaper or specialised workers (the routing in step 3). A coordinator that reads every file to produce line numbers, or implements a routine change itself, is burning the scarce model on work a worker does as well; a worker promoted to coordinator inherits none of the run's judgment. When the session's own model is not the flagship, say so in the dispatch plan — the human may prefer to relaunch the coordinator rather than let a mid-tier model sign off.
+
 Recipes live in `references/dispatch-protocol.md` (C0–C6); the brief, the run policy and the report contract live in `references/worker-brief.md`; what the runtime itself provides (hooks, accounts, cards, sandbox limits) is `../../reference/orca-substrate.md`. This hub is the process and its rules.
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
-**Boundary.** `/samuel:waves` executes a *set of planned issues* from the `blockedBy` graph; `/samuel:conductor` drives the *pipeline* for one issue; `/samuel:team-orchestrate` spawns Claude peers that converse. This skill takes **one task, planned or not**, and turns it into one to a few briefed workers plus your own review and integration. It never plans the product, never merges, and never reimplements those skills — when the task is a `pipeline:ready` issue, the worker's brief can simply be "run `/samuel:conductor N --ship`".
+**Boundary.** `/samuel:waves` executes a *set of planned issues* from the `blockedBy` graph; `/samuel:conductor` drives the *pipeline* for one issue; `/samuel:team-orchestrate` spawns Claude peers that converse. This skill takes **one task, planned or not**, and turns it into one to a few briefed workers plus your own review and integration. It never plans the product, never merges, and never reimplements those skills. **Workers talk Orca, not the pipeline**: a worker is an agent in an Orca terminal that receives a brief and answers through orchestration mail (`worker_done`, `ask`); when the task is a planned issue, the brief embeds the issue's Executor Plan verbatim and the worker implements it directly. `/samuel:conductor` inside a worker is opt-in (`--via conductor`) — it swaps Orca mail for a headless pipeline the coordinator can only observe from outside, so it is never the default.
 
 ## Mode
 
 ```
-/samuel:coordinate <task text | issue N>          — coordinate one task
+/samuel:coordinate <task text | issue N>          — coordinate one task (an issue's Executor Plan becomes the brief)
+/samuel:coordinate N --via conductor              — opt-in: the worker runs /samuel:conductor N --ship instead of an Orca-mail brief
 /samuel:coordinate … --effort xhigh               — raise every implementer to xhigh (reviewers already run there)
 /samuel:coordinate … --engine codex|claude        — force one engine for the implementers
 /samuel:coordinate status                          — inventory only: run, workers, worktrees, policy; no dispatch
