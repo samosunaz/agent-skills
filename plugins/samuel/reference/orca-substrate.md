@@ -10,6 +10,10 @@ The version-matched command reference is served by the binary itself — `orca s
 
 `worker-start` has no `--issue`; link a card after creation with `orca worktree set --worktree name:X --issue N --json`. Cards carry two human-visible fields the coordinator owns: `--comment "<one line of state>"` and `--workspace-status todo|in-progress|in-review|completed` (the board columns). Moving the card at every state change is what lets the human read progress from the sidebar instead of asking.
 
+## Several sessions in one checkout
+
+A primary checkout routinely hosts five or more coordinator sessions at once. They share everything the filesystem holds — `.claude/*`, the git index, the working tree — and nothing Orca holds: a Run, its Tasks and Dispatches belong to the terminal that created them. Two rules follow. **Per-run state is keyed by the Run id** (`orca orchestration run-current --json` → `result.run.id`), never by a checkout-level path — a sibling session overwrote a shared `.claude/run-policy.md` mid-brief (measured), and the same fate awaits any file two runs can name. **Git operations that need a stable tree run in a worktree of the session's own** — merging, gating, cherry-picking in a checkout another session may commit into is the two-writers collision with a longer fuse. Reading is fine; `orca terminal list --worktree current` says how many sessions share the checkout.
+
 ## Agent status hooks — what makes workers observable
 
 `orca agent hooks status --json` → `result.enabled` plus a per-agent `state` (`installed` / `not_installed`). With hooks on, two things exist that otherwise do not:
