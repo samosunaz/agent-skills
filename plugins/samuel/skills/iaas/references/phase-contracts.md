@@ -118,24 +118,28 @@ or declined with the reason) and the processed review IDs.
 
 ## Phase 4 — SIMPLIFY
 
-Runs `/samuel:remove-slop`.
+Three passes in a fixed order, each on the branch diff only, each allowed to change nothing: `/samuel:interrogate` (should this exist? — delete what serves no sentence of the purpose), then Claude Code's native `/simplify` (reuse, simplification, efficiency and altitude cleanups of what stays), then `/samuel:remove-slop` (what a senior developer would not have written: narration comments, defensive noise, type hacks, reinvented wheels). The order matters: cleaning or optimising a piece that the next pass would delete is wasted work, and slop removal is cosmetic and goes last.
 
 ```markdown
 # Phase 4 — SIMPLIFY item #{N}
 
 You are in the worktree for branch {branch}, with an open draft PR whose audit rounds are resolved.
 
-Task: a de-slop pass over the BRANCH DIFF ONLY. Remove comments that narrate the change or restate
-the obvious, defensive code for impossible states, duplicated logic, unnecessary indirection, and
-naming that drifted from the surrounding code. Check dependency manifests for a reinvented wheel or
-a hallucinated import.
+Task, over the BRANCH DIFF ONLY, in this order:
+1. /samuel:interrogate — restate the item's purpose from the Issue TL;DR, then delete every piece that
+   serves no sentence of it or rests on an unevidenced assumption; simplify what the deletions leave.
+2. /simplify — reuse, simplification, efficiency and altitude cleanups of the code that stays.
+3. /samuel:remove-slop — comments that narrate the change or restate the obvious, defensive code for
+   impossible states, duplicated logic, unnecessary indirection, naming that drifted from the
+   surrounding code; check dependency manifests for a reinvented wheel or a hallucinated import.
 
 Do NOT add features, do NOT restructure beyond the diff's own footprint, do NOT touch a file this
 branch never modified. If the diff is already clean, say so and change nothing — an empty simplify
 pass is a valid outcome, and inventing work here undoes an audit that already passed.
 
-Definition of done: if anything changed — gate green, commit, push, sign. In all cases post ONE
-`**Simplify pass:**` comment summarizing what was removed, or "no changes needed".
+Definition of done: if anything changed — gate green, one commit per pass that changed something,
+push, sign. In all cases post ONE `**Simplify pass:**` comment with one line per pass
+(`interrogate: …` · `simplify: …` · `remove-slop: …`), "no changes needed" where a pass changed nothing.
 {if --ready:} Then mark the PR ready for review.
 ```
 
