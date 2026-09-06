@@ -15,6 +15,7 @@ Coordinate a team of Claude Code sessions where each teammate is a full independ
 - Claude Code version: !`claude --version 2>/dev/null || echo "unknown"`
 - Agent teams flag: !`printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 2>/dev/null || echo "0"`
 - tmux installed: !`which tmux 2>/dev/null || echo "not_installed"`
+- Inside Orca: !`orca worktree current --json 2>/dev/null | grep -o '"ok": *[a-z]*' | head -1 | xargs || echo "not_orca"`
 - Inside tmux session: !`printenv TMUX >/dev/null 2>&1 && echo "yes" || echo "no"`
 - Working tree: !`git rev-parse --show-toplevel 2>/dev/null || echo "NO_REPO"`
 
@@ -136,3 +137,4 @@ _Add a line each time Claude trips on something._
 - Teammates are **not** listed by `ListAgents` — the lead reaches them through the team roster, and `SendMessage` serves both. Denying `SendMessage` to block peer messaging also kills teammate messaging; the tool has no separate specifier.
 - A team is the wrong answer to "my sessions should talk to each other". That works with no flag and no tmux since 2.1.224 — see the alternatives table above before paying the team's ~4× token cost.
 - `skills` and `mcpServers` from a subagent definition are NOT applied when used as a teammate — the teammate loads from project + user settings instead.
+- Inside an Orca terminal, `orca claude-teams [claude args…]` starts Agent Teams with teammates as native Orca splits — no tmux needed. Prefer it when the Context line above says the session is Orca-managed (`../../reference/orca-substrate.md` § Agent Teams).

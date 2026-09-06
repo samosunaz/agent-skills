@@ -135,7 +135,7 @@ agent-skills/
 │       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │       ├── agents/               # Sub-agent definitions (3)
 │       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 36 skills, one directory each
+│       └── skills/               # 37 skills, one directory each
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -176,6 +176,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:retro`](plugins/samuel/skills/retro/SKILL.md) | Personal retrospective from GitHub Issues/PRs + git history. |
 | [`/samuel:team-orchestrate`](plugins/samuel/skills/team-orchestrate/SKILL.md) | Spawn multi-session Claude Code agent teams for parallel work streams — when you need a shared task list and a lead-controlled lifecycle, not just sessions that talk (that works on its own since 2.1.224). |
 | [`/samuel:waves`](plugins/samuel/skills/waves/SKILL.md) | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
+| [`/samuel:coordinate`](plugins/samuel/skills/coordinate/SKILL.md) | Single-task coordinator over Orca: decompose one task into named workers (`<task>-<role>-<model>`, explicit model + effort verified in the launch receipt), six-slot briefs, six-line reports, proven starts, nine-minute wait windows with a status line each, integration + real checks in one checkout. Never pushes or merges on its own. |
 | [`/samuel:wave-prep`](plugins/samuel/skills/wave-prep/SKILL.md) | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
 
 ### Product
