@@ -49,6 +49,8 @@ Load the plan (Issue Executor Plan) and identify what should have changed. Spawn
 
 ## Step 2: Run the gate + verify criteria
 
+Before the gate, run `/samuel:interrogate` on the diff — surplus that ships past validation is never removed later, and a gate that passes on code that should not exist proves nothing about the change. A `delete`/`simplify` verdict lands as commits and the gate below runs on the result; a `keep`-only table costs one line. `implement` Step 3 already ran it once; this pass is the second look after the last fix, and "nothing to cut" is the usual and welcome answer.
+
 1. **Run the project gate** — the `Validation → Automated` command from the plan (e.g. `bun run gate`: typecheck+lint+build+guardrails). Capture real output **and the `HEAD SHA` it ran against** (Context). **This is the local merge gate** — a red gate blocks PASS. The SHA goes in the report: it is what `/samuel:done` compares against before emitting a `signoff` status, so a commit added after this step can never inherit this gate's verdict (adapter § Signed-off checks).
 2. **Run the security scan** — `Security scan` in Context (from `.claude/samuel.md`, `../../reference/tracker.md`). A command → run it **exactly as written**; **non-zero exit = FAIL**, weighted like a red gate. `NO_SCAN` → skip **explicitly** ("no security scan configured — skipping"), the same degradable pattern as REVIEW.md below; never invent a command. Courtesy check on `NO_SCAN` only: if `.gitleaks.toml` / `.semgrep*` exists at the repo root, add an **informational** note — "scan config detected but not wired — add `security_scan:` to `.claude/samuel.md`" — and never gate on it.
 3. **Verify each Brief Acceptance Criterion** and the plan's DoD: run the check, record pass/fail with actual output. Flip satisfied AC `- [ ]`→`- [x]` in the Brief (fetch body → splice → `gh issue edit --body-file`). If the plan declares an **e2e tier**: verify it was honored — the declared journey exists, runs green, and matches the tier (green/yellow/manual-only).
@@ -82,6 +84,7 @@ The reviewer returns `APPROVE | REQUEST CHANGES` + findings (`severity · catego
 > Computed: red gate, **failing security scan**, **or** any reviewer Blocker → FAIL · reviewer Important (no Blocker) → PASS WITH NOTES · else PASS. A `SKIP`ped scan is neutral.
 
 ### Gate
+{interrogate: deleted n / simplified n | nothing to cut}
 - **Gated SHA**: `{HEAD SHA at Step 2}`
 - [PASS/FAIL] `{gate command}` — {summary of output}
 - [PASS/FAIL/SKIP] security: `{security_scan command}` — {summary}   _(SKIP when no `security_scan` in `.claude/samuel.md`)_
