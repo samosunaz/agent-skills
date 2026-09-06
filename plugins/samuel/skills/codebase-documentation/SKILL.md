@@ -14,7 +14,7 @@ Conduct comprehensive research across the codebase by spawning parallel sub-agen
 - Git commit: !`git rev-parse HEAD 2>/dev/null || echo "NO_HEAD"`
 - Branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - Repository root: !`git rev-parse --show-toplevel 2>/dev/null || echo "NO_REPO_ROOT"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
 
 ## Role boundary
 
@@ -67,7 +67,7 @@ the question or area of interest and wait for it.
 
    A committed file — `Write` to `docs/features/{slug}/research.md` (feature) or `docs/research/{topic}.md` (standalone). Commit it on the branch.
 
-   Inside a flow feature (`Feature` ≠ `NO_FEATURE`), edit `.claude/task-context.md`: `phase: research`, `last_updated: {today}`. Standalone, skip the phase update.
+   Inside a flow feature (`Feature` ≠ `NO_FEATURE`), edit `.claude/task-context/{item}.md`: `phase: research`, `last_updated: {today}`. Standalone, skip the phase update.
 
    **Document structure:**
 

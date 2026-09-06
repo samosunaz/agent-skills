@@ -41,9 +41,9 @@ Read a field in a skill's `## Context` (expansion-free):
 
 **The second `sub()` is not optional on any field of this file.** `template/samuel.md` ships every field with an inline gloss, and a repo that copies it verbatim keeps them — so an unstripped read of `repo` returns `owner/name           # explicit owner/name for gh (…)`, which `gh` rejects. One idiom for every command-valued field (`tracker`, `repo`, `security_scan`, `signoff`), so the next skill that copies a read can't pick the wrong one. The awk program stays single-quoted, so its `$` never reaches the shell.
 
-> This applies to `.claude/samuel.md` only. `.claude/task-context.md` is written by the skills and never carries an inline gloss — its reads stay at the single `sub()` documented in `reference/task-context.md`.
+> This applies to `.claude/samuel.md` only. `.claude/task-context/{item}.md` is written by the skills and never carries an inline gloss — its reads stay at the single `sub()` documented in `reference/task-context.md`.
 
-When `repo` resolves to `NO_REPO`, ask once and persist the answer to `.claude/samuel.md`. `/samuel:start-task` copies `repo`+`item` into `.claude/task-context.md` so the rest of the pipeline reads one file.
+When `repo` resolves to `NO_REPO`, ask once and persist the answer to `.claude/samuel.md`. `/samuel:start-task` copies `repo`+`item` into `.claude/task-context/{item}.md` so the rest of the pipeline reads one file.
 
 ## Storage map — three axes, three homes
 
@@ -72,11 +72,11 @@ What stays in the tracker (never a file): **ephemeral, task-scoped** signals —
 
 ## Legacy contexts
 
-A `.claude/task-context.md` (or `.claude/samuel.md`) whose `tracker` key is anything other than `github` is a **pre-migration context**, not a supported mode. A pipeline skill that meets one stops and offers the migration path: write `.claude/samuel.md` with `tracker: github` + `repo`, and re-capture any open work as Issues (`gh issue create`, Brief from the old task body). Never silently fall back to another storage backend.
+A `.claude/task-context/{item}.md` (or `.claude/samuel.md`) whose `tracker` key is anything other than `github` is a **pre-migration context**, not a supported mode. A pipeline skill that meets one stops and offers the migration path: write `.claude/samuel.md` with `tracker: github` + `repo`, and re-capture any open work as Issues (`gh issue create`, Brief from the old task body). Never silently fall back to another storage backend.
 
 ## How a skill uses this
 
-1. Resolve `repo` + `item` from `.claude/task-context.md` (or `.claude/samuel.md` pre-task) — surface them in `## Context`.
+1. Resolve `repo` + `item` from `.claude/task-context/{item}.md` (or `.claude/samuel.md` pre-task) — surface them in `## Context`.
 2. Open `reference/github-operations.md` for the exact `gh` invocation.
 3. The *process* (research → plan → implement → validate → done, human checkpoints, the committed journal) is the pipeline's; the adapter only says where state lives.
 

@@ -22,10 +22,10 @@ Open the PR, mark the Issue done, and clean up. The inverse of `start-task`. Sup
 
 - Current branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - Autonomy: !`awk '/^autonomy:[ \t]*attended-auto[ \t]*(#.*)?$/{print"attended-auto";f=1;exit} /^autonomy:/{print"interactive";f=1;exit} END{if(!f)exit 1}' .claude/samuel.md 2>/dev/null || awk '/^autonomy:[ \t]*attended-auto[ \t]*(#.*)?$/{print"attended-auto";f=1;exit} /^autonomy:/{print"interactive";f=1;exit} END{if(!f)print"interactive"}' ~/.claude/samuel.md 2>/dev/null || echo "interactive"`
-- Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/task-context.md 2>/dev/null || echo "NO_REPO"`
-- Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
+- Repo: !`awk -v k=repo -v d=NO_REPO 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_REPO"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_DIR"`
 - HEAD SHA: !`git rev-parse HEAD 2>/dev/null || echo "NO_HEAD"`
 - Signoff: !`awk '/^signoff:/{sub(/^[^:]*: */,"");sub(/[ \t]*#.*$/,"");print;f=1}END{if(!f)print"NO_SIGNOFF"}' .claude/samuel.md 2>/dev/null || echo "NO_SIGNOFF"`
 - Commits since main: !`git log --oneline origin/main..HEAD 2>/dev/null || echo "No commits"`
@@ -35,9 +35,9 @@ Open the PR, mark the Issue done, and clean up. The inverse of `start-task`. Sup
 
 ## Step 1: DETECT & CONFIRM
 
-Resolve the item: parameter → `Item` from task-context → branch name → ask.
+Resolve the item: parameter → the number in the branch name → `Item` from task-context (the resolver already applied the branch; a value here with no number in the branch came from a lone file) → ask.
 
-**Then verify it is still open** — `.claude/task-context.md` is only deleted with the worktree, so in a plain checkout it survives the merge still pointing at the finished item (`reference/task-context.md` § Lifecycle):
+**Then verify it is still open** — a context file can outlive its item (a crash before Step 5's cleanup, an older plugin) and then points at finished work (`reference/task-context.md` § Lifecycle):
 
 ```bash
 gh issue view {item} -R {repo} --json state,title --jq '"\(.state) — \(.title)"'
@@ -120,7 +120,7 @@ The `Closes #{item}` link closes the Issue at merge; until then it sits `pipelin
 
 ### Pipeline phase
 
-Set `.claude/task-context.md` → `phase: end`, `last_updated: {today}` (worktree cleanup deletes it anyway; the PR/Issue is the surviving record).
+Set `.claude/task-context/{item}.md` → `phase: end`, `last_updated: {today}` (worktree cleanup deletes it anyway; the PR/Issue is the surviving record).
 
 ### Durable knowledge at close (storage map: `../../reference/tracker.md`)
 
@@ -184,7 +184,7 @@ EOF
 Return to main? 1) Yes (PR is open)   2) Stay on the branch for post-review changes
 ```
 
-If yes: `git checkout main && git pull origin main 2>/dev/null || true`. Never delete the branch/worktree without explicit confirmation. (attended-auto: take option 1 and say so — the PR is open, so the branch is preserved either way and the choice is reversible with one `git checkout`. Branch/worktree deletion keeps its confirmation at every level.)
+If yes: `git checkout main && git pull origin main 2>/dev/null || true`. In both cases delete `.claude/task-context/{item}.md` now — the PR is the surviving record, the file holds nothing but this item, and a leftover is exactly the orphaned context Step 1 guards against. Never delete the branch/worktree without explicit confirmation. (attended-auto: take option 1 and say so — the PR is open, so the branch is preserved either way and the choice is reversible with one `git checkout`. Branch/worktree deletion keeps its confirmation at every level.)
 
 ### Final summary
 
@@ -210,7 +210,7 @@ Next: /samuel:next  ·  /samuel:progress
 _Add a line each time Claude trips on something._
 
 - Don't manually `gh issue close` — `Closes #N` in the merged PR does it. Manually closing orphans the PR link.
-- **`phase: end` in task-context means "suspect", not "current".** Outside worktree mode nothing deletes the file, so it survives the merge pointing at the finished item. In #37 (`promo:bip`) the context still read `item: 25`, closed two PRs earlier — one unverified step from a `Closes #25` on unrelated work. Step 1's state check exists for exactly this.
+- **`phase: end` in task-context means "suspect", not "current".** Step 5 deletes the file, but a crash before it, or a file from an older plugin, leaves one pointing at the finished item. In #37 (`promo:bip`) the context still read `item: 25`, closed two PRs earlier — one unverified step from a `Closes #25` on unrelated work. Step 1's state check exists for exactly this.
 - The PR's TL;DR is not a copy of the Issue's. The Issue's was written before the work; this one reports what the work actually did — including where it diverged.
 - On an autonomous `--draft` run the TL;DR matters more, not less: it's the only part of a PR nobody watched being written that a human is guaranteed to read.
 - `--draft` is the autonomous default: the agent opens the PR, the human marks ready (`gh pr ready N`) + merges. Interactive runs may open ready-for-review.

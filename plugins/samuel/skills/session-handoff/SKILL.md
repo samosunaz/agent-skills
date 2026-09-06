@@ -28,8 +28,8 @@ Create or resume handoff documents for Frequent Intentional Compaction (FIC) —
 - Commits since main: !`git log --oneline origin/main..HEAD 2>/dev/null || echo "No commits"`
 - Files changed: !`git diff --stat origin/main..HEAD 2>/dev/null || echo ""`
 - Git status: !`git status --porcelain 2>/dev/null || echo ""`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Phase: !`awk '/^phase:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_PHASE"}' .claude/task-context.md 2>/dev/null || echo "NO_PHASE"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Phase: !`awk -v k=phase -v d=NO_PHASE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_PHASE"`
 
 > **Tracker**: `../../reference/tracker.md`. The handoff persists as a committed file `{feature_dir}/handoff-{phase}.md`.
 > **Pipeline state**: `../../reference/task-context.md`. Inside a flow feature, the handoff MUST capture the current `phase` and the status of every feature-dir artifact (spec, research, plan, implementation-notes journal, validation) so a fresh session can resume from the exact pipeline point. Note the journal's open questions and `living/sealed` status explicitly.
@@ -49,7 +49,7 @@ Create or resume handoff documents for Frequent Intentional Compaction (FIC) —
 
 ### Identify current task
 
-If a task ID provided as parameter, use it. Otherwise, resolve the active item from `.claude/task-context.md` (`item`).
+If a task ID provided as parameter, use it. Otherwise, resolve the active item from `.claude/task-context/{item}.md` (`item`).
 
 ### Categorize progress (from the Executor Plan's Steps)
 

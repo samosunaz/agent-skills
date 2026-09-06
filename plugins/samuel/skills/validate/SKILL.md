@@ -15,10 +15,10 @@ Verify the implementation satisfies the plan and the Brief's Acceptance Criteria
 - Current branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - HEAD SHA: !`git rev-parse HEAD 2>/dev/null || echo "NO_HEAD"`
 - Recent commits: !`git log --oneline -n 20 2>/dev/null || echo "No commits"`
-- Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/task-context.md 2>/dev/null || echo "NO_REPO"`
-- Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
+- Repo: !`awk -v k=repo -v d=NO_REPO 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_REPO"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_DIR"`
 - Constitution: !`test -f CONSTITUTION.md && echo "present" || echo "none"`
 - Review overrides: !`test -f REVIEW.md && echo "REVIEW.md present" || echo "none"`
 - Security scan: !`awk '/^security_scan:/{sub(/^[^:]*: */,"");sub(/[ \t]*#.*$/,"");print;f=1}END{if(!f)print"NO_SCAN"}' .claude/samuel.md 2>/dev/null || echo "NO_SCAN"`
@@ -117,7 +117,7 @@ Check whether behavior changed in ways docs must follow: API/endpoints, env/conf
 1. **Persist the report** as a committed file `{feature_dir}/validation.md` (`Write`). Also surface it: `gh issue comment {item} -R {repo}` with the PASS/FAIL summary + the independent-review verdict + manual checklist (so the Issue timeline tells the story). Code refs in the comment follow the adapter § Linking: SHA permalinks if the branch is pushed, plain `path:line` otherwise (the usual case pre-`done` — don't push just to mint links).
 2. **Present** the report (+ doc updates).
 3. **Seal the journal** (only on PASS / PASS WITH NOTES, no `Blocking: yes` open questions, **and no unresolved reviewer Blocker**): `Read`+`Edit` the file → `Status: sealed`, drop `status:living`/`has-open-questions` from its body callout, keep `has-deviations` if applicable.
-4. **Set phase**: `.claude/task-context.md` → `phase: validate`, `last_updated: {today}`.
+4. **Set phase**: `.claude/task-context/{item}.md` → `phase: validate`, `last_updated: {today}`.
 5. Recommend: PASS → `/samuel:done`; FAIL → fix, re-run; PASS WITH NOTES → address, then `/samuel:done`.
 
 ## Important Guidelines

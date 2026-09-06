@@ -11,7 +11,7 @@ The target environment has `gh` authenticated but **no GitHub MCP server**. Do n
 The origin remote may be an SSH alias (e.g. `git@github.com-samosunaz:owner/repo.git`, not literal `github.com`). This **breaks naïve owner/repo detection** — never parse `git remote get-url`. Resolve the repo two ways, both explicit:
 
 1. **One-time setup (idiomatic):** `gh repo set-default owner/repo`. This writes an explicit resolution into git config and bypasses URL parsing, so subsequent `gh issue`/`gh pr` commands work **without `-R`** even behind the alias. Run it once per clone/worktree.
-2. **Per-command (belt-and-suspenders):** pass `-R owner/repo` on every **write** (`issue create/edit/comment`, `pr create`). The pipeline stores `repo: owner/name` in `.claude/task-context.md` frontmatter (set by `/samuel:start-task`); read it in the skill body and pass it as `-R`.
+2. **Per-command (belt-and-suspenders):** pass `-R owner/repo` on every **write** (`issue create/edit/comment`, `pr create`). The pipeline stores `repo: owner/name` in `.claude/task-context/{item}.md` frontmatter (set by `/samuel:start-task`); read it in the skill body and pass it as `-R`.
 
 > **Multi-account note.** `gh` may be authenticated as a personal identity (e.g. `samosunaz`) distinct from a work identity that has **no access** to the repo. Trust `gh auth status` + `gh repo view owner/repo`, not the git user.email. If `gh repo view owner/repo` fails with 404, it is an auth/account problem, not a missing repo.
 

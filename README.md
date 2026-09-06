@@ -148,7 +148,7 @@ All skills live in the `samuel` plugin. Invoke as `/samuel:<skill-name>`.
 
 ### Core Pipeline: R → [S] → P → [A] → I → V
 
-A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — bring them in when they de-risk the work, skip them for bugs and small features. State flows through `.claude/task-context.md`; per-repo config (`repo` for `gh`) lives in `.claude/samuel.md`. Committed feature artifacts (journal, validation) live under `docs/features/<slug>/`.
+A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — bring them in when they de-risk the work, skip them for bugs and small features. State flows through `.claude/task-context/{item}.md`; per-repo config (`repo` for `gh`) lives in `.claude/samuel.md`. Committed feature artifacts (journal, validation) live under `docs/features/<slug>/`.
 
 | Skill | Purpose |
 |-------|---------|

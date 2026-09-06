@@ -14,7 +14,7 @@ The prompt, Brief, or plan is the **map**; the codebase and domain are the **ter
 
 ## Pipeline Position
 
-Standalone — runs with zero pipeline state, in any repo or none. When `.claude/task-context.md` or an Issue exists, it enriches the audit; it never requires them. Preflight is the natural pre-`pipeline:ready` companion (wrong assumptions are the top failure mode of unattended runs).
+Standalone — runs with zero pipeline state, in any repo or none. When `.claude/task-context/{item}.md` or an Issue exists, it enriches the audit; it never requires them. Preflight is the natural pre-`pipeline:ready` companion (wrong assumptions are the top failure mode of unattended runs).
 
 ## Context
 
@@ -22,9 +22,9 @@ Standalone — runs with zero pipeline state, in any repo or none. When `.claude
 - Repo root: !`git rev-parse --show-toplevel 2>/dev/null || echo "NO_REPO_ROOT"`
 - Branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - Repo (repo config): !`awk '/^repo:/{sub(/^[^:]*: */,"");sub(/[ \t]*#.*$/,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/samuel.md 2>/dev/null || echo "NO_REPO"`
-- Active item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Phase: !`awk '/^phase:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_PHASE"}' .claude/task-context.md 2>/dev/null || echo "NO_PHASE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE_DIR"`
+- Active item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Phase: !`awk -v k=phase -v d=NO_PHASE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_PHASE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_FEATURE_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE_DIR"`
 
 ## Input resolution
 

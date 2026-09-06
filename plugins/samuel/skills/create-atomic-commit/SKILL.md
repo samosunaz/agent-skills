@@ -20,7 +20,8 @@ Create git commits for the changes made during this session.
 - Unstaged changes: !`git diff --stat 2>/dev/null || echo ""`
 - Recent commits (style reference): !`git log --oneline -5 2>/dev/null || echo "No commits"`
 - Commitlint config: !`cat commitlint.config.mjs 2>/dev/null || cat commitlint.config.js 2>/dev/null || cat commitlint.config.ts 2>/dev/null || cat .commitlintrc.json 2>/dev/null || echo "No commitlint config found"`
-- Task context: !`cat .claude/task-context.md 2>/dev/null || echo "NO_TASK_CONTEXT"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
 
 ## Pre-requisites
 
@@ -43,7 +44,7 @@ If current branch is `main` or `master`:
 Determine if this commit is part of an active task pipeline:
 
 - **Pipeline mode ON** if ANY of:
-  - `.claude/task-context.md` exists and references `TASK-XXX`
+  - `.claude/task-context/{item}.md` exists and references `TASK-XXX`
   - Branch name matches `TASK-[0-9]+`
 - **Pipeline mode OFF** otherwise (standard behavior, skip enrichment in step 1)
 

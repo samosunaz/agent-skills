@@ -19,10 +19,10 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 
 ## Context
 
-- Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/task-context.md 2>/dev/null || echo "NO_REPO"`
-- Item: !`awk '/^item:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_ITEM"}' .claude/task-context.md 2>/dev/null || echo "NO_ITEM"`
-- Feature: !`awk '/^feature_slug:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_FEATURE"}' .claude/task-context.md 2>/dev/null || echo "NO_FEATURE"`
-- Feature dir: !`awk '/^feature_dir:/{sub(/^[^:]*: */,"");print;f=1}END{if(!f)print"NO_DIR"}' .claude/task-context.md 2>/dev/null || echo "NO_DIR"`
+- Repo: !`awk -v k=repo -v d=NO_REPO 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_REPO"`
+- Item: !`awk -v k=item -v d=NO_ITEM 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_ITEM"`
+- Feature: !`awk -v k=feature_slug -v d=NO_FEATURE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_FEATURE"`
+- Feature dir: !`awk -v k=feature_dir -v d=NO_DIR 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_DIR"`
 - Constitution: !`test -f CONSTITUTION.md && echo "present" || echo "none"`
 
 > **Tracker**: `../../reference/tracker.md`. Adapter: `../../reference/github-operations.md`. **Plan format**: `../../reference/plan-templates.md`. **Pipeline state**: `../../reference/task-context.md`. If a `spec.md` exists, read it first — its FR/SC gate this plan.
@@ -84,13 +84,13 @@ Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {c
    ```bash
    gh issue create -R {repo} --title "{type}: {summary}" --label "type:{t},priority:{p},pipeline:planned" --body-file /tmp/issue-new.md
    ```
-   then record the new issue number back into `.claude/task-context.md` (`item:`).
+   then write the item's context file under the new number — `.claude/task-context/{N}.md` with `item: {N}` — and remove any placeholder file the session was using; the file name is the item, so a renumbered item is a renamed file.
 3. **Declare inter-issue edges**: for each sibling dependency identified in Phase 3, declare the native `blockedBy` edge — read-then-add, never blind-add (adapter § Issue dependencies). `/samuel:waves` computes execution order from this graph; a dependency that lives only in the plan's prose is invisible to it.
 
 > `--body` / `--body-file` replaces the WHOLE body — always include both marker sections.
 > Code cited anywhere in the body → **SHA permalink**, never plain `path:line` (adapter § Linking) — the Issue outlives file moves. Exception: the plan's `### Relevant code` stays plain relative paths (the drift check machine-reads them).
 
-Edit `.claude/task-context.md`: `phase: plan`, `last_updated: {today}`.
+Edit `.claude/task-context/{item}.md`: `phase: plan`, `last_updated: {today}`.
 
 **Checkpoint 4**: report the Issue URL and the label flip in one line and continue. The ROUTE question in Phase 5 is this phase's prompt: the write is verifiable from the URL and reversible with one more `gh issue edit`.
 
