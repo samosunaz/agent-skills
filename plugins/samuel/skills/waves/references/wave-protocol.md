@@ -2,7 +2,7 @@
 
 The executable recipes behind `/samuel:waves`. The coordinator is a **live attended session** in the target repo's primary checkout; workers are isolated implementers in Orca-managed worktrees. GitHub is the only durable state — the blockedBy graph, PR state, and labels survive any crash; Orca orchestration state is disposable provenance (see § State & recovery).
 
-Boundary (anti-double-scheduler, decided in #30): **waves = coordinator** (which items enter which wave, and when) · **conductor = per-item engine** · **Orca automations = calendar trigger**. An automation may *invoke* waves; waves never duplicates conductor's pipeline logic and never schedules itself.
+Boundary (anti-double-scheduler): **waves = coordinator** (which items enter which wave, and when) · **conductor = per-item engine** · **Orca automations = calendar trigger**. An automation may *invoke* waves; waves never duplicates conductor's pipeline logic and never schedules itself.
 
 Authority ceiling (ADR 0004): the launch itself grants each worker push + **draft** PR authority and the coordinator comment authority **on the issues being driven** — nothing else. Merge, `gh pr ready`, and issue close are the human's, at every step of this protocol.
 
@@ -74,7 +74,7 @@ Per ready issue, up to the approved concurrency cap (default **3**; excess queue
 
 ```bash
 # Preferred: agent-first create — Codex lands in the first terminal, no fallback shell.
-# Model/effort come from Orca Settings agentDefaultArgs (#30 P1).
+# Model/effort come from Orca Settings agentDefaultArgs.
 orca worktree create --repo id:{ORCA_REPO_ID} --name issue-{N}-{slug} --issue {N} --no-parent --agent codex --json
 # → copy the FULL worktree id `<repoId>::<path>` and startupTerminal.handle from the response
 ```
