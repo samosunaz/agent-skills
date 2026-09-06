@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.0](https://github.com/samosunaz/agent-skills/compare/v4.7.0...v4.8.0) (2026-09-06)
+
+
+### 🚀 Features
+
+* **samuel:** interrogate — first-principles pass before calling work done ([#33](https://github.com/samosunaz/agent-skills/issues/33)) ([4d3ebed](https://github.com/samosunaz/agent-skills/commit/4d3ebeda029310cba9d3657e11831c1214f7e404))
+
 ## [4.7.0](https://github.com/samosunaz/agent-skills/compare/v4.6.0...v4.7.0) (2026-09-06)
 
 
