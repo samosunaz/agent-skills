@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.9.0](https://github.com/samosunaz/agent-skills/compare/v4.8.0...v4.9.0) (2026-09-06)
+
+
+### 🚀 Features
+
+* **coordinate:** --via iaas opt-in — blind audit rounds over a draft PR ([#39](https://github.com/samosunaz/agent-skills/issues/39)) ([999bfc4](https://github.com/samosunaz/agent-skills/commit/999bfc4a4661d059a552524c33e149d737273123))
+* **samuel:** interrogate is self-invoked at every close-out ([#35](https://github.com/samosunaz/agent-skills/issues/35)) ([5925143](https://github.com/samosunaz/agent-skills/commit/5925143dc39b94242f3e271a1c942ab67983ce13))
+* **samuel:** task-context is one file per item, resolved from the branch ([#38](https://github.com/samosunaz/agent-skills/issues/38)) ([f152197](https://github.com/samosunaz/agent-skills/commit/f152197d887e82d19e4649abb7257bc89f0b2c0f))
+
+
+### 🩹 Fixes
+
+* **coordinate:** key per-run state by the Orca Run id; integrate outside shared checkouts ([#37](https://github.com/samosunaz/agent-skills/issues/37)) ([1487a5f](https://github.com/samosunaz/agent-skills/commit/1487a5f839d1fcd59aea787b2a1b6bf45d38c705))
+
+
+### 📄 Documentation
+
+* **coordinate:** gotchas from the first live run ([#40](https://github.com/samosunaz/agent-skills/issues/40)) ([8c37d28](https://github.com/samosunaz/agent-skills/commit/8c37d28ac21accc954e2faa4d701fde0d403b9c8))
+
 ## [4.8.0](https://github.com/samosunaz/agent-skills/compare/v4.7.0...v4.8.0) (2026-09-06)
 
 
