@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.7.0](https://github.com/samosunaz/agent-skills/compare/v4.6.0...v4.7.0) (2026-09-06)
+
+
+### 🚀 Features
+
+* **samuel:** coordinate skill and Orca substrate reference ([#29](https://github.com/samosunaz/agent-skills/issues/29)) ([cc0976b](https://github.com/samosunaz/agent-skills/commit/cc0976b8413c7e104a48e3b48e472ac58ef52f2a))
+
+
+### 🩹 Fixes
+
+* **coordinate:** Orca mail by default, conductor opt-in; state the model split ([#31](https://github.com/samosunaz/agent-skills/issues/31)) ([6c43332](https://github.com/samosunaz/agent-skills/commit/6c4333205b315607241419b8e2895732d596e2cd))
+
+
+### 🧹 Miscellaneous Chores
+
+* state former issue citations on their own terms ([#32](https://github.com/samosunaz/agent-skills/issues/32)) ([a3ae32c](https://github.com/samosunaz/agent-skills/commit/a3ae32cee79a688d99a6d6a7688abd601ed5bc63))
+
 ## [4.6.0](https://github.com/samosunaz/agent-skills/compare/v4.5.1...v4.6.0) (2026-09-05)
 
 
