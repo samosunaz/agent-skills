@@ -46,13 +46,19 @@ agent-skills/
 ├── .agents/
 │   └── plugins/marketplace.json  # Codex marketplace
 ├── plugins/
-│   └── samuel/                   # Personal dev workflow skills
-│       ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
-│       ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
-│       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
-│       ├── agents/               # Sub-agent definitions (3)
-│       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
-│       └── skills/               # 38 skills, one dir each (flat — §7.1)
+│   ├── samuel/                   # Personal dev workflow skills
+│   │   ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
+│   │   ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
+│   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
+│   │   ├── agents/               # Sub-agent definitions (3)
+│   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
+│   │   └── skills/               # 38 skills, one dir each (flat — §7.1)
+│   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
+│       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
+│       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write)
+│       ├── hooks/hooks.json      # Read/Grep/Bash matchers → scripts/check-*.sh (Claude Code only; Codex has no hooks)
+│       ├── scripts/              # check-read.sh (whole-file reads > SHUNT_MIN_LINES), check-search.sh (unbounded content searches); both fail open
+│       └── skills/               # bulk-read, code-write — the delegation recipes the hooks point at
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -103,6 +109,18 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 - **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + the permission barrier (bypass mode + a committed deny list) + multi-item loop: `plugins/samuel/skills/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
 
 - **`/samuel:iaas`** — Drives **one item** through **Implement → [Audit → Address] × N → Simplify**, each phase its own headless process with **fresh context** (the auditor never saw the implementer's reasoning, so it judges the diff instead of the story). Reimplements nothing: the phases are `implement`+`done --draft`, `pr-self-audit`, `address-pr-comments`, and a Simplify chain of `interrogate` → native `/simplify` → `remove-slop`, and **GitHub is the channel between them** — the pass markers on the PR are what make round 2 a delta instead of a repeat. The round ceiling comes from `--rounds N` or from the item's **size chip** (S→1, M→2, L→3, `plugins/samuel/reference/plan-templates.md` § Sizing); a ceiling is a maximum, never a target. Four stop rules, and the report always names which fired: converged (no Blocker/Important), ceiling reached, **not converging** (the same `file:line` re-raised after a claimed fix), or an **empty audit** — a broken channel, never a clean verdict. Authority stops at the draft PR (`--ready` opts into marking it ready; merge is never automated, ADR 0004). Run accounting goes to the same `conductor:log` issue, plus a `rounds` column. Contracts, the chain and model routing: `plugins/samuel/skills/iaas/references/phase-contracts.md`.
+
+## The Shunt Plugin: Token Plane
+
+`shunt:` is orthogonal to `samuel:` (delivery): it controls what enters the frontier context. The pattern is Spotify's (engineering.atspotify.com, sep 2026: a hook + cheap-worker shunt cut Claude Code token use on large-file reads by ~90% in their measurements); here the workers are two plugin agents on cheap Claude models and the enforcement is a plugin hook (ADR 0007, `docs/decisions/0007-token-plane-gate-large-io-out-of-context.md`).
+
+- **Read gate** (`hooks/hooks.json` → `scripts/check-read.sh`, matchers `Read` and `Bash`): a whole-file `Read` (no `offset`/`limit`) or a bare `cat`/`less`/`more`/`bat` on a **text** file over `SHUNT_MIN_LINES` (default 350) is **denied** with a message naming the three exits: delegate the question to `shunt:bulk-reader`, read a targeted range for an edit, or override deliberately with `offset=1 limit=<n>`. Piped/chained commands, `sed -n`, `head -n`, `tail -n`, binaries, and anything the script cannot parse **pass**: the gate fails open. `SHUNT_DISABLE=1` on the `claude` process turns it off.
+- **Search gate** (`scripts/check-search.sh`, matchers `Grep` and `Bash` for `rg`/`grep`/`git grep`): a content-mode search with no bound (`head_limit`/`-m`) and no scope (`glob`/`type`/`-g`/`-t`/subdirectory) across the whole repo is denied; files-only, count, piped, bounded, or scoped forms pass. Speed was never the cost; every matching line entering context is. An explicit `head_limit` is the override.
+- **Agents** (`agents/`): `bulk-reader` (haiku, read-only tools; one closed question in, structured bullets with `file:line` out; refuses debugging/design) and `code-writer` (sonnet, `Write` allowed; one target file from one reference file, nothing else touched). Both are exempt from the gates by `agent_type`; every other subagent is gated like the main thread.
+- **`shunt:bulk-read`**: the delegation recipe the hook points at; never for debugging, architecture, safety-critical paths, or the region you are about to edit (worker line numbers are hints; verify with `Grep` before editing).
+- **`shunt:code-write`**: pattern-following generation (tests, configs, stubs) with a **mandatory reference file**; the output goes to disk and only `git diff` + the verify contract come back through the main model.
+- **Measurement**: every denial appends one line to `~/.claude/plugin-data/shunt/denials.log` (`SHUNT_LOG` overrides).
+- **What it does not touch**: the fixed per-session cost (CLAUDE.md, skill hubs, reference spokes). That is a separate lever; see § Skill Authoring Guidelines hub size.
 
 ## Meta Skills
 

@@ -35,7 +35,10 @@ Add the marketplace and install the plugin:
 ```
 /plugin marketplace add samosunaz/agent-skills
 /plugin install samuel@samuel-skills
+/plugin install shunt@samuel-skills
 ```
+
+`shunt` is optional and independent: it is the token plane (hooks that deny whole-file reads of large files and unbounded repo-wide searches, routing them to cheap worker agents). Install it alone if you only want the gates.
 
 #### Per-project setup
 
@@ -52,7 +55,8 @@ Add to `.claude/settings.json` in the target project repo:
     }
   },
   "enabledPlugins": {
-    "samuel@samuel-skills": true
+    "samuel@samuel-skills": true,
+    "shunt@samuel-skills": true
   }
 }
 ```
@@ -63,7 +67,7 @@ Skills are namespaced by plugin: `/samuel:plan`, `/samuel:implement`, `/samuel:c
 
 Clone or copy this repo and Codex discovers the plugin via `.agents/plugins/marketplace.json`.
 
-Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/samuel/agents/`, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
+Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/*/agents/` or the `shunt` hooks, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
 
 ## Source of Truth
 
@@ -129,18 +133,23 @@ agent-skills/
 ├── .agents/
 │   └── plugins/marketplace.json  # Codex marketplace (samuel-skills)
 ├── plugins/
-│   └── samuel/                   # Personal dev workflow plugin
-│       ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
-│       ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
-│       ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
-│       ├── agents/               # Sub-agent definitions (3)
-│       ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
-│       └── skills/               # 38 skills, one directory each
+│   ├── samuel/                   # Personal dev workflow plugin
+│   │   ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
+│   │   ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
+│   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
+│   │   ├── agents/               # Sub-agent definitions (3)
+│   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
+│   │   └── skills/               # 38 skills, one directory each
+│   └── shunt/                    # Token plane plugin (ADR 0007)
+│       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
+│       ├── scripts/              # check-read.sh, check-search.sh (fail open)
+│       ├── agents/               # bulk-reader (haiku), code-writer (sonnet)
+│       └── skills/               # bulk-read, code-write
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
 
-The plugin conforms to [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec), so `skills/` is flat: a client discovers only its immediate children. The tables below keep the groups the skills are organized by.
+Both plugins conform to [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec), so `skills/` is flat: a client discovers only its immediate children. The tables below keep the groups the skills are organized by.
 
 ## Skills
 
@@ -220,6 +229,15 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 | [`/samuel:find-unknowns`](plugins/samuel/skills/find-unknowns/SKILL.md) | Map-vs-territory audit: audit / preflight (Issue N, READY-or-HOLD) / teach / quiz. Preflight gates autonomous `pipeline:ready`; quiz is the human comprehension gate before merging agent-authored PRs. |
 | [`/samuel:repo-audit`](plugins/samuel/skills/repo-audit/SKILL.md) | Substrate drift detector for consumer repos: deterministic checks + semantic CLAUDE.md pass. Report-only. |
 | [`/samuel:create-review-md`](plugins/samuel/skills/create-review-md/SKILL.md) | Generate a repo's root `REVIEW.md` (schema v1): deterministic evidence digest + semantic derivation of repo-specific review rules, cited per bullet. |
+
+### Token plane (`shunt` plugin)
+
+Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
+
+| Skill | Purpose |
+|-------|---------|
+| [`/shunt:bulk-read`](plugins/shunt/skills/bulk-read/SKILL.md) | Delegate a whole-file read (or several) to the `bulk-reader` agent (haiku, read-only) and get back structured bullets cited `file:line`. Never for debugging, architecture, or the region you are about to edit. |
+| [`/shunt:code-write`](plugins/shunt/skills/code-write/SKILL.md) | Hand pattern-following generation (tests, configs, stubs) to the `code-writer` agent (sonnet) that writes to disk from a mandatory reference file; verify via `git diff` + the verify contract. |
 
 ### Governance *(optional)*
 

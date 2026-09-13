@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "shunt",
+  "version": "4.9.0",
+  "description": "Token plane: PreToolUse hooks that keep whole-file reads of large files and unbounded repo-wide searches out of the main context, plus cheap worker agents (bulk-reader, code-writer) and the delegation skills that route to them",
+  "author": {
+    "name": "Samuel Osuna",
+    "url": "https://github.com/samosunaz"
+  },
+  "homepage": "https://github.com/samosunaz/agent-skills#readme",
+  "repository": "https://github.com/samosunaz/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "tokens",
+    "hooks",
+    "delegation",
+    "subagents"
+  ]
+}

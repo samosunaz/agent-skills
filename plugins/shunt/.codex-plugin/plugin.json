@@ -1,0 +1,35 @@
+{
+  "name": "shunt",
+  "version": "4.9.0",
+  "description": "Token plane: delegation skills (bulk-read, code-write) that keep large-file I/O out of the main model's context. The enforcing hooks and the worker agents are Claude Code only.",
+  "author": {
+    "name": "Samuel Osuna",
+    "url": "https://github.com/samosunaz"
+  },
+  "homepage": "https://github.com/samosunaz/agent-skills#readme",
+  "repository": "https://github.com/samosunaz/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "tokens",
+    "hooks",
+    "delegation",
+    "subagents"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Shunt",
+    "shortDescription": "Route large-file reads and boilerplate generation to a cheap worker",
+    "longDescription": "A token plane for coding agents. Two delegation recipes: bulk-read sends whole-file reads of large files to a cheap read-only worker and brings back only structured bullets cited as file:line; code-write sends pattern-following generation (tests, configs, stubs) to a worker that writes straight to disk from a mandatory reference file. Under Claude Code the plugin also ships PreToolUse hooks that deny whole-file reads over a line limit and unbounded repo-wide content searches, pointing at the delegation path.",
+    "developerName": "Samuel Osuna",
+    "category": "Development",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Bulk-read these files and list every public method with its file:line",
+      "Code-write a test file for this module using the sibling test as the reference"
+    ],
+    "websiteURL": "https://github.com/samosunaz/agent-skills"
+  }
+}
