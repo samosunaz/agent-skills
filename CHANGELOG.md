@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.0](https://github.com/samosunaz/agent-skills/compare/v4.9.0...v4.10.0) (2026-09-13)
+
+
+### 🚀 Features
+
+* **shunt:** token plane plugin + first plugin-eval suites ([#41](https://github.com/samosunaz/agent-skills/issues/41)) ([28c584e](https://github.com/samosunaz/agent-skills/commit/28c584e0c8b692b19bab8dd9040a1eba8a698e90))
+
 ## [4.9.0](https://github.com/samosunaz/agent-skills/compare/v4.8.0...v4.9.0) (2026-09-06)
 
 
