@@ -9,6 +9,11 @@
       "name": "samuel",
       "source": "./plugins/samuel",
       "description": "Personal development workflow skills for indie hacker projects"
+    },
+    {
+      "name": "shunt",
+      "source": "./plugins/shunt",
+      "description": "Token plane: hooks that route large-file reads and boilerplate generation to cheap worker agents instead of the main context"
     }
   ]
 }

@@ -9,7 +9,9 @@
     "check:context": "bash scripts/lint-skill-context.sh",
     "check:plugins": "sh scripts/validate-plugins.sh",
     "check:portability": "bash scripts/check-agent-plugins.sh",
-    "check:autonomy": "bash scripts/lint-autonomy.sh"
+    "check:autonomy": "bash scripts/lint-autonomy.sh",
+    "eval:samuel": "claude plugin eval plugins/samuel --trust-plugin --no-publish --judge-model sonnet --max-cost-usd 5",
+    "eval:shunt": "claude plugin eval plugins/shunt --trust-plugin --no-publish --scaffold --max-cost-usd 5"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",

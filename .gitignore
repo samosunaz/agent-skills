@@ -4,3 +4,6 @@ node_modules/
 
 # samuel pipeline local state (per-repo config + per-task context) — never versioned
 .claude/
+
+# plugin-eval run output (reports, per-run transcripts) — never versioned
+**/evals/results/

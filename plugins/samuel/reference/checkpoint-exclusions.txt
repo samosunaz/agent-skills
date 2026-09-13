@@ -39,3 +39,9 @@ plugins/samuel/skills/mermaid/SKILL.md
 # Reference material — the prose standard. It prints a rewrite and stops
 # (SKILL.md Step 6); posting or committing it is the caller's turn, not a gate.
 plugins/samuel/skills/tldr/SKILL.md
+
+# Delegation recipes (shunt plugin). Each spawns one worker and verifies its
+# output; the only decision is the caller's own routing, never a question to
+# the human.
+plugins/shunt/skills/bulk-read/SKILL.md
+plugins/shunt/skills/code-write/SKILL.md
