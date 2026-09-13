@@ -139,11 +139,13 @@ agent-skills/
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │   │   ├── agents/               # Sub-agent definitions (3)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
+│   │   ├── evals/                # plugin-eval cases (`bun run eval:samuel`)
 │   │   └── skills/               # 38 skills, one directory each
 │   └── shunt/                    # Token plane plugin (ADR 0007)
 │       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
 │       ├── scripts/              # check-read.sh, check-search.sh (fail open)
 │       ├── agents/               # bulk-reader (haiku), code-writer (sonnet)
+│       ├── evals/                # plugin-eval case (`bun run eval:shunt`)
 │       └── skills/               # bulk-read, code-write
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)

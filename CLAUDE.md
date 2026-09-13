@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) and Codex when worki
 
 ## What This Is
 
-A skill registry for AI coding agents (Claude Code + Codex) aimed at solo and indie hacker projects. Organized as a plugin monorepo. Skills are folders of instructions and resources that agents load dynamically for specialized workflows. No build system, no tests — this is a content repo of markdown-based skill definitions.
+A skill registry for AI coding agents (Claude Code + Codex) aimed at solo and indie hacker projects. Organized as a plugin monorepo. Skills are folders of instructions and resources that agents load dynamically for specialized workflows. No build system. Behavior is measured by `claude plugin eval` suites where they exist (§ Evals); everything else is a content repo of markdown-based skill definitions.
 
 ## Multi-Platform Support
 
@@ -52,12 +52,14 @@ agent-skills/
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │   │   ├── agents/               # Sub-agent definitions (3)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
+│   │   ├── evals/                # plugin-eval cases: tldr-rewrite, mermaid-standard (§ Evals)
 │   │   └── skills/               # 38 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
 │       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write)
 │       ├── hooks/hooks.json      # Read/Grep/Bash matchers → scripts/check-*.sh (Claude Code only; Codex has no hooks)
 │       ├── scripts/              # check-read.sh (whole-file reads > SHUNT_MIN_LINES), check-search.sh (unbounded content searches); both fail open
+│       ├── evals/                # plugin-eval case: large-file-read — asserts the deny fires (§ Evals)
 │       └── skills/               # bulk-read, code-write — the delegation recipes the hooks point at
 ├── template/                     # SKILL.md + CONSTITUTION.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
@@ -121,6 +123,19 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 - **`shunt:code-write`**: pattern-following generation (tests, configs, stubs) with a **mandatory reference file**; the output goes to disk and only `git diff` + the verify contract come back through the main model.
 - **Measurement**: every denial appends one line to `~/.claude/plugin-data/shunt/denials.log` (`SHUNT_LOG` overrides).
 - **What it does not touch**: the fixed per-session cost (CLAUDE.md, skill hubs, reference spokes). That is a separate lever; see § Skill Authoring Guidelines hub size.
+
+## Evals: measuring whether a skill earns its context
+
+`claude plugin eval` (Claude Code ≥ 2.1.269) is the repo's only executable test surface. A suite lives in **`plugins/<plugin>/evals/`**, one directory per case (`prompt.md` + `graders/*.md`, plus `case.yaml` when the case needs a fixture). That path is not a preference: the documented override `"experimental": {"evals": ...}` cannot go in `plugin.json` without breaking the closed field set `bun run check:portability` enforces, and `.claude-plugin/plugin.json` is a symlink to it.
+
+- `bun run eval:samuel` · `bun run eval:shunt` — the full measurement: 3 runs per case per arm. Each case runs again with no plugin loaded, and `Δ` (with minus without) is what the plugin contributed. Expect roughly $2 per plugin per full run, a few minutes each. Both scripts pass `--no-publish`: publishing the HTML report to claude.ai is the runner's default, and the report carries every prompt and reply.
+- Iterate with `--case <name> --ablation none --runs 1` (one arm, one run, ~$0.20). Measure with the defaults.
+- **A case with a `scaffold_script` needs `--scaffold`, which is off by default and which `--trust-plugin` does not imply.** Without it the fixture is never copied, the agent finds an empty workspace, and the case scores 0 without erroring. `eval:shunt` carries the flag; a hand-built command must too.
+- **Grade structure with `regex`, prose with `llm`.** A judge asked to rule on shapes and class syntax votes FAIL against diagrams that satisfy every clause; the same claims as regex are free, deterministic, and checkable by a human reading the pattern. Keep rubrics to short outputs, and state that any note the skill appends is expected.
+- **A grader must fail on material the case did not ask for.** Every mermaid grader passes on the example inside the style spoke, which the case grants `Read` on, so `domain-anchored` ties the diagram to the asked process. A Δ carried by the most cosmetic rule in a skill misreports what the skill contributes.
+- A `tool_used: Skill` grader never scores: it can't pass without the plugin, so the runner reports it as an indicator in the with-arm only. Give every case one grader on the result and one on the trajectory.
+
+Cases must not depend on `gh`, auth, or MCP: a run starts in a throwaway home with no credentials, no `CLAUDE.md`, and no other plugin, so a `gh`-shaped case measures the environment instead of the skill. Those need mocks under `evals/mocks/`.
 
 ## Meta Skills
 
