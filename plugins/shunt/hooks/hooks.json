@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
             "timeout": 5
           }
         ]
@@ -17,12 +17,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
             "timeout": 5
           }
         ]
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
             "timeout": 5
           }
         ]

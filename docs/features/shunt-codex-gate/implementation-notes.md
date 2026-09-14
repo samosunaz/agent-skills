@@ -1,7 +1,7 @@
 # Implementation Notes: shunt-codex-gate
 
 > **Item**: #43  ·  **Plan**: Issue body plan section  ·  **Constitution**: none
-> **Counters**: D:2 V:1 T:0 Q:1 (open_remaining: 1)
+> **Counters**: D:3 V:1 T:0 Q:2 (open_remaining: 2)
 > **Status**: living
 > **Flags**: has-deviations, has-open-questions
 
@@ -28,6 +28,17 @@
 - **Context**: The gates exempt the two workers by `agent_type` (`shunt:bulk-reader`, `shunt:code-writer`). Measured in the live probe, every Codex subagent reports `agent_type: "default"` and a UUID `agent_id`, so the exemption can never match and a Codex worker is gated exactly like the main thread. The probe confirmed the consequence: the spawned subagent was denied `cat big.txt`, took no exit, and reported failure to its parent.
 - **Decision**: Leave the exemption alone and put the bounded read in the spawn message instead. The Codex worker is told to read with `sed -n '1,<n>p'` up front, which is the deliberate override the gate already honours.
 - **Why**: The alternatives are worse. Exempting `agent_type: "default"` exempts every Codex subagent, which contradicts ADR 0007's stated intent that a non-worker subagent pays the same as the main model. Declaring an `[agents.<role>]` so the name matches needs a config layer installed into the user's Codex home, which the plan deliberately deferred. The override path costs one sentence in the recipe and keeps the gate a single rule.
+
+### D-003 · Both shipped hooks files declare SHUNT_CLIENT; neither relies on the default
+- **Phase**: foundational
+- **Step**: 3
+- **When**: 2026-09-14
+- **Files**: `plugins/shunt/hooks/hooks.json`, `plugins/shunt/scripts/install-codex.sh`
+- **Status**: applied
+- **Affects**: none
+- **Context**: `SHUNT_CLIENT` unset emits the neutral message. The Claude Code hooks file did not set it, so the primary client silently dropped from its own precise wording to the generic one — a downgrade the eval could not see, because its grader matches only the denial prefix. Found by the interrogate pass, not by the gate.
+- **Decision**: Every shipped hooks file names its client: `SHUNT_CLIENT=claude` in `hooks/hooks.json`, `SHUNT_CLIENT=codex` in what the installer writes. The unset state is a fallback for a hand-written hooks file, never the path either client takes.
+- **Why**: A default that one shipped configuration silently depends on is not a default, it is an undeclared coupling. Naming the client in both files also makes the hooks file readable on its own: the command says which vocabulary it expects.
 
 ## Deviations
 
@@ -56,4 +67,14 @@
 - **Blocking**: no
 - **Status**: open
 - **Impact if unresolved**: The denial log double-counts, so any measurement built on its line count overstates the gate's hit rate. The gate itself is unaffected: a second deny on a blocked call changes nothing.
+
+### Q-002 · Would a future Codex that loads plugin hooks double-install the gate?
+- **Phase**: foundational
+- **Step**: 5
+- **When**: 2026-09-14
+- **Spec ref**: Step 5, the `hooks` field in the Codex manifest
+- **Question**: The Codex manifest now declares `hooks: ./hooks/hooks.json` for the version that re-enables plugin-shipped handlers. A repo that also ran `install-codex.sh` would then carry the same two gates twice: once from the plugin, once from `.codex/hooks.json`. Does Codex de-duplicate identical handlers, and if not, should `install-codex.sh --check` warn when both sources are present?
+- **Blocking**: no
+- **Status**: open
+- **Impact if unresolved**: A doubled gate denies the same call twice, which changes nothing for the model, and logs the denial twice, which inflates the measurement. It cannot happen on 0.154.0, where plugin handlers never run.
 
