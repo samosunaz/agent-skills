@@ -2,8 +2,8 @@
 
 > **Item**: #43  ·  **Plan**: Issue body plan section  ·  **Constitution**: none
 > **Counters**: D:4 V:1 T:0 Q:2 (open_remaining: 0)
-> **Status**: living
-> **Flags**: has-deviations, has-open-questions
+> **Status**: sealed
+> **Flags**: has-deviations
 
 ## Design Decisions
 
