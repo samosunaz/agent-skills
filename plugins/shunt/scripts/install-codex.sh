@@ -64,17 +64,22 @@ desired() {
       {matcher: "Bash", hooks: [{type: "command", command: $s, timeout: 5}]} ]'
 }
 
-# Replaces this plugin's own groups and leaves every other hook in place.
+# Replaces this plugin's own handlers and leaves every other hook in place.
+# Identity is the script name, the same one gate_state uses: a path fragment
+# would miss the versioned directory a marketplace install lives in, and the
+# stale handlers would then accumulate on every run. Filtering runs inside the
+# group so a foreign handler sharing a group with ours survives.
 merged() {
   local existing='{}'
-  [ -f "$HOOKS" ] && existing="$(cat "$HOOKS" 2>/dev/null)"
+  [ -s "$HOOKS" ] && existing="$(cat "$HOOKS" 2>/dev/null)"
   printf '%s' "$existing" | jq --argjson add "$(desired)" '
+    def ours: (.command // "")
+      | (contains("check-read.sh") or contains("check-search.sh"));
     (.hooks // {}) as $h
     | .hooks = ($h | .PreToolUse = (
         (($h.PreToolUse // [])
-          | map(select(([.hooks[]?.command // ""]
-              | map(select(contains("shunt/scripts/check-")))
-              | length) == 0)))
+          | map(.hooks = [.hooks[]? | select(ours | not)])
+          | map(select((.hooks // []) | length > 0)))
         + $add))'
 }
 
@@ -110,22 +115,44 @@ report_gates() {
 }
 
 # Codex skips an untrusted handler in silence. The hash is computed inside
-# Codex over the normalized handler identity, so it cannot be produced here —
-# but an entry keyed by this repo's hooks file proves the prompt was answered
-# at least once.
+# Codex over the normalized handler identity, so it cannot be produced here.
+# Its presence can be read, and it is indexed per handler: trusting a foreign
+# handler in the same file says nothing about ours.
 report_trust() {
-  local key abs
+  local abs idx i trusted=0 total=0
   abs="$(cd "$DOT" 2>/dev/null && pwd)/hooks.json"
-  if [ ! -f "$CODEX_CONF" ]; then
-    gap "trust" "no $CODEX_CONF; open codex once in this repo and approve the two handlers"
+  if [ ! -f "$HOOKS" ]; then
+    gap "trust" "no $HOOKS yet; install first, then trust"
     return
   fi
-  key="$(grep -c "^\[hooks\.state\.\"${abs}:pre_tool_use" "$CODEX_CONF" 2>/dev/null)"
-  key=${key:-0}
-  if [ "$key" -ge 1 ]; then
-    pass "trust" "$key trusted handler entry(ies) for $abs"
+  idx="$(jq -r '
+    def ours: (.command // "")
+      | (contains("check-read.sh") or contains("check-search.sh"));
+    .hooks.PreToolUse // []
+    | to_entries[]
+    | select([.value.hooks[]? | select(ours)] | length > 0)
+    | .key' "$HOOKS" 2>/dev/null)"
+  if [ -z "$idx" ]; then
+    gap "trust" "no shunt handler in $HOOKS to trust"
+    return
+  fi
+  if [ ! -f "$CODEX_CONF" ]; then
+    gap "trust" "no $CODEX_CONF; open codex once in this repo and approve the shunt handlers"
+    return
+  fi
+  while IFS= read -r i; do
+    [ -n "$i" ] || continue
+    total=$((total + 1))
+    if grep -qF "[hooks.state.\"${abs}:pre_tool_use:${i}:0\"]" "$CODEX_CONF" 2>/dev/null; then
+      trusted=$((trusted + 1))
+    fi
+  done <<EOF
+$idx
+EOF
+  if [ "$trusted" -eq "$total" ]; then
+    pass "trust" "$trusted/$total shunt handler(s) trusted for $abs"
   else
-    gap "trust" "handlers not trusted yet — open codex once in this repo and approve them, or pass --dangerously-bypass-hook-trust in automation"
+    gap "trust" "$trusted/$total shunt handler(s) trusted — open codex once in this repo and approve the rest, or pass --dangerously-bypass-hook-trust in automation"
   fi
 }
 
@@ -146,7 +173,8 @@ if [ "$MODE" = install ]; then
 
   new="$(merged 2>/dev/null)"
   if [ -z "$new" ]; then
-    gap "hooks-file" "$HOOKS exists but is not valid JSON; left untouched"
+    gap "hooks-file" "$HOOKS is empty or not valid JSON; left untouched"
+    report_gates
     report_trust
     verdict
   fi
@@ -157,6 +185,8 @@ if [ "$MODE" = install ]; then
     pass "hooks-file" "$HOOKS written"
   else
     gap "hooks-file" "cannot write $HOOKS"
+    report_gates
+    report_trust
     verdict
   fi
 else

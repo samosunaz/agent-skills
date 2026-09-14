@@ -33,7 +33,7 @@ Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Ski
 
 The Codex marketplace entry needs `policy.installation` **and** `policy.authentication` (`ON_INSTALL` \| `ON_USE`) plus `category` on every plugin — the validator mirrors the workspace ingestion schema. Its `source.path` is relative to the **repo root**, not to the marketplace file: `./plugins/<name>`, never `../../plugins/<name>`. Spec: [`plugin-json-spec.md`](https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/plugin-creator/references/plugin-json-spec.md).
 
-Codex's optional companion files are `.mcp.json` (`mcpServers`) and `.app.json` (`apps`) — this repo declares neither, and `hooks` is rejected outright by the validator. There is no OpenAPI document anywhere in the plugin contract; the only YAML is a per-skill `<skill>/agents/openai.yaml` carrying Codex-side presentation metadata (`interface.display_name`, `interface.short_description`, optional `icon_small`/`icon_large`/`brand_color`/`default_prompt`, `policy.allow_implicit_invocation`, `dependencies.tools`). It is optional and unused here; the `agents/` directory at plugin root is Claude sub-agents, unrelated.
+Codex's optional companion files are `.mcp.json` (`mcpServers`) and `.app.json` (`apps`) — this repo declares neither. `hooks` **is** accepted: `.codex-plugin/plugin.json` may name a hooks file (a path, an array of paths, or an inline object) and `shunt` declares one — Codex CLI 0.154.0 reads the field and runs no handler from it, so a plugin's gate is installed per repo until that changes (`plugins/shunt/scripts/install-codex.sh`). There is no OpenAPI document anywhere in the plugin contract; the only YAML is a per-skill `<skill>/agents/openai.yaml` carrying Codex-side presentation metadata (`interface.display_name`, `interface.short_description`, optional `icon_small`/`icon_large`/`brand_color`/`default_prompt`, `policy.allow_implicit_invocation`, `dependencies.tools`). It is optional and unused here; the `agents/` directory at plugin root is Claude sub-agents, unrelated.
 
 ## Repository Structure
 
@@ -57,7 +57,7 @@ agent-skills/
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
 │       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write)
-│       ├── hooks/hooks.json      # Read/Grep/Bash matchers → scripts/check-*.sh (Claude Code only; Codex has no hooks)
+│       ├── hooks/hooks.json      # Read/Grep/Bash matchers → scripts/check-*.sh (loaded by Claude Code; Codex runs the same protocol, installed per repo)
 │       ├── scripts/              # check-read.sh (whole-file reads > SHUNT_MIN_LINES), check-search.sh (unbounded content searches); both fail open
 │       ├── evals/                # plugin-eval case: large-file-read — asserts the deny fires (§ Evals)
 │       └── skills/               # bulk-read, code-write — the delegation recipes the hooks point at

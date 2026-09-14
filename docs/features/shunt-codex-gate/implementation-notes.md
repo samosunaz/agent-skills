@@ -1,7 +1,7 @@
 # Implementation Notes: shunt-codex-gate
 
 > **Item**: #43  ·  **Plan**: Issue body plan section  ·  **Constitution**: none
-> **Counters**: D:3 V:1 T:0 Q:2 (open_remaining: 2)
+> **Counters**: D:4 V:1 T:0 Q:2 (open_remaining: 0)
 > **Status**: living
 > **Flags**: has-deviations, has-open-questions
 
@@ -40,6 +40,17 @@
 - **Decision**: Every shipped hooks file names its client: `SHUNT_CLIENT=claude` in `hooks/hooks.json`, `SHUNT_CLIENT=codex` in what the installer writes. The unset state is a fallback for a hand-written hooks file, never the path either client takes.
 - **Why**: A default that one shipped configuration silently depends on is not a default, it is an undeclared coupling. Naming the client in both files also makes the hooks file readable on its own: the command says which vocabulary it expects.
 
+### D-004 · The installer identifies its own handlers by script name everywhere
+- **Phase**: polish
+- **Step**: 4
+- **When**: 2026-09-14
+- **Files**: `plugins/shunt/scripts/install-codex.sh`
+- **Status**: applied
+- **Affects**: none
+- **Context**: The merge first dropped prior handlers by the path fragment `shunt/scripts/check-`. That matches the repo checkout and nothing else: a marketplace install lives at `plugins/cache/<marketplace>/shunt/<version>/scripts/`, where the fragment never appears. The independent review reproduced the consequence — three installs left six handlers, and a version upgrade would leave the handler pointing at the deleted directory in place.
+- **Decision**: Every place that recognises a shunt handler matches on the script name (`check-read.sh`, `check-search.sh`), the same identity `gate_state` already used. The filter also runs inside the matcher group instead of dropping the group, so a foreign handler sharing a group survives.
+- **Why**: A versioned install directory is the normal deployment, not an edge case, and a self-test run from the repo checkout can never see the failure. One identity used in all three places (merge, gate report, trust lookup) is the only shape that cannot drift.
+
 ## Deviations
 
 ### V-001 · The trust check observes Codex config instead of always reporting a gap
@@ -65,7 +76,8 @@
 - **Spec ref**: Brief DoD, second open research question
 - **Question**: An early probe logged two identical `PreToolUse` payloads carrying the same `tool_use_id` for a single tool call, with one handler configured. Every later run in this issue logged one payload per call. Is the duplicate a Codex behaviour under some condition, or was the first probe misread?
 - **Blocking**: no
-- **Status**: open
+- **Status**: deferred
+- **Resolution**: Deferred at validation. Real use answers it for free: duplicate lines carrying the same second in the denial log mean the delivery is real, their absence means the first probe was misread. A Codex run bought now would only buy precision in a measurement nothing consumes yet.
 - **Impact if unresolved**: The denial log double-counts, so any measurement built on its line count overstates the gate's hit rate. The gate itself is unaffected: a second deny on a blocked call changes nothing.
 
 ### Q-002 · Would a future Codex that loads plugin hooks double-install the gate?
@@ -75,6 +87,7 @@
 - **Spec ref**: Step 5, the `hooks` field in the Codex manifest
 - **Question**: The Codex manifest now declares `hooks: ./hooks/hooks.json` for the version that re-enables plugin-shipped handlers. A repo that also ran `install-codex.sh` would then carry the same two gates twice: once from the plugin, once from `.codex/hooks.json`. Does Codex de-duplicate identical handlers, and if not, should `install-codex.sh --check` warn when both sources are present?
 - **Blocking**: no
-- **Status**: open
+- **Status**: deferred
+- **Resolution**: Deferred at validation, and unverifiable today by construction: it needs a Codex version that runs plugin-shipped handlers. Revisit when one ships.
 - **Impact if unresolved**: A doubled gate denies the same call twice, which changes nothing for the model, and logs the denial twice, which inflates the measurement. It cannot happen on 0.154.0, where plugin handlers never run.
 
