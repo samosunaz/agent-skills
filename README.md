@@ -234,7 +234,7 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 
 ### Token plane (`shunt` plugin)
 
-Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
+Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the denial names its exits in. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
 
 | Skill | Purpose |
 |-------|---------|
