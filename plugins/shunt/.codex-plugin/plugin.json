@@ -1,6 +1,6 @@
 {
   "name": "shunt",
-  "version": "4.9.0",
+  "version": "4.10.0",
   "description": "Token plane: delegation skills (bulk-read, code-write) that keep large-file I/O out of the main model's context. The enforcing hooks and the worker agents are Claude Code only.",
   "author": {
     "name": "Samuel Osuna",
