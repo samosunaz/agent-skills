@@ -65,16 +65,20 @@ desired() {
 }
 
 # Replaces this plugin's own handlers and leaves every other hook in place.
-# Identity is the script name, the same one gate_state uses: a path fragment
-# would miss the versioned directory a marketplace install lives in, and the
-# stale handlers would then accumulate on every run. Filtering runs inside the
-# group so a foreign handler sharing a group with ours survives.
+# Deleting uses the narrow identity — the prefix this installer writes plus the
+# script name — so a foreign command that merely mentions check-read.sh is not
+# silently removed. Reporting uses the wider one below: liberal about what
+# counts as a gate present, conservative about what may be deleted. Neither
+# matches on the path, which differs between a checkout and the versioned
+# directory a marketplace install lives in. Filtering runs inside the group so
+# a foreign handler sharing a group with ours survives.
 merged() {
   local existing='{}'
   [ -s "$HOOKS" ] && existing="$(cat "$HOOKS" 2>/dev/null)"
   printf '%s' "$existing" | jq --argjson add "$(desired)" '
     def ours: (.command // "")
-      | (contains("check-read.sh") or contains("check-search.sh"));
+      | (startswith("SHUNT_CLIENT=")
+         and (contains("check-read.sh") or contains("check-search.sh")));
     (.hooks // {}) as $h
     | .hooks = ($h | .PreToolUse = (
         (($h.PreToolUse // [])
@@ -130,8 +134,10 @@ report_trust() {
       | (contains("check-read.sh") or contains("check-search.sh"));
     .hooks.PreToolUse // []
     | to_entries[]
-    | select([.value.hooks[]? | select(ours)] | length > 0)
-    | .key' "$HOOKS" 2>/dev/null)"
+    | .key as $group
+    | (.value.hooks // []) | to_entries[]
+    | select(.value | ours)
+    | "\($group):\(.key)"' "$HOOKS" 2>/dev/null)"
   if [ -z "$idx" ]; then
     gap "trust" "no shunt handler in $HOOKS to trust"
     return
@@ -143,7 +149,7 @@ report_trust() {
   while IFS= read -r i; do
     [ -n "$i" ] || continue
     total=$((total + 1))
-    if grep -qF "[hooks.state.\"${abs}:pre_tool_use:${i}:0\"]" "$CODEX_CONF" 2>/dev/null; then
+    if grep -qF "[hooks.state.\"${abs}:pre_tool_use:${i}\"]" "$CODEX_CONF" 2>/dev/null; then
       trusted=$((trusted + 1))
     fi
   done <<EOF
