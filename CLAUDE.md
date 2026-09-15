@@ -121,6 +121,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 - **Agents** (`agents/`): `bulk-reader` (haiku, read-only tools; one closed question in, structured bullets with `file:line` out; refuses debugging/design) and `code-writer` (sonnet, `Write` allowed; one target file from one reference file, nothing else touched). Both are exempt from the gates by `agent_type`; every other subagent is gated like the main thread.
 - **`shunt:bulk-read`**: the delegation recipe the hook points at; never for debugging, architecture, safety-critical paths, or the region you are about to edit (worker line numbers are hints; verify with `Grep` before editing).
 - **`shunt:code-write`**: pattern-following generation (tests, configs, stubs) with a **mandatory reference file**; the output goes to disk and only `git diff` + the verify contract come back through the main model.
+- **Codex install**: the gates run there too, installed per repo by `scripts/install-codex.sh` (0.154.0 reads a plugin's `hooks` field and runs no handler from it). **A Codex handler is skipped in silence until it is trusted once** — approve it in the TUI, or pass `--dangerously-bypass-hook-trust`; `--check` reports which state you are in.
 - **Measurement**: every denial appends one line to `~/.claude/plugin-data/shunt/denials.log` (`SHUNT_LOG` overrides).
 - **What it does not touch**: the fixed per-session cost (CLAUDE.md, skill hubs, reference spokes). That is a separate lever; see § Skill Authoring Guidelines hub size.
 
@@ -272,5 +273,6 @@ Every skill has a `## Gotchas` section that grows over time. Add a line each tim
 - No auxiliary files (READMEs, changelogs) inside skill folders unless essential.
 - `allowed-tools` in frontmatter — declare every tool the skill needs.
 - **Subagents get no plugin base-dir at runtime** — inject reference content (e.g. a rubric) into the subagent's prompt; a relative path in an agent def won't resolve in the target repo.
+- **A script this repo ships to consumers is verified from the versioned install directory a marketplace produces, never from the checkout** — an identity derived from the path passes in the checkout and breaks on every real install (`plugins/cache/<marketplace>/<plugin>/<version>/`).
 - All skills must have `## Gotchas` — starts empty, grows with use.
 - **A role boundary is one `## Role boundary` paragraph with its reason** — never a caps header or a `What NOT to Do` list. Current models take the register literally, and a prohibition list anchors toward the failures it names.

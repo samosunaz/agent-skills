@@ -67,6 +67,8 @@ Skills are namespaced by plugin: `/samuel:plan`, `/samuel:implement`, `/samuel:c
 
 Clone or copy this repo and Codex discovers the plugin via `.agents/plugins/marketplace.json`.
 
+The `shunt` gates run under Codex as well, installed per repo: `bash plugins/shunt/scripts/install-codex.sh` from the target repo's root (`--check` reports without writing).
+
 Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/*/agents/` or the `shunt` hooks, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
 
 ## Source of Truth
