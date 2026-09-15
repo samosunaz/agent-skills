@@ -1,5 +1,5 @@
 {
-  "description": "Deny whole-file reads of large text files (default > 350 lines) and unbounded repo-wide content searches, so both are delegated or bounded instead of entering the main context. Targeted reads (offset/limit, sed -n, head -n), piped commands, and files-only/counted/bounded/scoped searches pass. SHUNT_MIN_LINES overrides the read threshold; SHUNT_DISABLE=1 turns both gates off.",
+  "description": "Deny whole-file reads of large text files (default > 350 lines) and unbounded repo-wide content searches, so both are delegated or bounded instead of entering the main context. Targeted reads (offset/limit, sed -n, head -n), piped commands, and files-only/counted/bounded/scoped searches pass. SHUNT_MIN_LINES overrides the read threshold; SHUNT_DISABLE=1 turns both gates off; SHUNT_CLIENT (claude|codex) selects the vocabulary of the denial message, and unset emits wording valid on either client.",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
             "timeout": 5
           }
         ]
@@ -17,12 +17,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-read.sh\"",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
             "timeout": 5
           }
         ]
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
+            "command": "SHUNT_CLIENT=claude bash \"${CLAUDE_PLUGIN_ROOT}/scripts/check-search.sh\"",
             "timeout": 5
           }
         ]

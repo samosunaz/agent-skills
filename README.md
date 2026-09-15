@@ -67,6 +67,8 @@ Skills are namespaced by plugin: `/samuel:plan`, `/samuel:implement`, `/samuel:c
 
 Clone or copy this repo and Codex discovers the plugin via `.agents/plugins/marketplace.json`.
 
+The `shunt` gates run under Codex as well, installed per repo: `bash plugins/shunt/scripts/install-codex.sh` from the target repo's root (`--check` reports without writing).
+
 Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/*/agents/` or the `shunt` hooks, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
 
 ## Source of Truth
@@ -234,7 +236,7 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 
 ### Token plane (`shunt` plugin)
 
-Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
+Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the denial names its exits in. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
 
 | Skill | Purpose |
 |-------|---------|

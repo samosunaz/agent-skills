@@ -44,7 +44,7 @@ The same plugin gates searches (`scripts/check-search.sh`, matchers `Grep` and `
 
 ## Deliberate override
 
-When the whole file is required (a diff under review, a config you must reproduce verbatim), `Read` with `offset=1` and `limit=<line count>`. That is the explicit override and it passes the gate. Per-session switches: `SHUNT_MIN_LINES=N` raises or lowers the limit, `SHUNT_DISABLE=1` turns the gate off; both are environment variables of the `claude` process, not of a tool call.
+When the whole file is required (a diff under review, a config you must reproduce verbatim), `Read` with `offset=1` and `limit=<line count>`. That is the explicit override and it passes the gate. Per-session switches: `SHUNT_MIN_LINES=N` raises or lowers the limit, `SHUNT_DISABLE=1` turns the gate off, and `SHUNT_CLIENT=claude|codex` selects the vocabulary of the denial message — unset emits wording valid on either client. All three are environment variables of the agent process, not of a tool call.
 
 ## Gotchas
 

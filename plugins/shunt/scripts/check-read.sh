@@ -4,7 +4,8 @@
 # (shunt:bulk-read). Fails open: any error, missing jq, or unknown shape allows.
 #
 # Env: SHUNT_MIN_LINES (default 350) · SHUNT_DISABLE=1 (gate off) · SHUNT_LOG
-# (denial log path) · SHUNT_DEBUG (append every hook input to this file).
+# (denial log path) · SHUNT_DEBUG (append every hook input to this file) ·
+# SHUNT_CLIENT (claude|codex; unset emits a message valid on either client).
 
 [ "${SHUNT_DISABLE:-0}" = "1" ] && exit 0
 command -v jq >/dev/null 2>&1 || exit 0
@@ -12,6 +13,11 @@ command -v jq >/dev/null 2>&1 || exit 0
 threshold="${SHUNT_MIN_LINES:-350}"
 case "$threshold" in ''|*[!0-9]*) threshold=350 ;; esac
 [ "$threshold" -eq 0 ] && exit 0
+
+# Selects the vocabulary of the denial message. An unknown value falls back to
+# the neutral wording rather than to one client's tools.
+client="${SHUNT_CLIENT:-}"
+case "$client" in claude|codex) ;; *) client="" ;; esac
 
 input="$(cat)" || exit 0
 tool="$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null)" || exit 0
@@ -39,8 +45,22 @@ deny() {
   # The denial log is the measurement (ADR 0007); it never blocks the gate.
   local log="${SHUNT_LOG:-$HOME/.claude/plugin-data/shunt/denials.log}"
   { mkdir -p "$(dirname "$log")" && printf '%s\t%s\t%s\t%s\t%s\n' "$(date +%FT%T)" "$tool" "${agent:-main}" "$lines" "$file" >>"$log"; } 2>/dev/null || true
-  local reason
-  reason="shunt: ${file} has ${lines} lines (limit ${threshold}). A whole-file read of a large file does not enter this context. Choose one: (1) You need an ANSWER about the file → delegate the read: Agent shunt:bulk-reader, prompt 'Read ${file} and answer: <your question>. Output structured bullets only, cite file:line.' (2) You need to EDIT a region → Read the file with offset/limit around the target lines, or Grep for the symbol first; targeted reads pass this gate. (3) The whole file is genuinely required (a diff you must review, a config you must reproduce verbatim) → Read with offset=1 and limit=${lines}; that is the explicit, deliberate override. Details: skill shunt:bulk-read."
+  local reason head tail
+  # The prefix is identical in every branch: the eval grader matches it
+  # (evals/large-file-read/graders/deny-fired.md).
+  head="shunt: ${file} has ${lines} lines (limit ${threshold}). A whole-file read of a large file does not enter this context. Choose one:"
+  case "$client" in
+    claude)
+      tail="(1) You need an ANSWER about the file → delegate the read: Agent shunt:bulk-reader, prompt 'Read ${file} and answer: <your question>. Output structured bullets only, cite file:line.' (2) You need to EDIT a region → Read the file with offset/limit around the target lines, or Grep for the symbol first; targeted reads pass this gate. (3) The whole file is genuinely required (a diff you must review, a config you must reproduce verbatim) → Read with offset=1 and limit=${lines}; that is the explicit, deliberate override."
+      ;;
+    codex)
+      tail="(1) You need an ANSWER about the file → delegate the read: spawn_agent with model gpt-5.5 and reasoning_effort low, message 'Read ${file} with sed -n 1,${lines}p — this gate applies to you too — and answer: <your question>. Output structured bullets only, cite file:line.' (2) You need to EDIT a region → read a range with sed -n '<start>,<end>p' ${file}, or rg the symbol first; bounded reads pass this gate. (3) The whole file is genuinely required (a diff you must review, a config you must reproduce verbatim) → sed -n '1,${lines}p' ${file}; that is the explicit, deliberate override."
+      ;;
+    *)
+      tail="(1) You need an ANSWER about the file → delegate the read to a cheap worker: one closed question in, structured bullets cited file:line out, the corpus stays in its context. (2) You need to EDIT a region → read a bounded range around the target lines, or search for the symbol first; bounded reads pass this gate. (3) The whole file is genuinely required (a diff you must review, a config you must reproduce verbatim) → re-read it as an explicit bounded range covering all ${lines} lines; that is the deliberate override."
+      ;;
+  esac
+  reason="${head} ${tail} Details: skill shunt:bulk-read."
   jq -cn --arg r "$reason" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
   exit 0
 }

@@ -3,10 +3,16 @@
 # with no result bound and no scope narrower than the repo is denied with a
 # message that points at files-first / scoped / bounded forms. Fails open.
 #
-# Env: SHUNT_DISABLE=1 (gate off) · SHUNT_LOG (denial log path).
+# Env: SHUNT_DISABLE=1 (gate off) · SHUNT_LOG (denial log path) ·
+# SHUNT_CLIENT (claude|codex; unset emits a message valid on either client).
 
 [ "${SHUNT_DISABLE:-0}" = "1" ] && exit 0
 command -v jq >/dev/null 2>&1 || exit 0
+
+# Selects the vocabulary of the denial message. An unknown value falls back to
+# the neutral wording rather than to one client's tools.
+client="${SHUNT_CLIENT:-}"
+case "$client" in claude|codex) ;; *) client="" ;; esac
 
 input="$(cat)" || exit 0
 tool="$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null)" || exit 0
@@ -26,8 +32,20 @@ deny() {
   local what="$1"
   local log="${SHUNT_LOG:-$HOME/.claude/plugin-data/shunt/denials.log}"
   { mkdir -p "$(dirname "$log")" && printf '%s\t%s\t%s\t%s\t%s\n' "$(date +%FT%T)" "$tool" "${agent:-main}" "search" "$what" >>"$log"; } 2>/dev/null || true
-  local reason
-  reason="shunt: unbounded content search across the whole repo (${what}). Every matching line would enter this context. Choose one: (1) FILES FIRST → Grep output_mode=files_with_matches (rg -l), then open the few files that matter with a targeted Read. (2) SCOPE or BOUND → narrow with path/glob/type (rg -g/-t, a subdirectory), or bound with head_limit=N (rg -m N, | head -n N). (3) Deliberate override → pass head_limit explicitly (any value); an explicit bound passes this gate. Details: skill shunt:bulk-read § Search gate."
+  local reason head tail
+  head="shunt: unbounded content search across the whole repo (${what}). Every matching line would enter this context. Choose one:"
+  case "$client" in
+    claude)
+      tail="(1) FILES FIRST → Grep output_mode=files_with_matches (rg -l), then open the few files that matter with a targeted Read. (2) SCOPE or BOUND → narrow with path/glob/type (rg -g/-t, a subdirectory), or bound with head_limit=N (rg -m N, | head -n N). (3) Deliberate override → pass head_limit explicitly (any value); an explicit bound passes this gate."
+      ;;
+    codex)
+      tail="(1) FILES FIRST → rg -l <pattern>, then open the few files that matter with a bounded read (sed -n). (2) SCOPE or BOUND → narrow with rg -g/-t or a subdirectory path, or bound with rg -m N. (3) Deliberate override → pass an explicit bound (rg -m N, or pipe the output through head -n N); a bounded search passes this gate."
+      ;;
+    *)
+      tail="(1) FILES FIRST → list the matching files only, then open the few that matter with a bounded read. (2) SCOPE or BOUND → narrow by path, glob, or file type, or cap the number of results. (3) Deliberate override → pass an explicit result bound; a bounded search passes this gate."
+      ;;
+  esac
+  reason="${head} ${tail} Details: skill shunt:bulk-read § Search gate."
   jq -cn --arg r "$reason" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
   exit 0
 }

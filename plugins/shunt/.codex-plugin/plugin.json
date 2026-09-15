@@ -1,7 +1,7 @@
 {
   "name": "shunt",
   "version": "4.10.0",
-  "description": "Token plane: delegation skills (bulk-read, code-write) that keep large-file I/O out of the main model's context. The enforcing hooks and the worker agents are Claude Code only.",
+  "description": "Token plane: PreToolUse gates that keep whole-file reads of large files and unbounded repo-wide searches out of the main model's context, plus the delegation skills that route them to a cheap worker. On Codex CLI 0.154.0 the gates are installed per repo with scripts/install-codex.sh, because a plugin's own hooks field is read but its handlers are not yet run.",
   "author": {
     "name": "Samuel Osuna",
     "url": "https://github.com/samosunaz"
@@ -16,10 +16,11 @@
     "subagents"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Shunt",
     "shortDescription": "Route large-file reads and boilerplate generation to a cheap worker",
-    "longDescription": "A token plane for coding agents. Two delegation recipes: bulk-read sends whole-file reads of large files to a cheap read-only worker and brings back only structured bullets cited as file:line; code-write sends pattern-following generation (tests, configs, stubs) to a worker that writes straight to disk from a mandatory reference file. Under Claude Code the plugin also ships PreToolUse hooks that deny whole-file reads over a line limit and unbounded repo-wide content searches, pointing at the delegation path.",
+    "longDescription": "A token plane for coding agents. Two PreToolUse gates deny a whole-file read of a text file over a line limit and an unbounded repo-wide content search, and name the exits in the vocabulary of the client they run under (SHUNT_CLIENT). Two delegation recipes carry the first exit: bulk-read sends the read to a cheap worker and brings back structured bullets cited as file:line; code-write sends pattern-following generation to a worker that writes straight to disk from a mandatory reference file. Under Claude Code the gates load with the plugin; under Codex they are installed into a repo with scripts/install-codex.sh and each handler is trusted once.",
     "developerName": "Samuel Osuna",
     "category": "Development",
     "capabilities": [
