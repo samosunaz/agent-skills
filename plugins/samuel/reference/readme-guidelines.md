@@ -18,7 +18,7 @@ Include what applies; omit the rest. Don't invent sections a small project doesn
 
 1. **Title + one-line description** — what it is, for whom. *(Required.)*
 2. **Badges** *(optional)* — build/CI, version, license.
-3. **Demo / screenshot** *(optional)* — for visual / user-facing products. Claude can't generate these; insert a `[Screenshot: …]` placeholder and ask the user.
+3. **Demo / screenshot** *(optional)* — for visual / user-facing products. Capture it from the running product and commit it next to the README. Use a `[Screenshot: …]` placeholder only when the product cannot be run from the session.
 4. **Features / what it does** — a concise bulleted list of capabilities. Significant ones link to their dossier.
 5. **Prerequisites** — runtime versions, system deps, accounts/keys needed to run it.
 6. **Installation** — the copy-pasteable happy path.

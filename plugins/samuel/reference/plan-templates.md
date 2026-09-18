@@ -100,6 +100,7 @@ If a step depends on a prior one, say so. No "figure out X" — the plan decides
 - [ ] Every Brief AC met
 - [ ] {feature-specific DoD}
 - [ ] e2e journey authored/updated for the declared tier (repos with an e2e app)
+- [ ] Visual work: the before/after captures attached to the PR (`reference/github-operations.md` § Attaching captures)
 ```
 
 ### Quality bar — what makes a plan "self-contained"

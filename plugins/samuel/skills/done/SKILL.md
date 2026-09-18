@@ -99,6 +99,7 @@ gh pr create -R {repo} --base main --head {branch} \
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution.**
 - **Body opens with the TL;DR** — the body is a human surface; the title is pinned to conventional-commit form.
 - Code cited in the body → **SHA permalinks** (adapter § Linking); the push above just made the branch SHA linkable.
+- **Visual change → attach the captures** the plan's Validation or DoD names (before/after, one per state) with `--attach`, referenced in the body where they belong (adapter § Attaching captures). A capture path in the PR body that GitHub cannot render is a missing capture.
 - Then: `gh issue edit {item} -R {repo} --add-label pipeline:in-review --remove-label pipeline:in-progress`.
 
 ### Signoff

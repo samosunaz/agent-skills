@@ -139,7 +139,7 @@ break carefully, which tests cover this. For humans AND for AI.]
 
 ## Screenshots  (conditional — UI)
 
-[Screenshot: description]  ← placeholder; ask the user for the real images.
+![description](assets/state-name.png)  ← captured from the running UI; a `[Screenshot: …]` placeholder only when the UI is unreachable from the session.
 
 ## Changelog
 
