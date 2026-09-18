@@ -45,7 +45,7 @@ MAY CHANGE: {explicit files or directories}. New files only under {dir}.
 
 MUST NOT TOUCH: {files, directories, schemas, public contracts, config, tests you are not the owner of}. If the outcome cannot be reached without touching one of these, stop and ask (see LIMITS) — do not work around it.
 
-VERIFY: {the exact commands — unit/integration test, typecheck, lint, the project gate `{gate}`}. Run them yourself before reporting. For visual work: start the dev server, `orca capture start --worktree current --json`, open the page in the embedded browser (`orca tab create --url {url} --worktree current --json`), exercise the change, then `orca full-screenshot --format png --json` per state and `orca console --limit 100 --json`; save the capture paths — they are the Screenshot paths line of your report.
+VERIFY: {the exact commands — unit/integration test, typecheck, lint, the project gate `{gate}`}. Run them yourself before reporting. For visual work: start the dev server, `orca capture start --worktree current --json`, open the page in the embedded browser (`orca tab create --url {url} --worktree current --json`), exercise the change, then `orca full-screenshot --format png --json` per state and `orca console --limit 100 --json`; save the capture paths — they are the Screenshot paths line of your report. When the artifact is a PR, also attach the captures to it (`gh pr comment {pr} --attach '<path>#<what it shows>'`, `reference/github-operations.md` § Attaching captures) and report the comment URL next to the paths.
 
 ARTIFACT: {a commit on {branch} — report its SHA | a file at {path} | a review comment list}. One commit per logical change, conventional message, no AI attribution.
 
@@ -81,7 +81,7 @@ STANDING CONSTRAINTS:
 | Frozen commit | `git log -1 {sha}` from your checkout (shared object store). Absent ⇒ the work does not exist yet — "complete but uncommitted" has been the signature of a worker killed by a quota limit. |
 | Files changed | Intersect with MAY CHANGE / MUST NOT TOUCH. Any file outside ⇒ inspect the diff regardless of risk. |
 | Test results | A claim. Rerun the gate at integration; a reviewer settles a disputed test by running it. |
-| Screenshot paths | Open them for visual work; also open the running page. |
+| Screenshot paths | Open them for visual work; also open the running page. A PR artifact without the captures attached gets one follow-up dispatch to attach them. |
 | Unresolved | Decide: follow-up dispatch, accept with a note in the final report, or escalate to the human. Never drop a line silently. |
 
 Open the diff when: files outside the allowed set · security-sensitive paths (auth, secrets, payments, permissions) · behavioural change wider than DELIVER · a reviewer requested changes · the human asked. Otherwise the report is the review, and that is the point of the contract.

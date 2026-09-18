@@ -428,6 +428,24 @@ EOF
 ```
 
 - **`Closes #N`** in the body auto-closes the issue on merge — the link that ties PR ↔ issue. Always include it.
+
+### Attaching captures
+
+A capture a human judges (a before/after of a visual change, a UI state, an error screen) goes **onto the GitHub surface**, never as a local path in a report. `gh` ≥ 2.99 uploads images and video with `--attach '<file>#<alt text>'` on `issue create|edit|comment` and `pr create|edit|comment` (push access required, up to 50 files per command). Check it first: `gh pr comment --help | grep -q -- --attach` fails on an older `gh`. Upgrade it (`brew upgrade gh`) instead of falling back to local paths.
+
+```bash
+# The body references the file by its local path; gh rewrites it to the uploaded asset URL.
+gh pr create -R owner/repo --base main --head {branch} --title "…" \
+  --body-file /tmp/pr-body.md \
+  --attach './before.png#Hero before: grey placeholder plate' \
+  --attach './after.png#Hero after: image-free mode'
+```
+
+- **Reference, then attach.** Write `![alt](./before.png)` where the capture belongs in the body. `gh` rewrites that path to the uploaded URL and keeps the Markdown and alt text. An attached file the body does not reference is appended at the end, away from the text that explains it.
+- **Alt text says what the reader should see**, not the file name: the file name is the fallback, and `before.png` tells a reader nothing.
+- **Images and video only.** A log or a JSON report is not a capture. Quote it in a fenced block or leave it to the commit.
+- The same file cannot be attached twice in one command. A video renders as a player only when it sits alone in its paragraph.
+- Only the **body's** local path is rewritten. A capture referenced in a `samuel:run` block or a comment you compose later needs its own `--attach` on that command.
 - **`--draft`** for unattended runs: the agent opens the PR, CI runs, the human reviews → marks ready → merges. Interactive runs may open ready-for-review directly.
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution**, ever.
 - **Body** opens with the TL;DR block (§ TL;DR) — English, four lines, written last. `## Summary` is the agent-facing layer underneath it, not a substitute: a summary explains the change, the TL;DR decides whether it gets read.

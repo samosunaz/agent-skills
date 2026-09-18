@@ -31,7 +31,7 @@ Generate and maintain a **living dossier** per platform capability: enriched mar
 3. **Living, never overwrite.** In UPDATE mode: revise sections in place AND **add** a changelog row. Never silently delete history.
 4. **One dossier per capability**, not per PR. Multiple PRs of one capability → changelog entries of the same dossier.
 5. **Forced checkpoint.** Present the draft (and, in UPDATE, which sections changed) and wait for approval before writing.
-6. **Output language** — the dossier *artifact* is written in the `--lang` language (default `es` for the team; `en` available). These skill instructions are English; the written dossier follows `--lang`. Technical terms (APIs, components, paths) stay English regardless. Screenshots: Claude can't generate them — insert `[Screenshot: …]` placeholders and ask the user.
+6. **Output language** — the dossier *artifact* is written in the `--lang` language (default `es` for the team; `en` available). These skill instructions are English; the written dossier follows `--lang`. Technical terms (APIs, components, paths) stay English regardless. Screenshots: capture the running UI yourself (Playwright, the Orca embedded browser, the repo's preview skill) into `<root>/<slug>/assets/` and reference them by relative path. When the UI cannot be reached from this session, insert a `[Screenshot: …]` placeholder and ask the user.
 7. **Diagrams earn their place.** Mermaid for flows >3 steps, lifecycles (states), multi-service interaction, and the data model. Don't diagram the trivial.
 
 ## Invocation
@@ -96,7 +96,7 @@ Generate and maintain a **living dossier** per platform capability: enriched mar
 
 ## Phase 4: CHECKPOINT & WRITE
 
-1. **Present the full draft.** In UPDATE, explicitly list *which sections changed* and the new changelog row. Ask for screenshots if UI. **WAIT for approval.** Iterate on feedback.
+1. **Present the full draft.** In UPDATE, explicitly list *which sections changed* and the new changelog row. Show the captured screenshots if UI (or list the placeholders still open). **WAIT for approval.** Iterate on feedback.
 2. **Write the dossier** with `Write` to `<root>/<slug>/README.md` (CREATE) or `Edit`/`Write` (UPDATE).
 3. **Update the catalog** `<root>/README.md` (`Edit` the table, or `Write` if absent): the capability's row with status, 1-line summary, date, link. Newest-touched first.
 
@@ -130,7 +130,7 @@ Repo-level docs: [README.md ✎ | CLAUDE.md ✎ | no changes]
 Status: [🟢 Live | 🟡 Beta | ...]   Version: [vX.Y]
 
 Pending:
-- [ ] Add real screenshots (if UI)
+- [ ] Replace any `[Screenshot: …]` placeholder left open (if UI)
 - [ ] Commit the dossier + docs (rides the task PR)
 ```
 
@@ -165,7 +165,7 @@ _Add a line each time Claude trips on something._
 - The dossier lives in the PRODUCT repo, not in this skills repo.
 - Confirm the catalog root before writing — `docs/product/` is default, but the repo may have another convention.
 - **Output language follows `--lang` (default `es`); the skill instructions are English.** Technical terms stay English in any language.
-- Screenshots: Claude doesn't generate them. Insert `[Screenshot: ...]` placeholders and ask the user.
+- Screenshots are captured, not requested: a dossier asset is a committed file under `assets/`, so it needs no upload. A placeholder is only for a UI this session cannot reach.
 - Sub-agents are retrievers — synthesis (and every `file:line`) happens in the main context.
 - No commit/PR — leaves files ready. Versioning is the user's call (rides the task PR).
 - README/CLAUDE.md (Phase 5): link, don't duplicate. A pointer to the dossier, never copied sections — the dossier is the single source of truth. Always with a checkpoint: never auto-edit those docs.
