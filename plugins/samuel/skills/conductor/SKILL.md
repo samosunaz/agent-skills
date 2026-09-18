@@ -108,6 +108,8 @@ gh issue list --label conductor:log --state open --json number --jq '.[0].number
 
 This is the run's **narrative** half — the Reason, the assumptions taken, what the next human should look at. The mechanical rollup posted by the workflow (`assets/conductor.yml`, one table row per item) can't produce it, and the two are deliberately separate comments on the same issue. **Interactive runs don't post** — the report is already on screen. A hard abort (turn or budget cap killing the process) never reaches this step, so the log issue then carries only the mechanical rollup: lessons are best-effort by construction, the counters are not. Bootstrap of the label + issue is part of activation — `../../reference/automated-trigger.md` § Caps & run accounting.
 
+The narrative comment (and any Issue comment this run posts for a hard STOP or a recorded assumption) carries a `samuel:run` block — `phase: conductor`, `agent: claude`, `model`/`effort` from this run's own launch (or `unknown` when not observable), `run` = this run's id when one is tracked — per `../../reference/github-operations.md` § Run metadata.
+
 ## Guidelines
 
 1. **Orchestrate, don't reimplement.** Each `/samuel:*` skill owns its phase.

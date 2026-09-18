@@ -506,6 +506,46 @@ Three rules, because a signed check and an executed check are indistinguishable 
 - **Sign only the gated SHA.** `/samuel:validate` records the SHA its gate ran against; `/samuel:done` refuses to sign when `HEAD` has moved past it. Otherwise the status attests a commit no gate ever saw.
 - **A signed check is not independent evidence.** Whoever verifies work they did not do — the human at merge, the waves coordinator at `worker_done` — reads the checks that actually executed. An agent signing its own PR has asserted, not verified; the assertion is worth exactly the gate output recorded in `validation.md` behind it.
 
+## Run metadata — who produced this artifact
+
+GitHub has no native field for which agent, model, or effort produced a comment, review, or PR body. The convention is an HTML-comment block, invisible when rendered, appended to the visible content — the same family as `<!-- samuel:plan -->` / `<!-- samuel:brief -->` / `<!-- samuel:review-pass -->` / `<!-- samuel:address-pass -->`:
+
+```
+<!-- samuel:run
+phase: audit
+round: 2
+agent: claude
+model: opus-5
+effort: xhigh
+sha: f917ba48
+run: run_6876fb2702f7
+-->
+```
+
+- **`phase`** (required): one of `implement | audit | address | simplify | validate | done | conductor | waves | coordinate` — extend only when a skill genuinely needs another value.
+- **`agent`** (required): `claude | codex | opencode` — the engine, not the harness.
+- **`model`** and **`effort`** (required): come from the **launcher**, never a guess. A headless phase started with `claude -p --model X --effort Y` (iaas) or an explicit `orca orchestration worker-start` (coordinate/waves) injects these values into the phase's own prompt, and the phase stamps exactly what it was told. In an interactive session a skill cannot reliably observe its own model — write `model: unknown` / `effort: unknown` rather than guess.
+- **`sha`** (required): the short HEAD SHA at the moment of posting.
+- **`round`** (required only for `audit` / `address`): the pass number `P` — the same count as that surface's own `review-pass` / `address-pass` marker.
+- **`run`** (optional): the run/job id when one exists — a conductor run, an Orca run, an iaas job.
+
+**Placement.** The block is appended as its **own separate block**, after any existing pass marker — it never replaces or merges into `<!-- samuel:review-pass … -->` or `<!-- samuel:address-pass -->`. Those markers are matched with `startswith` / `contains` on their exact prefix (§ Passes in `pr-self-audit/references/review-output.md`, § Pass markers in `address-pr-comments/references/pr-comment-resolution.md`); folding a multi-line block into either would silently break that match and reset every pass count back to 1.
+
+**Reading it back** — filter comments (or reviews, or a PR body: same `body` field) whose text contains the marker, then pull individual fields out of the line list rather than a fragile multi-line regex:
+
+```jq
+gh api repos/{owner}/{repo}/issues/{n}/comments --paginate --jq '
+def field(lines; key): (lines | map(select(startswith(key))) | .[0]) as $l
+  | if $l == null then "unknown" else ($l | sub("^" + key + "[ \t]*"; "")) end;
+[.[] | select(.body // "" | contains("<!-- samuel:run"))
+  | (.body | split("\n")) as $lines
+  | { id, phase: field($lines; "phase:"), model: field($lines; "model:") }]'
+```
+
+`.[0]` on an empty array is `null`, so the `if $l == null` guard is the same defense as the `//empty` idiom elsewhere in this adapter (§ Gotchas) against the `--jq` null-on-empty-list trap — never branch on the raw match.
+
+**Why**: it ties each artifact to the model that produced it, straight from GitHub — the SoT — so cost-per-accepted-change and model comparisons are readable without cross-referencing a separate log. The `conductor:log` run reports already record cost/turns/tokens per run; this is the per-artifact complement.
+
 ## Gotchas
 
 _Add a line each time Claude trips on something._
