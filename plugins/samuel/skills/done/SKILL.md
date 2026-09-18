@@ -92,8 +92,24 @@ gh pr create -R {repo} --base main --head {branch} \
   --title "{type}({scope}): {description}" \
   --body "$(printf '%s\n' \
     '> **What:** {…}' '> **Why:** {…}' '> **Caveat:** {…}' '> `{chips}`' '' \
-    '## Summary' '{…}' '' '## Changes' '{…}' '' '## Test plan' '- [ ] {AC}' '' 'Closes #{item}')"
+    '## Summary' '{…}' '' '## Changes' '{…}' '' '## Test plan' '- [ ] {AC}' '' 'Closes #{item}' '' \
+    '<!-- samuel:run' 'phase: {implement | done}' 'agent: {claude | codex}' \
+    'model: {model, or unknown}' 'effort: {effort, or unknown}' 'sha: {HEAD SHA}' \
+    'run: {run/job id, omit the line if none}' '-->')"
 ```
+
+### Run metadata — `phase: implement` vs `phase: done`
+
+The PR body always carries a `samuel:run` block (`../../reference/github-operations.md` § Run
+metadata). One rule decides the `phase` value: **if this invocation was launched with an injected
+`Run metadata:` line** — an iaas Implement phase runs `/samuel:implement` then `/samuel:done --draft`
+in the same process, and its phase contract injects `agent`/`model`/`effort`/`run` for exactly this
+reason (`../iaas/references/phase-contracts.md` Phase 1) — **echo that phase's value verbatim**
+(`phase: implement`) instead of overriding it; the draft PR is that phase's deliverable, not a
+separate close-out. **In every other case** — an interactive close, conductor's Ship-mode termination,
+a waves worker's own close — stamp `phase: done`. `agent`/`model`/`effort` follow the same rule: pull
+them from the injected line when one exists, else `unknown` for an interactive session that cannot
+observe its own model.
 
 - **`Closes #{item}`** is mandatory — it auto-closes the Issue on merge.
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution.**

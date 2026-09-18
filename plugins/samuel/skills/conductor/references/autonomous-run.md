@@ -111,6 +111,8 @@ Every launch path records the same four numbers per item: **cost, turns, tokens,
 
 Outcome, per item: **shipped** (a draft PR exists), **aborted** (`subtype` ≠ `success`, `is_error: true`, or no result line), **escalated** (finished but opened no PR — validation FAIL, blocker, preflight `HOLD`, review mode). *Accepted* is not observable here — it materializes when you merge, and is computed at the morning review (`../../../reference/automated-trigger.md` § Morning review).
 
+Whatever id this recipe tracks per run (the log filename, `$ITEM`, a sweep id) is also the `run` value stamped in every artifact's `samuel:run` block for this run — `../../../reference/github-operations.md` § Run metadata.
+
 ## 4a. Droplet — single item
 
 A server doesn't sleep, so no `caffeinate`. Pick a ready item and ship it:

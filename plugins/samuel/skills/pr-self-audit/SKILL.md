@@ -8,7 +8,7 @@ allowed-tools: Bash(git branch *) Bash(git log *) Bash(git diff *) Bash(git remo
 
 Review a pull request for real bugs, security vulnerabilities, logic errors, and convention compliance. **High-signal only** — every flagged issue should be something a senior engineer would catch.
 
-> **Output spoke**: `references/review-output.md` — pass markers and delta scope, the report format, how the native event is derived from the verdict, and the publish/confirm mechanics.
+> **Output spoke**: `references/review-output.md` — pass markers and delta scope, the report format, how the native event is derived from the verdict, the publish/confirm mechanics, and the `samuel:run` metadata block (`../../reference/github-operations.md` § Run metadata).
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 > **Autonomy:** an **unattended** run — headless `claude -p`, CI, or an `/samuel:iaas` Audit phase — is `autonomous` (`../../reference/autonomy.md` § Resolution): it skips the Step 1 screening questions, publishes at Step 6 without the Step 5 wait, and derives the event exactly as written.
 
@@ -210,6 +210,7 @@ Projects can create a `REVIEW.md` at the repo root to customize review behavior;
 _Add a line each time Claude trips on something._
 
 - **Match the pass marker with `startswith` on the prefix.** `contains("<!-- samuel:review-pass -->")` matches nothing: the real marker carries `P=` and `findings=` inside it, so the closed form never appears in any body.
+- **The `samuel:run` metadata block is a separate block, appended after the pass marker — never merged into it.** The pass marker's `startswith` match only works while its exact prefix opens the body; folding run metadata into the same HTML comment would silently break that match (`../../reference/github-operations.md` § Run metadata).
 - **A repeat review with no scope line lies by omission.** "No findings" reads as "I reviewed everything" when the pass only looked at a delta. The line is mandatory whenever `P` > 1.
 - **The event is not a second question.** It follows from the verdict. Asking the user which event to send invites an answer that contradicts the verdict already shown.
 - **`event` on your own PR must be `COMMENT`** — GitHub answers 422 to `APPROVE`/`REQUEST_CHANGES` on a PR you authored, which is the normal case for a self-audit.
