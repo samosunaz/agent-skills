@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.11.0](https://github.com/samosunaz/agent-skills/compare/v4.10.0...v4.11.0) (2026-09-18)
+
+
+### 🚀 Features
+
+* **samuel:** attach captures to the PR with gh --attach ([#47](https://github.com/samosunaz/agent-skills/issues/47)) ([be2daa9](https://github.com/samosunaz/agent-skills/commit/be2daa926dcf727de8e0db79d252681af46fc073))
+* **shunt:** run the token-plane gate under Codex ([#45](https://github.com/samosunaz/agent-skills/issues/45)) ([33a6c09](https://github.com/samosunaz/agent-skills/commit/33a6c09b829c7ef297e15cb05b08e278b101096e))
+
 ## [4.10.0](https://github.com/samosunaz/agent-skills/compare/v4.9.0...v4.10.0) (2026-09-13)
 
 
