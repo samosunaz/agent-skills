@@ -12,7 +12,7 @@ Run all five before proposing a wave plan; a failed precondition stops the run b
 
 ```bash
 orca status --json                       # runtimeState + graphState must be "ready"
-orca orchestration task-list --json      # errors ⇒ orchestration (Experimental) is off in Orca Settings
+orca orchestration run-current --json    # .result.run — null ⇒ nothing bound yet, see § Bind the Run
 gh auth status                            # gh must be authenticated
 orca repo list --json | jq -r '.result.repos[] | select(.path == "{ABS_REPO_PATH}") | .id'
                                           # → {ORCA_REPO_ID}. Resolve by PATH, never by name: the name:
@@ -26,7 +26,26 @@ orca repo show --repo id:{ORCA_REPO_ID} --json
 gh repo set-default {OWNER}/{REPO}        # never parse the SSH-alias origin — use .claude/samuel.md `repo`
 ```
 
-If prior wave state exists (`task-list` non-empty from an interrupted run), go to § State & recovery before creating anything.
+### Bind the Run (Orca ≥ 1.4.205)
+
+Orchestration is namespaced by a **Run**, and every orchestration command needs one bound: `task-create` (P2), `check --wait` (P4), `reset --tasks` (P6). Unbound, each returns `ok:false` with `error.code: "run_required"` and **exit code 0**. That code means orchestration is **on and unbound** — never read it as "orchestration (Experimental) is off in Orca Settings"; only a dead runtime (P0 line 1) or a different error code says that.
+
+```bash
+orca orchestration run-list --json | jq -r '.result.runs[] | "\(.id)\t\(.objective)"' | head
+orca orchestration run-use --id {RUN_ID} --json                            # an interrupted wave Run for this repo
+orca orchestration run-create --objective "waves-{repo}-{date}" --json     # otherwise — `--objective` is the name; there is no --name
+```
+
+Record `result.run.id`: P2, P4 and P6 all operate inside it, and § State & recovery re-binds it with `run-use` after a crash.
+
+**If `run-create` is denied.** Claude Code's auto-mode permission classifier denies `orca orchestration run-create` (it reads as creating an agent), so the coordinator cannot unblock the Orca path from inside the session. This is not a precondition to work around silently — carry it to the **WAVE PLAN checkpoint** as a named engine choice:
+
+- **Orca engine** (recommended, the protocol as written) — the human runs the bind once themselves (`! orca orchestration run-create --objective "waves-{repo}-{date}" --json`, or approves it outside auto mode) and P2–P6 proceed unchanged.
+- **Agent-subagent engine** — one `Agent` subagent per ready issue (opus, effort high, `isolation: worktree`), given the § Worker contract verbatim. What it loses: the P2 Orca mirror, `worker_done` and the P4 `check --wait` loop (completion becomes the subagent's own notification plus `gh pr view`), the sidebar card and its `workspace-status`, worktree re-attachment by `issue:{N}`, and `ask`/`decision_gate` — a blocked subagent reports at the end instead of asking mid-flight. GitHub stays the only durable state, so § State & recovery still holds. The concurrency cap and the authority ceiling are unchanged.
+
+Never swap engines on your own: the losses above change what supervision the human is getting.
+
+If prior wave state exists (after binding, `task-list` is non-empty from an interrupted run), go to § State & recovery before creating anything.
 
 ## P1 — Intake & wave computation
 
@@ -43,7 +62,7 @@ The wave partition + per-issue engine proposal + concurrency cap is the **WAVE P
 
 ## P2 — Orca mirror
 
-Mirror the approved DAG into orchestration state for provenance and as external memory:
+Mirror the approved DAG into orchestration state for provenance and as external memory. Every command here runs inside the Run bound in P0 — a `run_required` error means the binding was lost, not that a task is missing:
 
 ```bash
 orca orchestration task-create --spec "{issue-N worker contract — see P3}" --deps '["task_id_a","task_id_b"]' --json
@@ -240,7 +259,7 @@ gh issue comment "$LOG" --body-file {report.md}
 
 Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Escalated/parked rows name their reason; a truncated run says what it did not cover.
 
-Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca orchestration reset --tasks --json` only when nothing is active and the report is posted.
+Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca orchestration reset --tasks --json` only when nothing is active and the report is posted — it resets the Run bound in P0, so re-bind with `run-use --id {run_id}` first if this session was restarted.
 
 ## State & recovery
 
@@ -249,7 +268,8 @@ Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca o
 | Dependency graph | GitHub native blockedBy | yes — SoT |
 | Item plans + AC | Issue bodies | yes — SoT |
 | PR / CI / merge state | GitHub | yes — SoT |
+| Orchestration Run binding | Orca coordinator terminal | no — disposable, re-bind with `run-use --id {run_id}` |
 | Wave membership, dispatch, worker_done | Orca orchestration tasks | no — disposable mirror |
 | Worker checkouts | Orca worktrees (`issue:{N}` selector) | yes — re-attachable |
 
-Recovery = re-run `/samuel:waves` with the same input: P1 recomputes waves from GitHub; existing worktrees are re-attached by `issue:{N}` (a worktree with an open draft PR ⇒ its issue is `shipped`, don't re-dispatch); orphaned orchestration tasks are reset. Never reconstruct state from terminal scrollback.
+Recovery = re-bind the Run, then re-run `/samuel:waves` with the same input. The binding dies with the coordinator terminal, not with the Run: `orca orchestration run-list --json` finds the wave Run by objective, `orca orchestration run-use --id {run_id} --json` re-binds it, and only then does `task-list` show prior state instead of `run_required`. P1 recomputes waves from GitHub; existing worktrees are re-attached by `issue:{N}` (a worktree with an open draft PR ⇒ its issue is `shipped`, don't re-dispatch); orphaned orchestration tasks are reset. Never reconstruct state from terminal scrollback.

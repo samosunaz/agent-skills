@@ -8,7 +8,9 @@ Every command below assumes Orca ≥ 1.4.193 (`worker-start --model/--effort`, `
 
 ```bash
 orca status --json | jq -r '.result.runtime.state'            # "ready" or stop
-orca orchestration task-list --brief --json | jq '.ok'          # false ⇒ Orchestration is off in Orca Settings — stop
+orca orchestration task-list --brief --json | jq -r '.ok, (.error.code // "-")'
+                                                                 # false + run_required ⇒ no Run bound yet (C1/C2), NOT orchestration off
+                                                                 # false + any other code ⇒ Orchestration is off in Orca Settings — stop
 orca agent hooks status --json | jq -r '.result.enabled, (.result.statuses[] | "\(.agent) \(.state)")'
                                                                  # enabled + target agent "installed", else `orca agent hooks on`
                                                                  # (and `agent hooks prepare-codex` before a two-step Codex launch):
@@ -40,7 +42,7 @@ Reuse rules: an **idle worker of the same task** takes the next Task via `worker
 ## C2 — Run, policy, tasks
 
 ```bash
-orca orchestration run-create --objective "coordinate: {task, one line}" --json     # or run-use --run <id>
+orca orchestration run-create --objective "coordinate: {task, one line}" --json     # or run-use --id <run_id>
 ```
 
 Take the Run id from the `run-create`/`run-current` receipt and write `.claude/run-policy/{run_id}.md` if absent (template in `worker-brief.md`; `mkdir -p .claude/run-policy` first); read it back before writing each brief. Never `.claude/run-policy.md`: that path is shared by every session in the checkout and was overwritten by a sibling mid-brief. Then one Task per worker, the **filled brief** as the spec, dependencies mirrored:
