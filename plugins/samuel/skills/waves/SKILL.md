@@ -26,7 +26,8 @@ All executable recipes live in `references/wave-protocol.md` (P0–P6). This hub
 ## Context
 
 - Orca: !`orca status 2>/dev/null | grep -E 'runtimeState|appRunning' | xargs | grep . || echo "ORCA_DOWN"`
-- Orchestration state: !`orca orchestration task-list --brief 2>/dev/null | head -5 | grep . || echo "ORCHESTRATION_OFF_OR_EMPTY"`
+- Bound run: !`orca orchestration run-current --json 2>/dev/null | grep -o 'run_[a-zA-Z0-9]*' | head -1 | grep . || echo "NO_RUN"`
+- Orchestration state: !`orca orchestration task-list --brief 2>/dev/null | head -5 | grep . || echo "NO_RUN_OR_EMPTY"`
 - Repo: !`awk '/^repo:/{sub(/^[^:]*: */,"");sub(/[ \t]*#.*$/,"");print;f=1}END{if(!f)print"NO_REPO"}' .claude/samuel.md 2>/dev/null || echo "NO_REPO"`
 - Branch: !`git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
 - Date: !`date +%Y-%m-%d`
@@ -41,9 +42,9 @@ Launching this skill is the explicit grant — and its limit:
 
 ## Process
 
-1. **PRECONDITIONS** — run P0 (Orca ready, orchestration on, `gh` authed, repo registered with base ref, `gh repo set-default`). Any failure stops before any dispatch. Prior orchestration state → § State & recovery first.
+1. **PRECONDITIONS** — run P0 (Orca ready, an orchestration **Run bound**, `gh` authed, repo registered with base ref, `gh repo set-default`). Any failure stops before any dispatch. Prior orchestration state → § State & recovery first.
 2. **INTAKE** — resolve the input to candidate issues; keep only `pipeline:ready` with a filled Executor Plan and no `direct` chip (`../../reference/plan-templates.md` § Sizing — a direct-lane item is implemented in the open session, never handed to a worker; exclude it with the reason `direct lane`); fetch plans + `blockedBy` in one batched call (P1). Waves never plans on the fly — exclusions are reported, never silent.
-3. **WAVE PLAN — checkpoint.** Present: the wave partition (issue → wave), per-issue engine proposal (Codex default; claude-conductor for taste ≥ 7 or genuinely hard items, per the model-routing table), the concurrency cap, and the exclusion list with reasons. **WAIT for approval.** Nothing is created or dispatched before it. Record the approved plan as one comment on the driving epic/first issue.
+3. **WAVE PLAN — checkpoint.** Present: the wave partition (issue → wave), per-issue engine proposal (Codex default; claude-conductor for taste ≥ 7 or genuinely hard items, per the model-routing table), the concurrency cap, and the exclusion list with reasons. If P0 could not bind a Run because auto mode denied `run-create`, say so here and present the two engines with what each one costs (P0 § Bind the Run) — an engine is chosen by the human, never swapped on your own. **WAIT for approval.** Nothing is created or dispatched before it. Record the approved plan as one comment on the driving epic/first issue.
 4. **DISPATCH** — mirror the DAG (`task-create --deps`, P2); per ready issue up to the cap: worktree linked via `--issue N` from the repo base ref, worker launched, contract delivered (`dispatch --inject` for Codex; §4a `claude -p` for the claude variant) (P3).
 5. **SUPERVISE** — rolling `check --wait` loop (P4): verify each reported PR actually exists, watch CI, one bounded re-dispatch per real failure then escalate, answer worker `ask`s (scope/schema questions go to the human), park escalations, backfill freed slots. Timeouts are liveness checkpoints — never kill a live worker. Claude-variant workers are also on the **peer roster** and can message the coordinator directly — an accelerant over the poll, never the completion signal (`../../reference/cross-session.md`).
 6. **RELEASE** — poll wave PRs for the human's merges (P5). When the wave's PRs are merged/parked: remove merged worktrees, recompute blockers from the live graph, message any live worker whose plan files the merge touched, launch the next wave. The graph, not the wave label, decides dispatchability — an issue whose specific blockers are merged may release early.
@@ -54,6 +55,8 @@ Launching this skill is the explicit grant — and its limit:
 _Add a line each time Claude trips on something._
 
 - On Linux outside Orca-managed terminals the binary is `orca-ide` — bare `orca` is the GNOME screen reader.
+- Orchestration is namespaced by a **Run** (Orca ≥ 1.4.205): unbound, `task-list` and every other orchestration command return `ok:false` with `error.code: "run_required"` and exit code 0. That is orchestration **on and unbound**, not off — P0 binds one with `run-use --id` or `run-create --objective "waves-{repo}-{date}"` (`--objective` is the name; there is no `--name`) before P2 creates a single task.
+- Auto mode's permission classifier denies `orca orchestration run-create`, so a session that needs a new Run cannot bind one itself. Surface it at the WAVE PLAN checkpoint as a choice — the human runs the bind themselves in bash mode, or the run switches to the Agent-subagent engine, which loses the Orca mirror, `worker_done`, `check --wait` and the card status. Never swap engines silently.
 - Always copy the FULL worktree id `<repoId>::<path>` from create responses; a bare repo id is not a worktree id.
 - `startupTerminal.handle` is the sole worker handle; re-resolve via `terminal list` only on `terminal_handle_stale`, never dual-send.
 - `worktree create --agent codex` accepts no model/effort flags — Settings agentDefaultArgs or the two-step fallback (P3).

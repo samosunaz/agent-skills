@@ -31,6 +31,7 @@ Two different questions, two different commands. **Which account is a worker goi
 
 `run-create` → `task-create` → `worker-start` → `check --wait` → `worker_done` → `worker-release` (or `--terminal <handle>` reuse). Facts that bite:
 
+- A **Run must be bound before any other orchestration command** (Orca ≥ 1.4.205). Unbound, each returns `ok:false` with `error.code: "run_required"` — that is orchestration on and unbound, never "orchestration is off". `run-current` reports the binding (`result.run: null` = none), `run-list` finds an existing Run, `run-use --id <run_id>` re-binds it, `run-create --objective "<name>"` makes one. The binding belongs to the coordinator terminal, so it dies with the session while the Run survives; and Claude Code's auto-mode classifier denies `run-create`, which makes a new Run a human step rather than something a coordinator can arrange for itself.
 - `worker-start` exits non-zero on anything but `ready` and returns `launch.requested` / `launch.effective` for model and effort — the receipt to check before dispatching anything else. `--effort` requires `--model`; neither combines with `--terminal`.
 - Every other Orca command returns `ok:false` with **exit code 0** — branch on `.ok`.
 - A dispatched worker cannot dispatch sub-workers (`nested_worker_depth_exceeded`, Settings → Orchestration → Nested worker depth). Briefs say "do not spawn sub-agents" for that reason and because Claude sub-agents inside a worker never complete under Orca.
