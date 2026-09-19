@@ -67,9 +67,9 @@ Skills are namespaced by plugin: `/samuel:plan`, `/samuel:implement`, `/samuel:c
 
 Clone or copy this repo and Codex discovers the plugin via `.agents/plugins/marketplace.json`.
 
-The `shunt` gates run under Codex as well, installed per repo: `bash plugins/shunt/scripts/install-codex.sh` from the target repo's root (`--check` reports without writing).
+The `shunt` gates run under Codex as well. Codex CLI runs no handler shipped inside a plugin (measured on 0.154.0), so they are installed per repo: `bash plugins/shunt/scripts/install-codex.sh` from the target repo's root writes `<repo>/.codex/hooks.json` (`--check` reports without writing). A Codex hook is then skipped in silence until you trust it once — approve it in the TUI, or pass `--dangerously-bypass-hook-trust`.
 
-Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Codex does not load the sub-agents in `plugins/*/agents/` or the `shunt` hooks, and skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
+Skills use the same `SKILL.md` format — Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). It does not read the sub-agent definitions in `plugins/*/agents/`: a Codex worker is spawned with `spawn_agent` and carries its contract inside the message, which is what the `shunt` delegation recipes write out (`plugins/shunt/reference/cross-client.md`). Skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) need that path passed another way.
 
 ## Source of Truth
 
@@ -143,10 +143,11 @@ agent-skills/
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
 │   │   ├── evals/                # plugin-eval cases (`bun run eval:samuel`)
 │   │   └── skills/               # 38 skills, one directory each
-│   └── shunt/                    # Token plane plugin (ADR 0007)
+│   └── shunt/                    # Token plane plugin (ADR 0007, ADR 0008)
 │       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
-│       ├── scripts/              # check-read.sh, check-search.sh (fail open)
-│       ├── agents/               # bulk-reader (haiku), code-writer (sonnet)
+│       ├── scripts/              # check-read.sh, check-search.sh (fail open), install-codex.sh
+│       ├── agents/               # bulk-reader (haiku), code-writer (sonnet) — Claude Code only
+│       ├── reference/            # cross-client.md (per-client tools, install, workers)
 │       ├── evals/                # plugin-eval case (`bun run eval:shunt`)
 │       └── skills/               # bulk-read, code-write
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
@@ -238,10 +239,12 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 
 Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the denial names its exits in. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
 
+The plane runs on both clients from one pair of scripts. Claude Code loads the plugin's `hooks/hooks.json` and delegates to the agents in `agents/`; Codex gets the same gates per repo from `install-codex.sh` and spawns its worker with `spawn_agent`, carrying the worker's contract inside the message. Per-client tool names, install paths, and worker mechanism: [`plugins/shunt/reference/cross-client.md`](plugins/shunt/reference/cross-client.md) (ADR 0008).
+
 | Skill | Purpose |
 |-------|---------|
-| [`/shunt:bulk-read`](plugins/shunt/skills/bulk-read/SKILL.md) | Delegate a whole-file read (or several) to the `bulk-reader` agent (haiku, read-only) and get back structured bullets cited `file:line`. Never for debugging, architecture, or the region you are about to edit. |
-| [`/shunt:code-write`](plugins/shunt/skills/code-write/SKILL.md) | Hand pattern-following generation (tests, configs, stubs) to the `code-writer` agent (sonnet) that writes to disk from a mandatory reference file; verify via `git diff` + the verify contract. |
+| [`/shunt:bulk-read`](plugins/shunt/skills/bulk-read/SKILL.md) | Delegate a whole-file read (or several) to a cheap worker — the `bulk-reader` agent (haiku, read-only) under Claude Code, `spawn_agent` on `gpt-5.5` at low effort under Codex — and get back structured bullets cited `file:line`. Never for debugging, architecture, or the region you are about to edit. |
+| [`/shunt:code-write`](plugins/shunt/skills/code-write/SKILL.md) | Hand pattern-following generation (tests, configs, stubs) to a cheap worker — the `code-writer` agent (sonnet) under Claude Code, `spawn_agent` on `gpt-5.5` at low effort under Codex — that writes to disk from a mandatory reference file; verify via `git diff` + the verify contract. |
 
 ### Governance *(optional)*
 

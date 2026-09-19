@@ -1,6 +1,6 @@
 ---
 name: bulk-read
-description: "Delegate whole-file reads of large files to the cheap bulk-reader agent (haiku) and bring back only the answer. Fired by the shunt hook when a Read/cat exceeds the line limit; also use proactively before reading 2+ large files for one question. Trigger on 'bulk read', 'summarize these files', 'what does this file do', a denied Read with a shunt: message."
+description: "Delegate whole-file reads of large files to a cheap worker (the bulk-reader agent on haiku under Claude Code, spawn_agent under Codex) and bring back only the answer. Fired by the shunt hook when a Read/cat exceeds the line limit; also use proactively before reading 2+ large files for one question. Trigger on 'bulk read', 'summarize these files', 'what does this file do', a denied Read with a shunt: message."
 allowed-tools: Agent Grep Glob Read Bash(wc *)
 ---
 
@@ -8,7 +8,9 @@ allowed-tools: Agent Grep Glob Read Bash(wc *)
 
 Most of what an agent does with a large file is I/O, not reasoning: it reads 800 lines to answer one question, and those lines then sit in the main context for the rest of the session. This skill moves that read to a cheap worker and keeps only the answer. The `shunt` hook (`hooks/hooks.json`) enforces it: a whole-file `Read`, `cat`, `less`, `more`, or `bat` on a text file over `SHUNT_MIN_LINES` (default 350) is denied with a pointer here. Targeted reads pass: `Read` with `offset`/`limit`, `sed -n`, `head -n`, `tail -n`, and any piped or chained command.
 
-Worker: the plugin's `shunt:bulk-reader` agent (`agents/bulk-reader.md`, haiku, read-only tools). The corpus lands in the worker's context, which is discarded when it returns; only its bullets reach you.
+Worker: the plugin's `shunt:bulk-reader` agent (`agents/bulk-reader.md`, haiku, read-only tools) under Claude Code, a `spawn_agent` call carrying the same contract under Codex. The corpus lands in the worker's context, which is discarded when it returns; only its bullets reach you.
+
+> **Clients:** delegate with `Agent` under Claude Code, with `spawn_agent` under Codex — tool names, install paths, and the inline worker contract: `../../reference/cross-client.md`.
 
 ## When to delegate
 
@@ -24,13 +26,23 @@ One question, concrete, with the exact output you want back. Bad: "read these fi
 
 ### 2) Delegate
 
-Spawn `shunt:bulk-reader` with a self-contained English prompt:
+**Claude Code** — spawn the `shunt:bulk-reader` agent with a self-contained English prompt:
 
 ```
 Read: <path1>, <path2>
 Answer: <the one question>
 Output: structured bullets only, each fact cited as file:line.
 ```
+
+**Codex** — there is no agent definition file, so the same contract travels inside the message. Call `spawn_agent` with `model: gpt-5.5` and `reasoning_effort: low`:
+
+```
+Read <path1> with sed -n '1,<line count>p', then <path2> the same way. The read gate applies to you too; a bounded range is its deliberate override, so never cat these files.
+Answer: <the one question>
+Rules: structured bullets only — no greeting, no prose, no closing line. Cite every fact as file:line; when unsure of a line, cite the nearest symbol and write approx. Answer only this question; if the files do not hold the answer, say so in one bullet and do not guess. Never propose edits, diagnose bugs, or rate the design. Under 40 bullets, grouped by file.
+```
+
+The `sed -n` sentence is not optional: a Codex subagent reports `agent_type: "default"`, so the gates' worker exemption never matches it and a worker told to read whole files is denied and gives up.
 
 Paths absolute, or relative to the session `cwd`. Expect one subagent round-trip, so a single 400-line file with a two-line answer is borderline: delegate when the alternative is the whole file in context, not when a `Grep` would do.
 
@@ -44,7 +56,7 @@ The same plugin gates searches (`scripts/check-search.sh`, matchers `Grep` and `
 
 ## Deliberate override
 
-When the whole file is required (a diff under review, a config you must reproduce verbatim), `Read` with `offset=1` and `limit=<line count>`. That is the explicit override and it passes the gate. Per-session switches: `SHUNT_MIN_LINES=N` raises or lowers the limit, `SHUNT_DISABLE=1` turns the gate off, and `SHUNT_CLIENT=claude|codex` selects the vocabulary of the denial message — unset emits wording valid on either client. All three are environment variables of the agent process, not of a tool call.
+When the whole file is required (a diff under review, a config you must reproduce verbatim), re-read it as a bounded range covering every line: `Read` with `offset=1` and `limit=<line count>` under Claude Code, `sed -n '1,<line count>p' <path>` under Codex. That is the explicit override and it passes the gate. Per-session switches: `SHUNT_MIN_LINES=N` raises or lowers the limit, `SHUNT_DISABLE=1` turns the gate off, and `SHUNT_CLIENT=claude|codex` selects the vocabulary of the denial message — unset emits wording valid on either client. All three are environment variables of the agent process, not of a tool call.
 
 ## Gotchas
 
@@ -53,3 +65,4 @@ _Add a line each time Claude trips on something._
 - Under auto mode the harness prefers `cat` over `Read`; both paths are gated, do not switch to `cat` to dodge a denied `Read`.
 - The hook fails open: no `jq`, a binary file, or malformed input all allow the read. A silent gate is not proof the file was small.
 - Hooks are session-wide: they fire inside subagents too. The script exempts `shunt:bulk-reader` and `shunt:code-writer` by `agent_type`; any other agent (`Explore`, `samuel:implementation-analyzer`) is gated like the main thread.
+- Under Codex **no** worker is exempt — every subagent there reports `agent_type: "default"` — which is why the Codex prompt orders the bounded read itself.

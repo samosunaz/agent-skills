@@ -2,6 +2,7 @@
 
 Date: 2026-09-08
 Status: Accepted
+Superseded in part by: [ADR 0008](0008-codex-runs-the-same-hook-protocol.md) — decision point 6 only
 Source: engineering.atspotify.com, "Portal by Spotify cut my Claude Code token usage by 90%" (sep 2026)
 
 ## Context
