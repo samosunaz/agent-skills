@@ -22,6 +22,7 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 - Comments state a constraint the code cannot show; never narrate the change.
 - No AI attribution anywhere. Conventional commits.
 - Scope exclusions: {e.g. "mobile is out of scope for this epic — register an issue, do not implement"}.
+- Any GitHub comment, review, or PR body you post carries a `samuel:run` block (`agent`/`model`/`effort` from the routing row above) — `../../../reference/github-operations.md` § Run metadata.
 
 ## Authority
 - Workers: commit on their own branch in their own worktree. Never push, never open a PR, never merge, unless the brief says so explicitly.

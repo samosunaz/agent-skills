@@ -135,9 +135,21 @@ A review whose body starts with `<!-- samuel:review-pass` came from this pipelin
 Reviews: {review_id}, {review_id}
 Comments: {comment_id}   (omit the line if none)
 Commits: {short-shas}
+
+<!-- samuel:run
+phase: address
+round: {P}
+agent: {claude | codex}
+model: {model, or unknown}
+effort: {effort, or unknown}
+sha: {head_sha}
+run: {run/job id, omit the line if none}
+-->
 ```
 
 Dispositions: ✅ Fixed · 💬 Answered · ❌ Rejected (citable reason) · 👌 Obsolete/Already handled · ⏳ Pending (reviewer is right, fix blocked — thread stays open). Element-initial IDs (`T{n}`), never `#{n}` (autolink); code references are SHA permalinks (`reference/github-operations.md` § Linking).
+
+The `samuel:run` block is a **separate block appended after** `<!-- samuel:address-pass -->`, never merged into it — the marker's `contains("<!-- samuel:address-pass -->")` match needs that exact closed form intact in the body. Field values and the read-back recipe: `../../../reference/github-operations.md` § Run metadata.
 
 ### Post
 

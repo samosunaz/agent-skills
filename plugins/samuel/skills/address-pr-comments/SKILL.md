@@ -11,7 +11,7 @@ Close the feedback loop on a pull request: fetch the feedback since the last pas
 In this solo context the most common caller scenario: the repo owner left review comments on an agent-authored draft PR (conductor / waves) and a fresh session addresses them. The owner is the human reviewer — their threads follow the human rules below, never the bot shortcuts.
 
 > The PR review itself lives in `/samuel:pr-self-audit`, `/codex:review`, ultrareview, and bots. This skill responds to whatever they leave.
-> **Resolution mechanics**: See [pr-comment-resolution.md](references/pr-comment-resolution.md) — gh/GraphQL snippets for fetch, reply, resolve, re-request.
+> **Resolution mechanics**: See [pr-comment-resolution.md](references/pr-comment-resolution.md) — gh/GraphQL snippets for fetch, reply, resolve, re-request, and the `samuel:run` metadata block (`../../reference/github-operations.md` § Run metadata).
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
 ## Context
@@ -195,6 +195,7 @@ If a worktree was created in Step 2, recommend keeping it until merge. If checko
 _Add a line each time Claude trips on something._
 
 - REST `pulls/{n}/comments` is inline-only; top-level comments are under `issues/{n}/comments`. Fetch both or you'll miss half the feedback.
+- **The `samuel:run` metadata block is a separate block, appended after `<!-- samuel:address-pass -->` — never merged into it.** The pass marker's `contains` match depends on that exact closed form appearing intact in the body (`../../reference/github-operations.md` § Run metadata).
 - `resolveReviewThread` needs the GraphQL node `id`, not the REST numeric `databaseId`.
 - Resolving inline threads does NOT clear a `CHANGES_REQUESTED` verdict — only a new review or re-request from that reviewer does.
 - `isOutdated` ≠ resolved. Confirm the comment is actually moot before resolving it.

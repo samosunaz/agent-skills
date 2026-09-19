@@ -114,7 +114,7 @@ Check whether behavior changed in ways docs must follow: API/endpoints, env/conf
 
 ## Step 5: Present, persist, seal
 
-1. **Persist the report** as a committed file `{feature_dir}/validation.md` (`Write`). Also surface it: `gh issue comment {item} -R {repo}` with the PASS/FAIL summary + the independent-review verdict + manual checklist (so the Issue timeline tells the story). Code refs in the comment follow the adapter § Linking: SHA permalinks if the branch is pushed, plain `path:line` otherwise (the usual case pre-`done` — don't push just to mint links).
+1. **Persist the report** as a committed file `{feature_dir}/validation.md` (`Write`). Also surface it: `gh issue comment {item} -R {repo}` with the PASS/FAIL summary + the independent-review verdict + manual checklist (so the Issue timeline tells the story). Code refs in the comment follow the adapter § Linking: SHA permalinks if the branch is pushed, plain `path:line` otherwise (the usual case pre-`done` — don't push just to mint links). Append a `samuel:run` block (`phase: validate`, `agent`/`model`/`effort` from an injected launcher line or `unknown`, `sha` = the Gated SHA) as its own trailing block — `../../reference/github-operations.md` § Run metadata.
 2. **Present** the report (+ doc updates).
 3. **Seal the journal** (only on PASS / PASS WITH NOTES, no `Blocking: yes` open questions, **and no unresolved reviewer Blocker**): `Read`+`Edit` the file → `Status: sealed`, drop `status:living`/`has-open-questions` from its body callout, keep `has-deviations` if applicable.
 4. **Set phase**: `.claude/task-context/{item}.md` → `phase: validate`, `last_updated: {today}`.

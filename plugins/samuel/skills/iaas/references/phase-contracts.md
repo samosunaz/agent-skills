@@ -15,6 +15,18 @@ parallel cannot overwrite them.
 
 ## Standing rules — every phase gets this block appended
 
+Every phase also gets one **Run metadata** line, filled with the values this launch actually used
+(never invented) — `{job_id}` is this iaas run's id when one is tracked, omitted otherwise:
+
+```
+Run metadata: agent=claude model={model} effort={effort} run={job_id}
+```
+
+Whatever the phase posts to GitHub (PR body, review, resolution comment, simplify-pass comment)
+carries a `samuel:run` block built from that line, per `../../../reference/github-operations.md` §
+Run metadata — `phase` is the one field the launcher does not inject, because it is the phase's own
+identity (`implement` / `audit` / `address` / `simplify`) and the skill it runs already knows it.
+
 ```markdown
 ## Standing rules (all phases)
 
@@ -46,6 +58,8 @@ Runs `/samuel:implement`, then `/samuel:done --draft`.
 
 You are in worktree {path} on branch {branch}, based on origin/{default}.
 
+Run metadata: agent=claude model={model} effort={effort} run={job_id}
+
 Task: implement item #{N} end to end. Start by reading the Issue — its body is the spec, and its
 Executor Plan is self-contained.
 
@@ -58,7 +72,8 @@ Definition of done:
   needs an undeclared seam is a plan-reality mismatch — stop and say so.
 - The repo gate green.
 - Commit, push the branch, sign the gate, then open a DRAFT PR titled "{type}: {summary}" with a
-  concise body carrying "Part of #{N}".
+  concise body carrying "Part of #{N}" and a `samuel:run` block stamped `phase: implement` from the
+  Run metadata line above (`/samuel:done`'s § Run metadata rule).
 ```
 
 ## Phase 2 — AUDIT (round P)
@@ -69,6 +84,8 @@ Runs `/samuel:pr-self-audit`. **This phase changes no code.**
 # Phase 2 — AUDIT item #{N}, round {P}
 
 You are in the worktree for branch {branch}. A draft PR exists for it.
+
+Run metadata: agent=claude model={model} effort={effort} run={job_id}
 
 Task: adversarial review of the PR against item #{N}. Read the Issue, the full diff, and the code in
 the tree — verify claims by reading, and by running targeted tests where that is cheap. Hunt for:
@@ -87,7 +104,8 @@ resolution comment says where to look; it is never the evidence. The rest is not
 Deliverable: exactly ONE PR review whose body opens with the pass marker, carries the scope line
 when this is a delta, and states **Verdict: APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES**,
 then each finding with its ID (B{n}/I{n}/N{n}), severity, category, file:line, impact naming the
-inputs that trigger it, and a concrete fix.
+inputs that trigger it, and a concrete fix. Append a `samuel:run` block (`phase: audit`,
+`round: {P}`) built from the Run metadata line above, as its own block after the pass marker.
 
 You change NO code in this phase.
 ```
@@ -101,6 +119,8 @@ Runs `/samuel:address-pr-comments`.
 
 You are in the worktree for branch {branch}, with an open draft PR carrying round {P}'s audit.
 
+Run metadata: agent=claude model={model} effort={effort} run={job_id}
+
 Task: resolve every finding of that round. For each: fix it, or decline with a one-line technical
 reason when the finding is factually wrong — **verify against the code, not against authority; the
 auditor can be wrong.** Blockers and Importants get fixed, not declined, unless provably incorrect.
@@ -113,7 +133,8 @@ change nothing, and post one line saying the audit stands.
 
 Definition of done when changes were made: gate green, commit, push, sign, then ONE
 `## Resolution — pass {P}` comment with the disposition table (finding → fixed with its permalink,
-or declined with the reason) and the processed review IDs.
+or declined with the reason), the processed review IDs, and a `samuel:run` block (`phase: address`,
+`round: {P}`) built from the Run metadata line above, appended after the `samuel:address-pass` marker.
 ```
 
 ## Phase 4 — SIMPLIFY
@@ -124,6 +145,8 @@ Three passes in a fixed order, each on the branch diff only, each allowed to cha
 # Phase 4 — SIMPLIFY item #{N}
 
 You are in the worktree for branch {branch}, with an open draft PR whose audit rounds are resolved.
+
+Run metadata: agent=claude model={model} effort={effort} run={job_id}
 
 Task, over the BRANCH DIFF ONLY, in this order:
 1. /samuel:interrogate — restate the item's purpose from the Issue TL;DR, then delete every piece that
@@ -139,7 +162,9 @@ pass is a valid outcome, and inventing work here undoes an audit that already pa
 
 Definition of done: if anything changed — gate green, one commit per pass that changed something,
 push, sign. In all cases post ONE `**Simplify pass:**` comment with one line per pass
-(`interrogate: …` · `simplify: …` · `remove-slop: …`), "no changes needed" where a pass changed nothing.
+(`interrogate: …` · `simplify: …` · `remove-slop: …`), "no changes needed" where a pass changed
+nothing, and a `samuel:run` block (`phase: simplify`) built from the Run metadata line above —
+this comment is a GitHub post like any other phase's, so it carries the block too.
 {if --ready:} Then mark the PR ready for review.
 ```
 
