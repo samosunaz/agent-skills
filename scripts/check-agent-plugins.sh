@@ -20,6 +20,7 @@ REF_RE = re.compile(r'(?:\.\./)+[A-Za-z0-9._/-]+\.(?:md|sh|yml|yaml|txt|json|py)
 # (file, ref) pairs that are templates quoted for another file's depth, not links.
 EXEMPT_REFS = {
     ("plugins/samuel/reference/interaction-tools.md", "../../reference/interaction-tools.md"),
+    ("plugins/shunt/reference/cross-client.md", "../../reference/cross-client.md"),
 }
 
 errors = []

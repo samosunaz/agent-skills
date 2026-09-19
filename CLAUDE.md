@@ -15,7 +15,7 @@ This repo targets **Claude Code** and **OpenAI Codex** from one shared skill sou
 | Discovery | `.claude-plugin/marketplace.json` | `.agents/plugins/marketplace.json` |
 | Plugin manifest | `plugins/*/.claude-plugin/plugin.json` → symlink to `plugins/*/plugin.json` | `plugins/*/.codex-plugin/plugin.json` |
 | Skill source | Shared `SKILL.md` format | Shared `SKILL.md` format |
-| Agents | `agents/*.md` per plugin | Not supported |
+| Agents | `agents/*.md` per plugin | `spawn_agent` (`model` + `reasoning_effort` per call); no per-plugin agent definition file, so a worker's contract travels inside the message |
 | Instructions | `CLAUDE.md` | `AGENTS.md` (symlink → `CLAUDE.md`) |
 
 Adding or renaming a skill needs no sync step — the plugin dir is the only source. Adding a **plugin** touches five files: both marketplaces, its root manifest, its Codex manifest, and `release-please-config.json` `extra-files` (a manifest missing from `extra-files` freezes that plugin's version silently; `scripts/validate-plugins.sh` fails the pre-commit hook on that gap and on version drift).
@@ -56,7 +56,8 @@ agent-skills/
 │   │   └── skills/               # 38 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
-│       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write)
+│       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write) — Claude Code only
+│       ├── reference/            # cross-client.md — per-client tool names, install paths, worker mechanism (ADR 0008)
 │       ├── hooks/hooks.json      # Read/Grep/Bash matchers → scripts/check-*.sh (loaded by Claude Code; Codex runs the same protocol, installed per repo)
 │       ├── scripts/              # check-read.sh (whole-file reads > SHUNT_MIN_LINES), check-search.sh (unbounded content searches); both fail open
 │       ├── evals/                # plugin-eval case: large-file-read — asserts the deny fires (§ Evals)
@@ -83,7 +84,7 @@ Every skill lives in `plugins/samuel/skills/<name>/` with a required `SKILL.md` 
 
 Skills are namespaced by plugin: `/samuel:commit`, `/samuel:plan`, etc.
 
-Sub-agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them automatically when the plugin is installed. Codex does not use agents.
+Sub-agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them automatically when the plugin is installed. Codex reads no agent definition file — it spawns a worker with `spawn_agent` and the worker's contract travels inside the message (`plugins/shunt/reference/cross-client.md`).
 
 Register new plugins in **both** marketplaces (`.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`). Use `template/SKILL.md` as starting point for new skills.
 
@@ -114,14 +115,14 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 ## The Shunt Plugin: Token Plane
 
-`shunt:` is orthogonal to `samuel:` (delivery): it controls what enters the frontier context. The pattern is Spotify's (engineering.atspotify.com, sep 2026: a hook + cheap-worker shunt cut Claude Code token use on large-file reads by ~90% in their measurements); here the workers are two plugin agents on cheap Claude models and the enforcement is a plugin hook (ADR 0007, `docs/decisions/0007-token-plane-gate-large-io-out-of-context.md`).
+`shunt:` is orthogonal to `samuel:` (delivery): it controls what enters the frontier context. The pattern is Spotify's (engineering.atspotify.com, sep 2026: a hook + cheap-worker shunt cut Claude Code token use on large-file reads by ~90% in their measurements); here the enforcement is a `PreToolUse` hook and the workers are cheap subagents (ADR 0007, `docs/decisions/0007-token-plane-gate-large-io-out-of-context.md`). **The plane runs on both clients** — one protocol, one pair of scripts, two installs and two worker mechanisms (ADR 0008, `docs/decisions/0008-codex-runs-the-same-hook-protocol.md`); the per-client table is `plugins/shunt/reference/cross-client.md`.
 
-- **Read gate** (`hooks/hooks.json` → `scripts/check-read.sh`, matchers `Read` and `Bash`): a whole-file `Read` (no `offset`/`limit`) or a bare `cat`/`less`/`more`/`bat` on a **text** file over `SHUNT_MIN_LINES` (default 350) is **denied** with a message naming the three exits: delegate the question to `shunt:bulk-reader`, read a targeted range for an edit, or override deliberately with `offset=1 limit=<n>`. Piped/chained commands, `sed -n`, `head -n`, `tail -n`, binaries, and anything the script cannot parse **pass**: the gate fails open. `SHUNT_DISABLE=1` on the agent process turns it off, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the three exits are named in — unset emits wording valid on either client.
+- **Read gate** (`hooks/hooks.json` → `scripts/check-read.sh`, matchers `Read` and `Bash`): a whole-file `Read` (no `offset`/`limit`) or a bare `cat`/`less`/`more`/`bat` on a **text** file over `SHUNT_MIN_LINES` (default 350) is **denied** with a message naming the three exits: delegate the question to the cheap worker, read a targeted range for an edit, or override deliberately with the whole file as an explicit range (`offset=1 limit=<n>` under Claude Code, `sed -n '1,<n>p'` under Codex). Piped/chained commands, `sed -n`, `head -n`, `tail -n`, binaries, and anything the script cannot parse **pass**: the gate fails open. `SHUNT_DISABLE=1` on the agent process turns it off, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the three exits are named in — unset emits wording valid on either client.
 - **Search gate** (`scripts/check-search.sh`, matchers `Grep` and `Bash` for `rg`/`grep`/`git grep`): a content-mode search with no bound (`head_limit`/`-m`) and no scope (`glob`/`type`/`-g`/`-t`/subdirectory) across the whole repo is denied; files-only, count, piped, bounded, or scoped forms pass. Speed was never the cost; every matching line entering context is. An explicit `head_limit` is the override.
-- **Agents** (`agents/`): `bulk-reader` (haiku, read-only tools; one closed question in, structured bullets with `file:line` out; refuses debugging/design) and `code-writer` (sonnet, `Write` allowed; one target file from one reference file, nothing else touched). Both are exempt from the gates by `agent_type`; every other subagent is gated like the main thread.
+- **Workers**: under Claude Code they are the plugin agents in `agents/` — `bulk-reader` (haiku, read-only tools; one closed question in, structured bullets with `file:line` out; refuses debugging/design) and `code-writer` (sonnet, `Write` allowed; one target file from one reference file, nothing else touched) — exempt from the gates by `agent_type`, while every other subagent is gated like the main thread. Under Codex there is no agent definition file: the worker is a `spawn_agent` call (`gpt-5.5`, `reasoning_effort: low`) carrying the same contract inline, and it is **not** exempt (every Codex subagent reports `agent_type: "default"`), so the spawn message orders the bounded `sed -n '1,<n>p'` read itself.
 - **`shunt:bulk-read`**: the delegation recipe the hook points at; never for debugging, architecture, safety-critical paths, or the region you are about to edit (worker line numbers are hints; verify with `Grep` before editing).
 - **`shunt:code-write`**: pattern-following generation (tests, configs, stubs) with a **mandatory reference file**; the output goes to disk and only `git diff` + the verify contract come back through the main model.
-- **Codex install**: the gates run there too, installed per repo by `scripts/install-codex.sh` (0.154.0 reads a plugin's `hooks` field and runs no handler from it). **A Codex handler is skipped in silence until it is trusted once** — approve it in the TUI, or pass `--dangerously-bypass-hook-trust`; `--check` reports which state you are in.
+- **Codex install**: the gates run there too, installed per repo into `<repo>/.codex/hooks.json` by `scripts/install-codex.sh` (0.154.0 reads a plugin's `hooks` field and runs no handler from it). **A Codex handler is skipped in silence until it is trusted once** — approve it in the TUI, or pass `--dangerously-bypass-hook-trust`; `--check` reports which state you are in. Codex has no `Read` and no `Grep` tool, so both gates hang off its single `Bash` matcher.
 - **Measurement**: every denial appends one line to `~/.claude/plugin-data/shunt/denials.log` (`SHUNT_LOG` overrides).
 - **What it does not touch**: the fixed per-session cost (CLAUDE.md, skill hubs, reference spokes). That is a separate lever; see § Skill Authoring Guidelines hub size.
 
