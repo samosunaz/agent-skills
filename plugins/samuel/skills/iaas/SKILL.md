@@ -28,10 +28,10 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 
 | Phase | Skill it runs | Leaves behind |
 |---|---|---|
-| **I**mplement | `/samuel:implement` then `/samuel:done --draft` | commits, a **draft PR** |
-| **A**udit | `/samuel:pr-self-audit` | ONE PR review carrying a `<!-- samuel:review-pass P={P} … -->` marker |
-| **A**ddress | `/samuel:address-pr-comments` | fixes + ONE `## Resolution — pass {P}` comment |
-| **S**implify | `/samuel:interrogate` → native `/simplify` → `/samuel:remove-slop` | delete what should not exist, tidy what stays, then remove the slop — commits over the branch diff, or nothing |
+| **I**mplement | `/samuel:implement` then `/samuel:done --draft` | commits, a **draft PR** (body carries a `samuel:run` block, `phase: implement`) |
+| **A**udit | `/samuel:pr-self-audit` | ONE PR review carrying a `<!-- samuel:review-pass P={P} … -->` marker + a `samuel:run` block |
+| **A**ddress | `/samuel:address-pr-comments` | fixes + ONE `## Resolution — pass {P}` comment + a `samuel:run` block |
+| **S**implify | `/samuel:interrogate` → native `/simplify` → `/samuel:remove-slop` | delete what should not exist, tidy what stays, then remove the slop — commits over the branch diff, or nothing; the `**Simplify pass:**` comment carries a `samuel:run` block (`phase: simplify`) when something changed |
 
 **GitHub is the channel between phases, not the session.** A fresh `claude -p` has no memory of the previous one, so the pass markers on the PR are the only thing that makes round 2 a delta instead of a repeat. That machinery already exists on both sides (`pr-self-audit` § Passes · `address-pr-comments` § Pass boundary) — IAAS depends on it and adds none of its own.
 
@@ -65,7 +65,7 @@ Any one of these ends it. Report which one fired — "done" and "gave up" must n
 
 ## Run accounting
 
-Capture cost, turns and tokens per phase (`--output-format stream-json`, read the `result` line), and post ONE run report to the rolling **`conductor:log`** issue — the same timeline the conductor and waves already write to (ADR 0003, format in `../../reference/automated-trigger.md` § The run report). Add a `rounds` column: the ceiling, how many actually ran, and which stop rule fired. Cost per accepted change is the number this makes visible; a wave of this shape has run $27-53.
+Capture cost, turns and tokens per phase (`--output-format stream-json`, read the `result` line), and post ONE run report to the rolling **`conductor:log`** issue — the same timeline the conductor and waves already write to (ADR 0003, format in `../../reference/automated-trigger.md` § The run report). Add a `rounds` column: the ceiling, how many actually ran, and which stop rule fired. Cost per accepted change is the number this makes visible; a wave of this shape has run $27-53. The model/effort behind each individual phase no longer needs the run report at all — every artifact a phase posts carries its own `samuel:run` block (`../../reference/github-operations.md` § Run metadata), readable straight off the PR.
 
 ## Gotchas
 

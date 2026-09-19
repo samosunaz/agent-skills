@@ -40,6 +40,14 @@ carries `P=` and `findings=` inside it, so the short closed form matches no body
 `P` = your **own** previous passes + 1 (filter by the Context's `gh login`). With no marker of your
 own, `P` = 1 and the run is a full sweep — the degenerate case needs no separate branch in the logic.
 
+## Run metadata
+
+Every review body carries a `<!-- samuel:run -->` block (`phase: audit`, `round: {P}`) — the who/what
+that produced this pass. It is a **separate block from the pass marker above**, appended at the end of
+the body, never merged into `<!-- samuel:review-pass -->` — the pass marker's `startswith` match must
+keep the exact prefix at the start of the body. Field values, the placement rule, and the jq recipe to
+read it back: `../../../reference/github-operations.md` § Run metadata.
+
 ### The scope line
 
 When the run is a delta, the comment opens by declaring what it covers. It is the only part of the
@@ -129,6 +137,16 @@ something the previous body never displayed. Never reuse an ID across passes on 
 
 The code looks good. The changes are coherent, follow the project's conventions, and introduce no evident bugs.
 {end no findings}
+
+<!-- samuel:run
+phase: audit
+round: {P}
+agent: {claude | codex}
+model: {model, or unknown}
+effort: {effort, or unknown}
+sha: {head_sha}
+run: {run/job id, omit the line if none}
+-->
 ```
 
 ## The event is derived from the verdict
