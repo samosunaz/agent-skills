@@ -29,7 +29,7 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 | Phase | Skill it runs | Leaves behind |
 |---|---|---|
 | **I**mplement | `/samuel:implement` then `/samuel:done --draft` | commits, a **draft PR** (body carries a `samuel:run` block, `phase: implement`) |
-| **A**udit | `/samuel:pr-self-audit` | ONE PR review carrying a `<!-- samuel:review-pass P={P} … -->` marker + a `samuel:run` block |
+| **A**udit | `/samuel:pr-self-audit`, executing · on M and L also a read-only second audit by another model family (round 1) | ONE PR review carrying a `<!-- samuel:review-pass P={P} … -->` marker + a `samuel:run` block · the second audit's confirmed findings as one PR comment |
 | **A**ddress | `/samuel:address-pr-comments` | fixes + ONE `## Resolution — pass {P}` comment + a `samuel:run` block |
 | **S**implify | `/samuel:interrogate` → native `/simplify` → `/samuel:remove-slop` | delete what should not exist, tidy what stays, then remove the slop — commits over the branch diff, or nothing; the `**Simplify pass:**` comment carries a `samuel:run` block (`phase: simplify`) when something changed |
 
@@ -54,7 +54,7 @@ No chip on the item → treat as **M** and say so in the CONFIRM block. A `direc
 
 Any one of these ends it. Report which one fired — "done" and "gave up" must never look the same.
 
-1. **Converged** — the audit verdict carries no Blocker and no Important. Nits alone do not buy another round; the rubric already calls them informational (`../../reference/review-rubric.md` § Severity).
+1. **Converged** — the audit verdict carries no Blocker and no Important, and on size M and L neither does the confirmed list of the second audit (`references/phase-contracts.md` § Phase 2b). Nits alone do not buy another round; the rubric already calls them informational (`../../reference/review-rubric.md` § Severity).
 2. **Ceiling reached** — stop and report every finding still open. Do not quietly continue.
 3. **Not converging** — round `N` raises findings at the same `file:line` the previous round claimed to have fixed. Another round costs the same money to produce the same argument, so stop and escalate with both rounds' findings side by side.
 4. **Empty audit** — a phase that returns nothing is a **broken channel, not a clean verdict**. Re-launch it once; still empty → STOP and report. Never count it as converged. (`git diff {base}...HEAD` is also empty on a branch with no commits, which reads identically — check the branch has commits before believing an empty audit.)
@@ -73,6 +73,8 @@ _Add a line each time Claude trips on something._
 
 - **The audit must not share context with the implementer.** Launch it as its own process, never as a continuation — an auditor that watched the code being written reviews the reasoning, not the diff. Same doctrine as `/samuel:validate` Step 2.5, at process scale instead of subagent scale.
 - **An empty phase return is indistinguishable from a clean one.** Rule 4 exists because both print nothing; the branch's commit count is what separates them.
+- **An auditor that only reads misses what an auditor that runs finds.** On the same frozen diff, the primary model read-only declared source order clean; the same model allowed to execute broke it with one case. Execution is part of the audit contract from round 1, not from round 2.
+- **Two model families beat one model at a higher effort.** Over five frozen diffs with a ground truth confirmed by execution, the primary found 4 of 5 real defects, a read-only auditor from another family found a different 4 of 5, and only the union reached 5 — one defect, present in four of the diffs, was raised by a single audit out of twenty-one that could have seen it. A second-audit finding is a hypothesis until the coordinator has executed it.
 - **A ceiling is not a target.** `--rounds 3` on a clean implementation should still stop after round 1.
 - **IAAS audits behaviour.** Pixels the human judges from a capture get no audit loop and no worker phase — the reflex to wrap every item in fresh-context phases is what turns a thirty-line stylesheet change into an hour. The `direct` chip exists so that reflex has to argue with a value the human set.
 - **The size chip is read, never re-judged.** If the item has no chip, say so at CONFIRM rather than inventing a complexity estimate — a heuristic built on the agent's self-assessment is decorative (`../../reference/pipeline.md` § The unknowns seam).
