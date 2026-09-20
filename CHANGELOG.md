@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.12.0](https://github.com/samosunaz/agent-skills/compare/v4.11.0...v4.12.0) (2026-09-20)
+
+
+### 🚀 Features
+
+* **samuel:** five usage-audit skills, and IAAS routing measured on a matched model run ([#55](https://github.com/samosunaz/agent-skills/issues/55)) ([4ba52f5](https://github.com/samosunaz/agent-skills/commit/4ba52f575eacc5bf6f075f45165e41e28387ab18))
+* **samuel:** stamp run metadata on every posted artifact ([#48](https://github.com/samosunaz/agent-skills/issues/48)) ([fd6a309](https://github.com/samosunaz/agent-skills/commit/fd6a309c5cb84ca109509d956a1bd3d94a624da9))
+* **samuel:** stamp run metadata on every posted artifact ([#50](https://github.com/samosunaz/agent-skills/issues/50)) ([36f3b11](https://github.com/samosunaz/agent-skills/commit/36f3b1167936000b3d844a12a182ab9d080d17c9))
+
+
+### 🩹 Fixes
+
+* **waves:** bind an orchestration Run in P0 and offer the subagent engine when run-create is denied ([#52](https://github.com/samosunaz/agent-skills/issues/52)) ([d13927e](https://github.com/samosunaz/agent-skills/commit/d13927eb901c353c25614d6e76306018ed0c3f3e))
+
+
+### 📄 Documentation
+
+* **shunt:** two-platform delegation recipes and ADR 0008 ([#53](https://github.com/samosunaz/agent-skills/issues/53)) ([b8bd33b](https://github.com/samosunaz/agent-skills/commit/b8bd33bd08d9180b7fb2e4bf64d8cb244d7e17d6)), closes [#44](https://github.com/samosunaz/agent-skills/issues/44)
+
 ## [4.11.0](https://github.com/samosunaz/agent-skills/compare/v4.10.0...v4.11.0) (2026-09-18)
 
 
