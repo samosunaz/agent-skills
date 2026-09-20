@@ -16,6 +16,7 @@
 plugins/ops/skills/catchup/SKILL.md
 plugins/ops/skills/pr-radar/SKILL.md
 plugins/samuel/skills/progress/SKILL.md
+plugins/samuel/skills/debrief/SKILL.md
 
 # Read-only analysis. Severity-tagged findings, no auto-edits, nothing to approve.
 plugins/samuel/skills/analyze/SKILL.md

@@ -50,10 +50,10 @@ agent-skills/
 │   │   ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
 │   │   ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
-│   │   ├── agents/               # Sub-agent definitions (3)
+│   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
 │   │   ├── evals/                # plugin-eval cases: tldr-rewrite, mermaid-standard (§ Evals)
-│   │   └── skills/               # 38 skills, one dir each (flat — §7.1)
+│   │   └── skills/               # 43 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
 │       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write) — Claude Code only
@@ -71,12 +71,12 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 | Group | Skills |
 |---|---|
 | pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
-| git | create-atomic-commit, remove-slop, interrogate, pr-self-audit, address-pr-comments, session-handoff |
-| workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, waves, wave-prep, done, progress, retro, team-orchestrate |
+| git | create-atomic-commit, remove-slop, interrogate, polish, pr-self-audit, address-pr-comments, session-handoff |
+| workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, cascade, waves, wave-prep, land, done, debrief, progress, retro, team-orchestrate |
 | product | feature-dossier, mermaid, tldr |
 | design | motion-brief |
 | contract | api-request, api-contract |
-| meta | find-unknowns, repo-audit, create-review-md, create-constitution, update-constitution |
+| meta | find-unknowns, repo-audit, create-review-md, premise, create-constitution, update-constitution |
 
 ## Skill Anatomy
 

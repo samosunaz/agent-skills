@@ -139,10 +139,10 @@ agent-skills/
 │   │   ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
 │   │   ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
-│   │   ├── agents/               # Sub-agent definitions (3)
+│   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
 │   │   ├── evals/                # plugin-eval cases (`bun run eval:samuel`)
-│   │   └── skills/               # 38 skills, one directory each
+│   │   └── skills/               # 43 skills, one directory each
 │   └── shunt/                    # Token plane plugin (ADR 0007, ADR 0008)
 │       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
 │       ├── scripts/              # check-read.sh, check-search.sh (fail open), install-codex.sh
@@ -192,6 +192,9 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:waves`](plugins/samuel/skills/waves/SKILL.md) | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
 | [`/samuel:coordinate`](plugins/samuel/skills/coordinate/SKILL.md) | Single-task coordinator over Orca: decompose one task into named workers (`<task>-<role>-<model>`, explicit model + effort verified in the launch receipt), six-slot briefs, six-line reports, proven starts, nine-minute wait windows with a status line each, integration + real checks in one checkout. Never pushes or merges on its own. |
 | [`/samuel:wave-prep`](plugins/samuel/skills/wave-prep/SKILL.md) | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
+| [`/samuel:cascade`](plugins/samuel/skills/cascade/SKILL.md) | Tiered run for one item: this session (the owner's flagship model) frames, answers the planner's checkpoints, ratifies the plan and does the final read; a high-tier planner writes the Executor Plan; a medium-tier implementer executes it; a fresh high-tier reviewer audits. Ends at a merge verdict, never at a merge. |
+| [`/samuel:land`](plugins/samuel/skills/land/SKILL.md) | Land a set of finished PRs as one train: state read from the host, ordered by file overlap, ONE approval for the merges and the sweep, re-verify what each merge invalidates, then remove the branches, worktrees and panes it made obsolete. |
+| [`/samuel:debrief`](plugins/samuel/skills/debrief/SKILL.md) | Read-only outcome report for work that landed: what it achieved, whether any of it is visible and where, what was measured, what comes next in the epic. |
 
 ### Product
 
@@ -217,6 +220,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:session-handoff`](plugins/samuel/skills/session-handoff/SKILL.md) | Context compaction (FIC) for long sessions. |
 | [`/samuel:interrogate`](plugins/samuel/skills/interrogate/SKILL.md) | The agent's own first-principles pass before it reports done (self-invoked at every pipeline close-out): restate the purpose, challenge every piece (unnecessary? weak assumption? deletable? simpler without it?), apply cuts delete > simplify > optimize > automate — or report the work is already right and change nothing. |
 | [`/samuel:remove-slop`](plugins/samuel/skills/remove-slop/SKILL.md) | Remove AI-generated code slop from the current branch. |
+| [`/samuel:polish`](plugins/samuel/skills/polish/SKILL.md) | The simplification chain as ONE run over a finished branch or a blast of PRs: `interrogate` → native `/simplify` → `remove-slop`, real checks re-run, one report, one push approval. |
 
 ### Contract
 
@@ -234,6 +238,7 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 | [`/samuel:find-unknowns`](plugins/samuel/skills/find-unknowns/SKILL.md) | Map-vs-territory audit: audit / preflight (Issue N, READY-or-HOLD) / teach / quiz. Preflight gates autonomous `pipeline:ready`; quiz is the human comprehension gate before merging agent-authored PRs. |
 | [`/samuel:repo-audit`](plugins/samuel/skills/repo-audit/SKILL.md) | Substrate drift detector for consumer repos: deterministic checks + semantic CLAUDE.md pass. Report-only. |
 | [`/samuel:create-review-md`](plugins/samuel/skills/create-review-md/SKILL.md) | Generate a repo's root `REVIEW.md` (schema v1): deterministic evidence digest + semantic derivation of repo-specific review rules, cited per bullet. |
+| [`/samuel:premise`](plugins/samuel/skills/premise/SKILL.md) | Burn a product fact agents keep re-deriving wrongly into the instruction file they load, then sweep the repo for every test, guardrail, doc, plan and field that contradicts it. Reports; never fixes. |
 
 ### Token plane (`shunt` plugin)
 
@@ -263,6 +268,9 @@ Sub-agents are spawned by skills for parallel data retrieval. They are retriever
 | `implementation-analyzer` | sonnet | Analyze implementation details of specific components |
 | `pattern-scanner` | sonnet | Find similar implementations and usage patterns |
 | `implementation-reviewer` | opus | Independent adversarial review of a diff vs spec/AC (`validate` Step 2.5) |
+| `cascade-planner` | opus · high | Planner tier of `/samuel:cascade`: framing → Brief + Executor Plan; returns open questions instead of guessing |
+| `cascade-implementer` | sonnet · high | Implementer tier of `/samuel:cascade`: executes the ratified plan, least code, six-line report |
+| `cascade-reviewer` | opus · xhigh | Review tier of `/samuel:cascade`: fresh-context audit of one frozen commit; validates every finding by executing it |
 
 ## Source of truth — GitHub Issues + PRs
 
