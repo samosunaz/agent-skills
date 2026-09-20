@@ -50,10 +50,10 @@ agent-skills/
 │   │   ├── plugin.json           # Portable manifest (Agent Plugins 1.0.0)
 │   │   ├── .claude-plugin/plugin.json   # Symlink → ../plugin.json
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
-│   │   ├── agents/               # Sub-agent definitions (3)
+│   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
 │   │   ├── evals/                # plugin-eval cases: tldr-rewrite, mermaid-standard (§ Evals)
-│   │   └── skills/               # 38 skills, one dir each (flat — §7.1)
+│   │   └── skills/               # 43 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
 │       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write) — Claude Code only
@@ -71,12 +71,12 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 | Group | Skills |
 |---|---|
 | pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
-| git | create-atomic-commit, remove-slop, interrogate, pr-self-audit, address-pr-comments, session-handoff |
-| workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, waves, wave-prep, done, progress, retro, team-orchestrate |
+| git | create-atomic-commit, remove-slop, interrogate, polish, pr-self-audit, address-pr-comments, session-handoff |
+| workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, cascade, waves, wave-prep, land, done, debrief, progress, retro, team-orchestrate |
 | product | feature-dossier, mermaid, tldr |
 | design | motion-brief |
 | contract | api-request, api-contract |
-| meta | find-unknowns, repo-audit, create-review-md, create-constitution, update-constitution |
+| meta | find-unknowns, repo-audit, create-review-md, premise, create-constitution, update-constitution |
 
 ## Skill Anatomy
 
@@ -111,7 +111,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 - **`/samuel:conductor`** — Drives the pipeline unattended phase-by-phase for cloud/overnight runs (`claude -p` + `/goal`; droplet or `caffeinate`). Two ceilings: **review mode** (default) runs up to `validate` then HARD-STOPS before any PR; **ship mode** (`--ship`) drives through `validate`, runs the gate, and opens a **draft PR** via `/samuel:done --draft` — the human marks ready & merges. Can **bootstrap from an item id**: `/samuel:conductor 42 --ship` = item → branch → implement → validate → draft PR (the headless SSH loop). SAFETY GATE: isolated worktree **or a CI runner on a non-main branch** (equivalent isolation), never a local `main`; review never pushes, ship opens only a draft (never merges/ready/closes). Records every assumption to the Issue + journal + handoff. Recipe + the permission barrier (bypass mode + a committed deny list) + multi-item loop: `plugins/samuel/skills/conductor/references/autonomous-run.md`. **Automatic heartbeat** — GitHub fires the loop on a schedule / `issues:labeled` (closing the manual-trigger gap), opening a draft PR via a committed workflow template (`plugins/samuel/skills/conductor/assets/conductor.yml`): `plugins/samuel/reference/automated-trigger.md`. **Run accounting** — every run captures cost/turns/tokens per item (`--max-budget-usd` + `stream-json`), enforces a per-item and a per-sweep budget cap, and posts one run report to a rolling `conductor:log` issue shared by CI and SSH launches; cost-per-accepted-change is computed at the morning review.
 
-- **`/samuel:iaas`** — Drives **one item** through **Implement → [Audit → Address] × N → Simplify**, each phase its own headless process with **fresh context** (the auditor never saw the implementer's reasoning, so it judges the diff instead of the story). Reimplements nothing: the phases are `implement`+`done --draft`, `pr-self-audit`, `address-pr-comments`, and a Simplify chain of `interrogate` → native `/simplify` → `remove-slop`, and **GitHub is the channel between them** — the pass markers on the PR are what make round 2 a delta instead of a repeat. The round ceiling comes from `--rounds N` or from the item's **size chip** (S→1, M→2, L→3, `plugins/samuel/reference/plan-templates.md` § Sizing); a ceiling is a maximum, never a target. Four stop rules, and the report always names which fired: converged (no Blocker/Important), ceiling reached, **not converging** (the same `file:line` re-raised after a claimed fix), or an **empty audit** — a broken channel, never a clean verdict. Authority stops at the draft PR (`--ready` opts into marking it ready; merge is never automated, ADR 0004). Run accounting goes to the same `conductor:log` issue, plus a `rounds` column. Contracts, the chain and model routing: `plugins/samuel/skills/iaas/references/phase-contracts.md`.
+- **`/samuel:iaas`** — Drives **one item** through **Implement → [Audit → Address] × N → Simplify**, each phase its own headless process with **fresh context** (the auditor never saw the implementer's reasoning, so it judges the diff instead of the story). Reimplements nothing: the phases are `implement`+`done --draft`, `pr-self-audit`, `address-pr-comments`, and a Simplify chain of `interrogate` → native `/simplify` → `remove-slop`, and **GitHub is the channel between them** — the pass markers on the PR are what make round 2 a delta instead of a repeat. The round ceiling comes from `--rounds N` or from the item's **size chip** (S→1, M→2, L→3, `plugins/samuel/reference/plan-templates.md` § Sizing); a ceiling is a maximum, never a target. Four stop rules, and the report always names which fired: converged (no Blocker/Important), ceiling reached, **not converging** (the same `file:line` re-raised after a claimed fix), or an **empty audit** — a broken channel, never a clean verdict. The audit **executes from round 1** (focused tests plus its own adversarial cases), and on size M and L round 1 also runs a **read-only second audit by another model family**, whose Blockers and Importants count only after the coordinator has executed them. Authority stops at the draft PR (`--ready` opts into marking it ready; merge is never automated, ADR 0004). Run accounting goes to the same `conductor:log` issue, plus a `rounds` column. Contracts, the chain and model routing: `plugins/samuel/skills/iaas/references/phase-contracts.md`.
 
 ## The Shunt Plugin: Token Plane
 

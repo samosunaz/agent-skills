@@ -88,7 +88,10 @@ You are in the worktree for branch {branch}. A draft PR exists for it.
 Run metadata: agent=claude model={model} effort={effort} run={job_id}
 
 Task: adversarial review of the PR against item #{N}. Read the Issue, the full diff, and the code in
-the tree — verify claims by reading, and by running targeted tests where that is cheap. Hunt for:
+the tree. Verify by EXECUTING, from round 1: run the item's focused tests, then write and run at
+least one adversarial case of your own for every acceptance criterion that names an order, a
+de-duplication, a boundary or an "in every branch" shape, and remove it again before you finish. A
+verdict earned by reading alone must say so in its first line. Hunt for:
 Acceptance Criteria not actually met, bugs the diff introduces, contract violations (CLAUDE.md,
 REVIEW.md, CONSTITUTION.md), vacuous tests, silent behavior changes outside scope, and solution fit
 (a reinvented wheel, a needless dependency, speculative generality, a broken public contract).
@@ -110,6 +113,33 @@ inputs that trigger it, and a concrete fix. Append a `samuel:run` block (`phase:
 You change NO code in this phase.
 ```
 
+## Phase 2b — SECOND AUDIT (size M and L, round 1 only)
+
+A second, **read-only** auditor from a **different model family**, launched beside Phase 2 on the same
+frozen SHA. Two instances of one model share blind spots; two families do not (§ Model routing has the
+measurement). It runs through the other engine's own runtime in read-only mode, never as a Claude
+sub-agent, and it posts nothing: its final message comes back to the coordinator.
+
+```markdown
+# Phase 2b — SECOND AUDIT item #{N}
+
+READ-ONLY review of commit {sha} on branch {branch} against item #{N}: its acceptance criteria and
+its plan. You execute nothing and change no file. Apply the review rubric as written (Blocker /
+Important / Nit, confidence bar, what not to flag). Trace the library source under the dependency
+directory when a claim depends on how a library orders, parses or visits something. Validate every
+Blocker or Important by citing the lines that prove it and the concrete input that breaks it.
+
+Report: `VERDICT:` line, `COUNTS: B= I= N=` line, then each finding as
+`ID · path:line · what breaks · the lines that prove it`. Under 3000 characters.
+```
+
+The coordinator **executes every Blocker and Important it returns** before anyone acts on it (a
+read-only claim is a hypothesis), posts the confirmed ones as one PR comment headed
+`## Second audit — confirmed findings`, and names that comment in the round's ADDRESS contract.
+Convergence needs both lists empty of Blockers and Importants. Engine out of quota or unable to
+start ⇒ skip 2b, write `second audit: skipped ({reason})` in the run report, and never substitute a
+lower tier of the primary family for it.
+
 ## Phase 3 — ADDRESS (round P)
 
 Runs `/samuel:address-pr-comments`.
@@ -121,7 +151,8 @@ You are in the worktree for branch {branch}, with an open draft PR carrying roun
 
 Run metadata: agent=claude model={model} effort={effort} run={job_id}
 
-Task: resolve every finding of that round. For each: fix it, or decline with a one-line technical
+Task: resolve every finding of that round{if 2b confirmed any:}, plus the confirmed second-audit
+findings in {comment url}{end}. For each: fix it, or decline with a one-line technical
 reason when the finding is factually wrong — **verify against the code, not against authority; the
 auditor can be wrong.** Blockers and Importants get fixed, not declined, unless provably incorrect.
 
@@ -201,10 +232,30 @@ Each phase's own final message is the machine-read report the standing rules ask
 
 | Phase | Default | Why |
 |---|---|---|
-| Implement | opus-5, effort high | the delegation default for any subagent that ships code |
-| **Audit** | opus-5, effort **xhigh** | the adversarial phase — the one whose misses cost a whole round |
-| Address | opus-5, effort high | bounded work: the findings name what to change |
-| Simplify | opus-5, effort high | taste-sensitive, but scoped to the diff |
+| Implement — size L, user-facing work, or an open design decision | opus-5, effort high | the delegation default for any subagent that ships code |
+| Implement — size S or M with a closed spec | gpt-5.6-luna, effort high, through the Codex runtime · fallback opus-5 high | matched the reference on the one matched run at half the output tokens and no Claude quota (provisional, below) |
+| **Audit** | opus-5, effort **xhigh**, **with execution** | the adversarial phase — the one whose misses cost a whole round |
+| Second audit (M, L) | gpt-5.6-luna, read-only | a different family: its misses did not overlap the primary's |
+| Address | opus-5, effort high | bounded work: the findings name what to change · not measured |
+| Simplify | opus-5, effort high | taste-sensitive, but scoped to the diff · not measured |
 
 Routing is overridable per run. Never silently drop a phase below opus-5 to save tokens; the audit
 is where an under-powered model quietly returns "no findings" and looks identical to a clean pass.
+The Codex rows need two things to hold: quota, and a sandbox that can run the project's tests from
+the worktree — a build tool whose lock lives in the main checkout denies a worktree-scoped sandbox.
+Check it with one focused test before the first dispatch; either one missing ⇒ that row falls back to
+opus-5, **never** to a lower Claude tier.
+
+**Evidence — provisional, one task.** One matched run: five implementers on the same medium fix, same
+plan, same base, blind audit. opus-5 came back with no finding at all; gpt-5.6-luna with one Nit and
+5 of 5 on the coordinator's adversarial suite, in 15k output tokens against opus-5's 30k, written
+without being able to run a test; gpt-5.6-sol failed 1 of 5 (a source-order defect); sonnet-5 wrote
+correct code, left two declared test seams unproven, used 43k tokens and broke one brief rule;
+gpt-5.6-terra shipped an inert check. Then the same five frozen diffs went to six auditors against a
+ground truth confirmed by execution: opus-5 **with** execution found 4 of 5 real defects, opus-5
+**read-only** missed the ordering defect the executing instance found, gpt-5.6-luna read-only found 4
+of 5 — a different four — and the union was 5 of 5. Nobody invented a Blocker or an Important on the
+two clean diffs. Severity drifted between instances of the same model (one defect: Nit in one review,
+Important in another), which is why convergence counts confirmed findings, not labels. Three more
+matched tasks with the same result make these rows permanent; one contrary task reopens them.
+sonnet-5 holds no implementer row and gpt-5.6-terra holds no row until each gets a fair run.
