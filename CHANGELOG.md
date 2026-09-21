@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.0](https://github.com/samosunaz/agent-skills/compare/v4.12.0...v4.13.0) (2026-09-21)
+
+
+### 🚀 Features
+
+* **samuel:** every run closes with a land dry-run, and land names stale drafts ([#56](https://github.com/samosunaz/agent-skills/issues/56)) ([41920e4](https://github.com/samosunaz/agent-skills/commit/41920e49016f080fde2504c105dbdf4e4b18dc46))
+
 ## [4.12.0](https://github.com/samosunaz/agent-skills/compare/v4.11.0...v4.12.0) (2026-09-20)
 
 
