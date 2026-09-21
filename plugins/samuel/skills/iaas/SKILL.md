@@ -59,6 +59,8 @@ Any one of these ends it. Report which one fired — "done" and "gave up" must n
 3. **Not converging** — round `N` raises findings at the same `file:line` the previous round claimed to have fixed. Another round costs the same money to produce the same argument, so stop and escalate with both rounds' findings side by side.
 4. **Empty audit** — a phase that returns nothing is a **broken channel, not a clean verdict**. Re-launch it once; still empty → STOP and report. Never count it as converged. (`git diff {base}...HEAD` is also empty on a branch with no commits, which reads identically — check the branch has commits before believing an empty audit.)
 
+Whichever fired, the report's last line is the output of `/samuel:land --dry-run`: the train this PR would join and what the run leaves behind to sweep. It merges and deletes nothing. A loop that ends at "converged" and stops there leaves a draft PR, a branch and a worktree for someone to rediscover — the closing line is what keeps the pipeline's exit state a list instead of a memory.
+
 ## Authority ceiling
 
 **Draft PR is where this skill stops.** `gh pr ready` runs only under `--ready`, and **merge is never automated at any level** — `/samuel:done`'s outward-action rules and ADR 0004 bind here unchanged. Every phase that pushes runs the repo gate first, and `gate:signoff` when `.claude/samuel.md` declares `signoff`; a phase never signs a SHA its gate did not run against.
