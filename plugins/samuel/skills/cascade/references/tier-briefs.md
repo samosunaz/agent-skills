@@ -39,6 +39,8 @@ MEASURE, DON'T ASSERT: a claim about size, cost, timing or frequency is backed b
 
 QUESTIONS: you will meet decisions you cannot settle from the framing and the code. Do not guess and do not ask the human. {orca: `orca orchestration ask --question "…" --timeout-ms 600000 --json` and wait | agents: stop and return the open questions as your final message — you will be resumed with the answers}. For each question give the options, your recommendation first, and what each option costs.
 
+OUT OF SCOPE: every line you cut carries a verdict — FOLD, FILE or DROP — under ../../../reference/finding-verdicts.md. A cut that is small and sits in a file the plan already touches is a FOLD: put it back in scope instead of cutting it.
+
 REPORT: the plan's location (issue body or file path), the three decisions you are least sure of, and everything marked `[unmeasured]`.
 ```
 
@@ -52,7 +54,7 @@ Run it yourself; this is the judgment the run is paying for. Record one line per
 4. **Order** — does every step leave the tree green? Deleting the old path before the last caller has moved is the classic inversion. Does a user-visible fix wait behind a large refactor it does not need?
 5. **Protections** — what does the plan delete (a test, a guard, an invariant) and what stands in its place? "Nothing" is a finding.
 6. **Premises** — does any step count, freeze or derive rules from something the repo declares disposable?
-7. **Least plan** — cut every step the stated outcome does not need; name what moved to a follow-up.
+7. **Least plan** — cut every step the stated outcome does not need; every cut carries a FOLD / FILE / DROP verdict (`../../../reference/finding-verdicts.md`). Challenge each FILE on cost: a three-line cut in a touched file costs minutes now and a whole pipeline pass as its own item.
 8. **Testing seams** — are the tests' expected values independent of the code under test, and is native or third-party behaviour verified where it actually runs (a real browser, a real database) rather than against a double?
 
 Send the plan back **once**, with the numbered findings. Present the ratified plan to the human with: what you changed, what you measured, what you cut.
@@ -69,7 +71,9 @@ METHOD: read the diff, then the code around it, then EXECUTE — from the first 
 
 ALSO CHECK: every project the diff touches was linted, type-checked and tested (not only the first one); tests whose expectation is recomputed the way the code computes it; behaviour of values that differ by locale or format; state that a refetch can overwrite.
 
-REPORT: verdict (APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES), then findings as `severity · path:line · what breaks · the evidence`. "No findings" must say what you executed to earn it.
+ADJACENT FINDINGS (outside the acceptance criteria): give each a verdict — FOLD, FILE or DROP — under finding-verdicts.md ({pasted or linked}). A FOLD goes back to the implementer before ship, so name the file and the fix.
+
+REPORT: verdict (APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES), then findings as `severity · path:line · what breaks · the evidence`, then adjacent findings as `FOLD|FILE|DROP · path:line · one line`. "No findings" must say what you executed to earn it.
 ```
 
 ## Final read — the top tier's checklist
