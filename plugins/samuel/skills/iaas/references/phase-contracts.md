@@ -45,6 +45,9 @@ identity (`implement` / `audit` / `address` / `simplify`) and the skill it runs 
   NOT force the plan: adapt when the fix is obvious, otherwise stop and explain the contradiction.
 - Reserve budget to finish. Committing, pushing, and the phase's required GitHub action must all
   happen before the turn limit.
+- A message with no tool call ends this phase: `claude -p` exits 0 and the chain moves on. Do not end
+  the turn with a summary that announces the next step, an offer to continue, or a list of choices
+  that block nothing; put status notes in the same message as your next tool call.
 - Your final message is read by a machine: what you did, the PR URL, gate status, deviations, open
   concerns. No padding.
 ```
@@ -232,19 +235,21 @@ Each phase's own final message is the machine-read report the standing rules ask
 
 | Phase | Default | Why |
 |---|---|---|
-| Implement — size L, user-facing work, or an open design decision | opus-5, effort high | the delegation default for any subagent that ships code |
-| Implement — size S or M with a closed spec | gpt-5.6-luna, effort high, through the Codex runtime · fallback opus-5 high | matched the reference on the one matched run at half the output tokens and no Claude quota (provisional, below) |
-| **Audit** | opus-5, effort **xhigh**, **with execution** | the adversarial phase — the one whose misses cost a whole round |
+| Implement — size L, user-facing work, or an open design decision | opus-5.5, effort high | the delegation default for any subagent that ships code |
+| Implement — size S or M with a closed spec | gpt-5.6-luna, effort high, through the Codex runtime · fallback opus-5.5 high | matched the reference on the one matched run at half the output tokens and no Claude quota (provisional, below) |
+| **Audit** | opus-5.5, effort **xhigh**, **with execution** | the adversarial phase — the one whose misses cost a whole round |
 | Second audit (M, L) | gpt-5.6-luna, read-only | a different family: its misses did not overlap the primary's |
-| Address | opus-5, effort high | bounded work: the findings name what to change · not measured |
-| Simplify | opus-5, effort high | taste-sensitive, but scoped to the diff · not measured |
+| Address | opus-5.5, effort high | bounded work: the findings name what to change · not measured |
+| Simplify | opus-5.5, effort high | taste-sensitive, but scoped to the diff · not measured |
 
-Routing is overridable per run. Never silently drop a phase below opus-5 to save tokens; the audit
+The rows name opus-5.5 since 2026-09-24; the evidence below was measured on opus-5 and not re-run.
+
+Routing is overridable per run. Never silently drop a phase below opus-5.5 to save tokens; the audit
 is where an under-powered model quietly returns "no findings" and looks identical to a clean pass.
 The Codex rows need two things to hold: quota, and a sandbox that can run the project's tests from
 the worktree — a build tool whose lock lives in the main checkout denies a worktree-scoped sandbox.
 Check it with one focused test before the first dispatch; either one missing ⇒ that row falls back to
-opus-5, **never** to a lower Claude tier.
+opus-5.5, **never** to a lower Claude tier.
 
 **Evidence — provisional, one task.** One matched run: five implementers on the same medium fix, same
 plan, same base, blind audit. opus-5 came back with no finding at all; gpt-5.6-luna with one Nit and

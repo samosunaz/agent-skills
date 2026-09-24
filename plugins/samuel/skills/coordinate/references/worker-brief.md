@@ -21,6 +21,7 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 - Compatibility: {none — pre-launch, legacy paths are removed | keep public contracts stable}.
 - Comments state a constraint the code cannot show; never narrate the change.
 - No AI attribution anywhere. Conventional commits.
+- Turn endings: when a step does not need the coordinator, keep going and put status in the same message as the next action. Never end a turn with a summary that announces the next step, an offer to continue, or a list of choices that block nothing.
 - Scope exclusions: {e.g. "mobile is out of scope for this epic — register an issue, do not implement"}.
 - Any GitHub comment, review, or PR body you post carries a `samuel:run` block (`agent`/`model`/`effort` from the routing row above) — `../../../reference/github-operations.md` § Run metadata.
 
