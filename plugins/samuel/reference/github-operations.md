@@ -515,7 +515,7 @@ GitHub has no native field for which agent, model, or effort produced a comment,
 phase: audit
 round: 2
 agent: claude
-model: opus-5
+model: opus-5.5
 effort: xhigh
 sha: f917ba48
 run: run_6876fb2702f7

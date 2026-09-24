@@ -118,6 +118,8 @@ The narrative comment (and any Issue comment this run posts for a hard STOP or a
 4. **GitHub is SoT** for items/decisions; task-context `phase` is SoT for pipeline position.
 5. **Ship mode is gated on `Overall: PASS`.** That means the objective gate is green AND the independent reviewer (validate Step 2.5) raised no Blocker. A draft PR on a red gate or an unaddressed reviewer Blocker is worse than no PR — hand off the failure instead.
 
+6. **A message with no tool call ends the run.** `claude -p` exits 0 on it, so an unattended run looks finished while work is still owed. Four endings never happen here: a summary that announces the next step without taking it, an offer to continue, a list of decisions none of which blocks the rest, and a pause because a milestone felt like a good place to report. Put status notes in the same message as the next tool call; end the turn only on a Stop / Exit Report condition.
+
 ## Gotchas
 
 _Add a line each time Claude trips on something._

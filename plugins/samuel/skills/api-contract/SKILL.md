@@ -38,7 +38,7 @@ Read as needed:
 
 ### 2) ANALYZE
 
-Spawn agents in a **single message** (all sonnet):
+Spawn agents in a **single message**:
 
 | `subagent_type` | Task |
 |---|---|

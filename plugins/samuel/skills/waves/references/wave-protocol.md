@@ -157,14 +157,14 @@ orca worktree create --repo id:{ORCA_REPO_ID} --name issue-{N}-{slug} --issue {N
 **2. Permission allowlist** — autonomous-run.md §2, written to **`.claude/settings.local.json`**, never `settings.json`: the tracked file would land in the worker's diff and ship inside its PR. `settings.local.json` is gitignored in most repos — confirm it, then verify `git status --porcelain` is still empty before launching. Author it with the **Write tool**; the auto-mode classifier denies permission config written through Bash.
 
 ```bash
-# 3. Launch. --model is not optional: headless inherits the user's configured default,
+# 3. Launch. --model and --effort are not optional: headless inherits the user's configured default,
 #    which is not necessarily the engine approved at the WAVE PLAN checkpoint.
 #    --name + crossSessionInbound make the worker addressable and able to RECEIVE
 #    (../../../reference/cross-session.md); without the setting a -p worker holds
 #    every inbound message forever, since it cannot show the approval dialog.
 orca terminal create --worktree id:{repoId}::{path} --title issue-{N}-conductor \
   --command 'export GH_CONFIG_DIR="{gh_config_dir}"; claude -p "/samuel:conductor {N} --ship
-  /goal ship item {N} as a draft PR with a green gate; record assumptions; never merge/ready. Report lifecycle events to the session named {coordinator_name}. Stop after 40 turns." --model {model} --name issue-{N} --settings "{\"crossSessionInbound\":\"accept\"}" --max-budget-usd {budget} --output-format stream-json --verbose | tee ~/conductor-{N}.jsonl' --json
+  /goal ship item {N} as a draft PR with a green gate; record assumptions; never merge/ready. Report lifecycle events to the session named {coordinator_name}. Stop after 40 turns." --model {model} --effort high --name issue-{N} --settings "{\"crossSessionInbound\":\"accept\"}" --max-budget-usd {budget} --output-format stream-json --verbose | tee ~/conductor-{N}.jsonl' --json
 orca terminal wait --terminal {handle} --for exit --timeout-ms 3600000 --json
 tail -n 1 ~/conductor-{N}.jsonl | jq -r 'select(.type=="result") | .subtype'   # success | error_* | absent ⇒ aborted
 ```

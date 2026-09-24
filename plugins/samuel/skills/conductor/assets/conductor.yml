@@ -122,6 +122,7 @@ jobs:
             echo "=== conductor #$n ==="
             # No --model: model IDs rotate. To pin, uncomment and use the current Opus id:
             #   --model <current Opus id>
+            # --effort is pinned: an unset level on the current Opus runs at `medium`.
             # `--output-format stream-json` is a hard error without `--verbose`.
             # Redirect, never tee: --verbose emits every message AND every tool
             # result, so piping it to stdout would publish whatever the agent
@@ -133,6 +134,7 @@ jobs:
               Stop after 40 turns." \
               --permission-mode bypassPermissions \
               --max-turns 50 \
+              --effort high \
               --max-budget-usd "$ITEM_BUDGET_USD" \
               --output-format stream-json --verbose \
               > "$log" || true

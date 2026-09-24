@@ -126,6 +126,7 @@ claude -p \
    Record every unattended assumption to GitHub + journal + a handoff. Do NOT mark the PR
    ready, merge, or close the issue. Stop after 40 turns if not reached." \
   --permission-mode bypassPermissions \
+  --effort high \
   --settings .claude/autonomous-ship.json \
   --max-budget-usd 10 \
   --output-format stream-json --verbose \
@@ -156,6 +157,7 @@ for n in $(gh issue list --state open --label "pipeline:ready" --json number --j
      /goal ship item $n as a draft PR with a green gate; record assumptions; never merge/ready.
      Stop after 40 turns." \
     --permission-mode bypassPermissions \
+    --effort high \
     --settings .claude/autonomous-ship.json \
     --max-budget-usd "$ITEM_BUDGET_USD" \
     --output-format stream-json --verbose \
@@ -223,6 +225,7 @@ n="$1"
 claude -p "/samuel:conductor $n --ship
   /goal ship a draft PR with a green gate; never merge. Stop after 40 turns." \
   --permission-mode bypassPermissions \
+  --effort high \
   --settings .claude/autonomous-ship.json \
   --max-budget-usd "${ITEM_BUDGET_USD:-10}" \
   --output-format stream-json --verbose \
@@ -268,7 +271,7 @@ Tie wake-state to the process so it releases when done:
 ```bash
 cd <worktree>
 caffeinate -i -- claude -p "/samuel:conductor 42 --ship /goal … Stop after 40 turns." \
-  --permission-mode bypassPermissions --settings .claude/autonomous-ship.json \
+  --permission-mode bypassPermissions --settings .claude/autonomous-ship.json --effort high \
   --max-budget-usd 10 --output-format stream-json --verbose \
   | tee ~/conductor-$(date +%F).jsonl
 ```
@@ -294,6 +297,9 @@ gh pr merge <n> -R owner/repo --squash                 # merge → Closes #item 
 ```
 
 ## Failure modes to expect
+
+- **Early stop, exit 0.** A turn that ends in text with no tool call ends `claude -p` mid-pipeline and looks like success. If the exit report lists open steps and no blocker, resume with `claude -p --continue "Open: <steps>. Continue; if one is blocked, say what blocks it."`, at most 2-3 times, then leave it for the morning review. The conductor's Guideline 6 makes these stops rarer, not impossible.
+- **Unpinned effort.** Every launch above pins `--effort high`: an unset level on the current Opus runs at `medium`, which skipped skills and missed detail in the 2026-09-24 flow eval.
 
 - **Empty run: exit 0, zero turns, no output.** Two different causes share this signature, and the exit code does not separate them. **Check the declarations first**: a binary a skill's injected `## Context` command runs that its own `allowed-tools` never declared is denied, and headless that denial is silent (`scripts/lint-skill-context.sh` rule 3 exists for exactly this). Only after that check rule out a launch problem — the wrong cwd (it must be inside the repo) or a `--settings` file the run could not find. Rewriting the prompt is the last thing to try, not the first.
 - **Drift across compactions** — mitigated by FIC handoffs, not eliminated. Keep items small (the plan sizing rule).

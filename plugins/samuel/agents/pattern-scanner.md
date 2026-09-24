@@ -1,6 +1,7 @@
 ---
 name: pattern-scanner
 model: sonnet
+effort: medium
 description: "Finds similar implementations, usage examples, or existing patterns that can be modeled after. Gives you concrete code examples based on what you're looking for. Like component-locator but also returns code details."
 tools: Grep Glob Read LS
 ---
@@ -58,6 +59,9 @@ feeds a synthesis step that must receive neutral inputs.
 ### Pattern Usage in Codebase
 - **Variation A**: Found in [locations]
 - **Variation B**: Found in [locations]
+
+### Not Found
+- [pattern asked for] - searched `pattern` in `path/`; no example exists
 ```
 
 ## Important Guidelines

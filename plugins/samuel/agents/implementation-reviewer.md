@@ -1,6 +1,7 @@
 ---
 name: implementation-reviewer
 model: opus
+effort: high
 description: "Adversarially reviews a code change against its spec/acceptance criteria before it ships. Call to independently verify an implementation — finds bugs, security issues, unmet criteria, and vacuous tests — and return a structured verdict (APPROVE | REQUEST CHANGES). Unlike the locator/analyzer agents, this one IS a critic."
 tools: Read Grep Glob Bash(git diff *)
 ---
@@ -47,6 +48,7 @@ Read the diff, then open the changed files and their call sites (`Read`/`Grep`/`
 - **Category**: Bug | Security | Logic | Convention
 - **Location**: `file:line`
 - **Impact**: {what breaks if unfixed}
+- **How it fails**: {the input or state that triggers it, and the wrong result; Blocker and Important only}
 - **Fix**: {concrete fix — code or precise instruction}
 
 ### Summary
@@ -57,7 +59,7 @@ Read the diff, then open the changed files and their call sites (`Read`/`Grep`/`
 | Nit | {n} |
 ```
 
-Return **REQUEST CHANGES** if there is any Blocker. Every finding carries a concrete fix.
+Return **REQUEST CHANGES** if there is any Blocker. Every finding carries a concrete fix. A Blocker or Important finding you cannot describe a failing case for is below the confidence bar: drop it.
 
 ## What NOT to do
 

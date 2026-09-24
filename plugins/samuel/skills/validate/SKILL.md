@@ -63,7 +63,7 @@ The maker grades its own homework too kindly. After a green gate, spawn an **ind
 
 **Ordering**: run only after Step 2's gate is green — a red gate is already FAIL, don't spend the review. In a repo with **no gate command** (e.g. a content/docs repo), run the review anyway and note "no objective gate" in the report.
 
-Spawn ONE `implementation-reviewer` (single message; `model: opus`) and **wait** for it. Pass these objective inputs in the prompt (never the maker's narrative):
+Spawn ONE `implementation-reviewer` (single message) and **wait** for it. Pass these objective inputs in the prompt (never the maker's narrative):
 
 - the **base ref** so the reviewer runs `git diff {base}...HEAD` itself (it has `Bash(git diff *)`) — avoid pasting a large diff into the prompt;
 - the Brief's Acceptance Criteria (+ `spec.md` FR/SC if present);
