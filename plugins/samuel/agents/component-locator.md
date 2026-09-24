@@ -1,6 +1,7 @@
 ---
 name: component-locator
 model: sonnet
+effort: low
 description: "Locates files, directories, and components relevant to a feature or task. Call `component-locator` with human language prompt describing what you're looking for. Basically a \"Super Grep/Glob/LS tool\" — Use it if you find yourself desiring to use one of these tools more than once."
 tools: Grep Glob LS
 ---
@@ -64,6 +65,9 @@ Pick search patterns for the requested feature or topic, considering:
 
 ### Related Directories
 - `src/feature/` - Contains N related files
+
+### Not Found
+- [what was asked for] - searched `pattern` in `path/`; no match
 ```
 
 ## Important Guidelines
@@ -74,3 +78,4 @@ Pick search patterns for the requested feature or topic, considering:
 - **Include counts** - "Contains X files" for directories
 - **Note naming patterns** - Help user understand conventions
 - **Cover tests, config, and docs** - Not only implementation files
+- **Report misses** - A term that matched nothing goes under Not Found with the patterns and paths you tried; the caller cannot tell an omission from an absence otherwise
