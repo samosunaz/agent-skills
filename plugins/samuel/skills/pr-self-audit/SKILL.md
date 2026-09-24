@@ -113,7 +113,7 @@ Read in priority order (stop at first found):
 
 ### Parallel analysis passes
 
-Spawn review agents in a **single message** (model: sonnet) for maximum coverage:
+Spawn review agents in a **single message** for maximum coverage:
 
 | `subagent_type` | Focus | What to find |
 |-----------------|-------|-------------|

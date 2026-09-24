@@ -15,7 +15,6 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 1. **No Open Questions**: unresolved questions at end of Phase 2 → STOP and loop back. A plan with ambiguity cannot be picked up unattended.
 2. **Forced Checkpoints**: every phase ends with a user prompt; Phase 4's prompt is Phase 5's ROUTE. Do NOT auto-advance (except under `/samuel:conductor`, which records assumptions instead).
 3. **Self-contained bar**: the Executor Plan must pass the quality bar in `plan-templates.md` — a fresh agent finishes it with no chat history.
-4. **Sub-agent model**: always `model: "sonnet"` for codebase agents.
 
 ## Context
 

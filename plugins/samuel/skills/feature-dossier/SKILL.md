@@ -67,7 +67,7 @@ Generate and maintain a **living dossier** per platform capability: enriched mar
 
 1. **Pipeline artifacts** (in `{feature_dir}` — `docs/features/<slug>/`): read the **Brief + Executor Plan** of the work item (Issue body via `gh issue view`), `spec.md`/`research.md` if present, `implementation-notes.md` (D/V/T/Q decisions), `validation.md`. Also recorded decisions (Issue comments) and any ADRs in `docs/decisions/` touching this capability.
 2. **Git / releases**: `gh pr view`, `git log` of the feature range, `gh release view` if applicable — for key PRs and the changelog.
-3. **Live code — sub-agents** (retrievers, not analysts; spawn ALL in a **single message**, `model: "sonnet"`):
+3. **Live code — sub-agents** (retrievers, not analysts; spawn ALL in a **single message**):
 
    **Round 1 — locators:**
 

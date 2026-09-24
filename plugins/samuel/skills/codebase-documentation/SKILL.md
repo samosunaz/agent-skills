@@ -40,7 +40,7 @@ the question or area of interest and wait for it.
 
 3. **Spawn parallel sub-agents for comprehensive research:**
 
-   Spawn ALL agents in a **single message** so they run in parallel. Use `model: "sonnet"` for each.
+   Spawn ALL agents in a **single message** so they run in parallel.
 
    **Round 1 — Locators** (all in one message):
 
@@ -111,7 +111,6 @@ the question or area of interest and wait for it.
 
 ## Important notes
 
-- **Model selection**: Use `model: "sonnet"` for sub-agents
 - Always run fresh codebase research
 - Focus on finding concrete file paths and line numbers
 - Research documents should be self-contained
