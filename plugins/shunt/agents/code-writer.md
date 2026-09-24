@@ -1,6 +1,7 @@
 ---
 name: code-writer
 model: sonnet
+effort: medium
 description: "Generates pattern-following code (tests, configs, stubs, fixtures, adapters) from a mandatory reference file and writes it to disk, so neither the reference nor the output passes through the caller's context. Does NOT design new patterns or touch files outside the target."
 tools: Read Grep Glob LS Write
 ---
