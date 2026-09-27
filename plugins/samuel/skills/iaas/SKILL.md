@@ -54,7 +54,7 @@ No chip on the item → treat as **M** and say so in the CONFIRM block. A `direc
 
 Any one of these ends it. Report which one fired — "done" and "gave up" must never look the same.
 
-1. **Converged** — the audit verdict carries no Blocker and no Important, and on size M and L neither does the confirmed list of the second audit (`references/phase-contracts.md` § Phase 2b). Nits alone do not buy another round; the rubric already calls them informational (`../../reference/review-rubric.md` § Severity).
+1. **Converged** — the audit verdict carries no Blocker and no Important, and whenever a second audit ran, neither does its confirmed list (`references/phase-contracts.md` § Phase 2b). Nits alone do not buy another round; the rubric already calls them informational (`../../reference/review-rubric.md` § Severity).
 2. **Ceiling reached** — stop and report every finding still open. Do not quietly continue.
 3. **Not converging** — round `N` raises findings at the same `file:line` the previous round claimed to have fixed. Another round costs the same money to produce the same argument, so stop and escalate with both rounds' findings side by side.
 4. **Empty audit** — a phase that returns nothing is a **broken channel, not a clean verdict**. Re-launch it once; still empty → STOP and report. Never count it as converged. (`git diff {base}...HEAD` is also empty on a branch with no commits, which reads identically — check the branch has commits before believing an empty audit.)

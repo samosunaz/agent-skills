@@ -1,6 +1,6 @@
 # Cascade — Tier Briefs and the Two Top-Tier Checklists
 
-Everything a tier receives is English, self-contained, and assumes **no chat history**. The implementer's brief is the six-slot brief of `../../coordinate/references/worker-brief.md` with the ratified plan embedded verbatim; only the planner and reviewer briefs, and the two checklists the top tier runs itself, live here.
+Everything a tier receives is English, self-contained, and assumes **no chat history**. The implementer's brief is the six-slot brief of `../../coordinate/references/worker-brief.md` with the ratified plan embedded verbatim; only the planner and reviewer briefs, the fold brief's rules, and the two checklists the top tier runs itself, live here.
 
 ## Routing row for the run policy
 
@@ -13,7 +13,7 @@ Cascade writes this table into the run policy (`../../coordinate/references/work
 | implementer — S, M, closed spec | codex | gpt-5.6-luna | high |
 | implementer — L, user-facing, or Codex unavailable · address · simplify | claude | opus | high |
 | audit / independent review, executing | claude (fresh instance) | opus | xhigh |
-| second audit — M and L, read-only, round 1 | codex | gpt-5.6-luna | high |
+| second audit — any size whose diff touches a write path or a persisted shape, read-only, round 1 | codex | gpt-5.6-luna | high |
 | coordinator · ratification · final read | this session | the owner's flagship | — |
 ```
 
@@ -56,6 +56,7 @@ Run it yourself; this is the judgment the run is paying for. Record one line per
 6. **Premises** — does any step count, freeze or derive rules from something the repo declares disposable?
 7. **Least plan** — cut every step the stated outcome does not need; every cut carries a FOLD / FILE / DROP verdict (`../../../reference/finding-verdicts.md`). Challenge each FILE on cost: a three-line cut in a touched file costs minutes now and a whole pipeline pass as its own item.
 8. **Testing seams** — are the tests' expected values independent of the code under test, and is native or third-party behaviour verified where it actually runs (a real browser, a real database) rather than against a double?
+9. **Chain length** — a plan of more than four PRs is split into two items of at most four that do not stack on each other; the second starts from the base branch, after the first has merged if it needs that code. Inside one item a PR stacks only on a PR whose code it needs.
 
 Send the plan back **once**, with the numbered findings. Present the ratified plan to the human with: what you changed, what you measured, what you cut.
 
@@ -75,6 +76,10 @@ ADJACENT FINDINGS (outside the acceptance criteria): give each a verdict — FOL
 
 REPORT: verdict (APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES), then findings as `severity · path:line · what breaks · the evidence`, then adjacent findings as `FOLD|FILE|DROP · path:line · one line`. "No findings" must say what you executed to earn it.
 ```
+
+## Fold brief — the top tier's ruling on each finding
+
+Every finding sorted FOLD goes back to the implementer under its own heading: the evidence, **one** fix, the test that pins it, and the break gesture that turns that test red. Never "X or Y": the implementer settles an open choice without the context that ruled one option out, and the next review round pays for it. When two fixes look equal, read the code until one wins, then name only that one.
 
 ## Final read — the top tier's checklist
 
