@@ -142,7 +142,7 @@ agent-skills/
 │   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
 │   │   ├── evals/                # plugin-eval cases (`bun run eval:samuel`)
-│   │   └── skills/               # 43 skills, one directory each
+│   │   └── skills/               # 44 skills, one directory each
 │   └── shunt/                    # Token plane plugin (ADR 0007, ADR 0008)
 │       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
 │       ├── scripts/              # check-read.sh, check-search.sh (fail open), install-codex.sh
@@ -203,6 +203,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:feature-dossier`](plugins/samuel/skills/feature-dossier/SKILL.md) | Create/update a living feature dossier (enriched markdown + Mermaid, evidence `file:line`, changelog) in a versioned product catalog. |
 | [`/samuel:mermaid`](plugins/samuel/skills/mermaid/SKILL.md) | The diagram style standard: semantic shapes, one-emoji vocabulary, `classDef` palette. Single home for how every Mermaid diagram in the pipeline is drawn. |
 | [`/samuel:tldr`](plugins/samuel/skills/tldr/SKILL.md) | The prose standard (Simplified Technical English): rewrite text so each sentence admits one reading. Single home for how every Issue/PR TL;DR, brief, and chat answer is written. |
+| [`/samuel:biz-tldr`](plugins/samuel/skills/biz-tldr/SKILL.md) | Retell a technical text for the person who owns the product: a headline, the flow as who-does-what steps, what can go wrong and what it costs someone, internal-only fixes in one line, and the decisions with a recommendation. Prints only. |
 
 ### Design
 

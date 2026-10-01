@@ -52,8 +52,8 @@ agent-skills/
 │   │   ├── .codex-plugin/plugin.json    # Codex-only: skills string + interface
 │   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
-│   │   ├── evals/                # plugin-eval cases: tldr-rewrite, mermaid-standard (§ Evals)
-│   │   └── skills/               # 43 skills, one dir each (flat — §7.1)
+│   │   ├── evals/                # plugin-eval cases: tldr-rewrite, biz-tldr-retell, mermaid-standard (§ Evals)
+│   │   └── skills/               # 44 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
 │       ├── agents/               # bulk-reader (haiku, read-only), code-writer (sonnet, Write) — Claude Code only
@@ -73,7 +73,7 @@ Skills are flat because §7.1 discovers only the immediate children of `skills/`
 | pipeline | codebase-documentation, spec, plan, refine-plan, analyze, implement, tdd, validate |
 | git | create-atomic-commit, remove-slop, interrogate, polish, pr-self-audit, address-pr-comments, session-handoff |
 | workflow | roadmap, kickoff, next, start-task, conductor, iaas, coordinate, cascade, waves, wave-prep, land, done, debrief, progress, retro, team-orchestrate |
-| product | feature-dossier, mermaid, tldr |
+| product | feature-dossier, mermaid, tldr, biz-tldr |
 | design | motion-brief |
 | contract | api-request, api-contract |
 | meta | find-unknowns, repo-audit, create-review-md, premise, create-constitution, update-constitution |
@@ -168,6 +168,7 @@ Cases must not depend on `gh`, auth, or MCP: a run starts in a throwaway home wi
 - **`/samuel:feature-dossier`** — Create/update a **living feature dossier** for a platform capability: enriched markdown + Mermaid diagrams/flows, evidence `file:line`, and an append-only changelog. Persists to a versioned **product catalog** (`docs/product/` in the product repo, organized by capability — distinct from `docs/features/<task-slug>/` task artifacts; see the Storage map in `reference/tracker.md`) with a master index, and propagates a one-line pointer to the root `README.md`/`CLAUDE.md` when the capability is significant (link, don't duplicate) — reference for humans **and** AI before future modifications. On-demand, and recommended at close by `/samuel:validate` (doc-impact) and `/samuel:done` when a change alters product behavior. Distinct from `feature-brief` (audience-tailored comms, archived) and `codebase-documentation` (transient research). Template + catalog format + section→diagram mapping: `plugins/samuel/reference/feature-dossier.md`.
 - **`/samuel:mermaid`** — The **diagram style standard**: semantic shapes + one-emoji vocabulary + `classDef` palette (triple encoding, so a diagram survives dark mode, colorblind readers, and renderers that drop styles). Single home for HOW every Mermaid diagram is drawn — dossiers, contracts, RFCs, Issue/PR bodies. Every diagram-emitting skill points here instead of defining its own rules: `plugins/samuel/reference/mermaid-style.md`. `%%{init}%%`/`themeVariables` are NOT blessed (GitHub forces its own theme).
 - **`/samuel:tldr`** — The **prose style standard**: rewrite text to Simplified Technical English (ASD-STE100 writing rules, not its closed dictionary) so each sentence admits exactly one reading. Targets the last assistant message by default, or pasted text / a file path; verbatim spans (code, commands, paths, quoted output) are copied byte-identical. Single home for HOW every human-facing sentence is written — the **TL;DR block** of Issue/PR bodies above all, plus briefs, ADR narratives, validation reports, and chat answers. Every prose-emitting skill points here instead of defining its own writing rules, the same way diagram-emitting skills point at `mermaid`. It prints the rewrite and stops: posting, committing, or editing the source is the caller's turn.
+- **`/samuel:biz-tldr`** — The **business retelling**: where `tldr` keeps the text and sharpens each sentence, this skill changes the frame from how the system works to who does what and what can go wrong for them. Five blocks: headline, the flow as numbered who-does-what steps, risks as what they cost a person, internal-only fixes in one line, and the owner's decisions with a recommendation (asked with `AskUserQuestion`; listed instead in unattended runs or when the retelling is for someone else). Every risk, number and unknown from the source survives; identifiers do not. Sentence rules defer to `tldr`'s spoke. Prints only. Boundary: `debrief` reports merged work from its diffs; `biz-tldr` retells any technical text, usually before a decision.
 
 ## Contract Skills
 
