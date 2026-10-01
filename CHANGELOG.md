@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.14.0](https://github.com/samosunaz/agent-skills/compare/v4.13.0...v4.14.0) (2026-10-01)
+
+
+### 🚀 Features
+
+* **samuel:** biz-tldr retells a technical text as a business flow, its risks and the owner's decisions ([#62](https://github.com/samosunaz/agent-skills/issues/62)) ([5a69a4f](https://github.com/samosunaz/agent-skills/commit/5a69a4f16710893b4cdafd3eecc8a8cc5f8bac59))
+* **samuel:** cascade fold briefs name one fix, the second audit follows what the diff touches, and long PR chains split ([#61](https://github.com/samosunaz/agent-skills/issues/61)) ([a42c2c2](https://github.com/samosunaz/agent-skills/commit/a42c2c2b9c687f77314e2e5ad9c1dd98ad493f72))
+* **samuel:** every finding outside an item's criteria gets a FOLD, FILE or DROP verdict ([#58](https://github.com/samosunaz/agent-skills/issues/58)) ([f0caf79](https://github.com/samosunaz/agent-skills/commit/f0caf790d72c8d3a81df0c7a105fef64416bbc25))
+
+
+### 🩹 Fixes
+
+* **samuel:** agents own their model and effort, and unattended runs survive Opus 5.5 turn endings ([#60](https://github.com/samosunaz/agent-skills/issues/60)) ([6404f9e](https://github.com/samosunaz/agent-skills/commit/6404f9e9e93ef8ea5efc01b8cd1cc09c8922b76e))
+
 ## [4.13.0](https://github.com/samosunaz/agent-skills/compare/v4.12.0...v4.13.0) (2026-09-21)
 
 
