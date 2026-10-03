@@ -104,7 +104,7 @@ A Claude reader uses the `terminal create --worktree current` form above. A revi
 
 ### Verify the launch
 
-**Claude worker** — within 30 seconds, `orca terminal read --terminal <handle> --json`: the footer names the requested model (e.g. `Opus …`), and the brief is rendered as a sent `❯` message followed by a tool call. A different model ⇒ stop and tell the human. The effort is not shown in the TUI: record it as *requested, not observable*. A bare **shell** prompt with no TUI above it is a dead agent (the binary crashed at launch): capture the tail, close the terminal, and run the same `terminal create` once more.
+**Claude worker** — within 30 seconds, `orca terminal read --terminal <handle> --json`: the footer names the requested model and effort (e.g. `Opus 5.5` and `◐ medium · /effort`), and the brief is rendered as a sent `❯` message followed by a tool call. A different model or effort ⇒ stop and tell the human. A bare **shell** prompt with no TUI above it is a dead agent (the binary crashed at launch): capture the tail, close the terminal, and run the same `terminal create` once more.
 
 **Codex worker** — read the receipt before anything else:
 
