@@ -34,7 +34,7 @@ Change it by editing the file and saying so in the next status line. Never silen
 
 ## Worker brief — six slots, then the contract
 
-Fill every slot. A slot you cannot fill is a decomposition problem, not something the worker should discover. The brief is the `--spec` text of `task-create`; Orca prepends the lifecycle preamble (task id, dispatch id, how to send `worker_done`) when it dispatches. **The task is in the first 200 characters** — ROLE and DELIVER open the brief; the policy closes it.
+Fill every slot. A slot you cannot fill is a decomposition problem, not something the worker should discover. A Claude worker's brief is the file `.claude/briefs/{run_id}/{name}.md`, passed whole as the `claude` argument — no preamble is added, so the REPORT and LIMITS slots carry the Claude form below. A Codex worker's brief is the `--spec` text of `task-create`; Orca prepends the lifecycle preamble (task id, dispatch id, how to send `worker_done`) when it dispatches. **The task is in the first 200 characters** — ROLE and DELIVER open the brief; the policy closes it.
 
 ```text
 ROLE: You are {name}, the {role} worker for "{task}". You implement exactly the outcome below in this worktree, then stop.
@@ -51,7 +51,8 @@ VERIFY: {the exact commands — unit/integration test, typecheck, lint, the proj
 
 ARTIFACT: {a commit on {branch} — report its SHA | a file at {path} | a review comment list}. One commit per logical change, conventional message, no AI attribution.
 
-REPORT (send exactly once, then idle): `orca orchestration send --type worker_done --subject "{name}: {done|failed}" --outcome {succeeded|failed} --task-id <from preamble> --dispatch-id <from preamble> --files-modified "{csv}" --body "<the six lines below>" --json`
+REPORT, Claude worker: write the six lines below to `.claude/reports/{name}.md` in this worktree — never stage or commit that file — then end your turn with exactly one line: `REPORT .claude/reports/{name}.md`.
+REPORT, Codex worker (send exactly once, then idle): `orca orchestration send --type worker_done --subject "{name}: {done|failed}" --outcome {succeeded|failed} --task-id <from preamble> --dispatch-id <from preamble> --files-modified "{csv}" --body "<the six lines below>" --json`
   Result: {one sentence}
   Frozen commit / artifact: {sha or path}
   Files changed: {list}
@@ -60,7 +61,7 @@ REPORT (send exactly once, then idle): `orca orchestration send --type worker_do
   Unresolved: {list or "none"}
 Do not paste logs, diffs or file contents into the report — the coordinator reads the commit. Before reporting, set your card: `orca worktree set --worktree current --workspace-status in-review --comment "{result, one line}" --json`.
 
-LIMITS: never push, open a PR, merge, or touch anything outside MAY CHANGE · never spawn sub-agents; review your own diff directly · blocked or ambiguous ⇒ `orca orchestration ask --question "..." --timeout-ms 600000 --json` and wait for the reply · if `orca orchestration send` fails twice (sandbox cannot reach Orca), stop retrying: leave the six report lines as the last message in this terminal and idle — the coordinator reads the terminal.
+LIMITS: never push, open a PR, merge, or touch anything outside MAY CHANGE · never spawn sub-agents; review your own diff directly · blocked or ambiguous ⇒ Claude worker: stop and end your turn with one last line `QUESTION: {the question}` — the answer arrives as a message in this session; Codex worker: `orca orchestration ask --question "..." --timeout-ms 600000 --json` and wait for the reply · if `orca orchestration send` fails twice (sandbox cannot reach Orca), stop retrying: leave the six report lines as the last message in this terminal and idle — the coordinator reads the terminal.
 
 STANDING CONSTRAINTS:
 {run policy, verbatim}
@@ -71,7 +72,7 @@ STANDING CONSTRAINTS:
 - **Implementer** — the template above.
 - **Reviewer** (independent, other model) — `DELIVER: a verdict on commit {sha} against {the DELIVER line of the implementer's brief}: APPROVE | REQUEST CHANGES, with findings as file:line + why + the smallest fix.` `MAY CHANGE: nothing — read-only.` `VERIFY: run {gate}; for any factual claim (a test fails, a path is dead) run the command and paste its one-line result.` Shares the coordinator's worktree (`--worktree current`); a reviewer that edits files is a second writer on a checkout.
 - **Researcher** — read-only, shares the current worktree, returns conclusions with `file:line` evidence, never a file dump. Capped in number and released the moment the decision they served is taken.
-- **Issue worker** (the task is a planned issue) — the implementer template with `DELIVER` = the issue's TL;DR *What* line, `START FROM` = the plan's baseline, `MAY CHANGE` = the plan's owner files, `VERIFY` = the plan's gate, and the issue's `<!-- samuel:plan -->` section pasted verbatim under `PLAN:` between `ARTIFACT` and `REPORT`. The worker implements the plan and reports through Orca mail like any other worker; opening the PR stays with the coordinator (C6) and the human. Name it `issue-{N}-{role}-{model}`.
+- **Issue worker** (the task is a planned issue) — the implementer template with `DELIVER` = the issue's TL;DR *What* line, `START FROM` = the plan's baseline, `MAY CHANGE` = the plan's owner files, `VERIFY` = the plan's gate, and the issue's `<!-- samuel:plan -->` section pasted verbatim under `PLAN:` between `ARTIFACT` and `REPORT`. The worker implements the plan and reports like any other worker of its engine (report file or `worker_done`); opening the PR stays with the coordinator (C6) and the human. Name it `issue-{N}-{role}-{model}`.
 - **IAAS worker** (only with `--via iaas`) — `DELIVER: run /samuel:iaas {N} [--rounds R] in this worktree; the draft PR with its audit-pass markers and Resolution comments is the artifact.` Like the conductor worker: no Orca mail, headless phases, completion is the last phase's process exit; the coordinator's report is the PR — `gh pr view` for state, the `<!-- samuel:review-pass -->` markers for how many rounds ran and what they raised, the `Simplify pass:` comment for the three-pass chain — never a six-line body. Name it `issue-{N}-{slug}` for the same reason as the conductor worker. Choose it when the human wants blind audit rounds rather than a briefed reviewer.
 - **Conductor worker** (only with `--via conductor`) — `DELIVER: run /samuel:conductor {N} --ship in this worktree; the draft PR is the artifact.` No Orca mail: a headless `claude -p` has no TUI to inject into, so completion is process exit and the coordinator watches the branch and the log (waves P3 § Claude worker has the launch). Name it `issue-{N}-{slug}` because `start-task`/`done` derive state from that branch. Use it when the human asks for the full pipeline (journal, validation, draft PR) rather than a brief.
 
@@ -79,7 +80,7 @@ STANDING CONSTRAINTS:
 
 | Line | Coordinator action |
 |---|---|
-| Result | Compare with DELIVER. Mismatch ⇒ one follow-up dispatch with the delta, not a new brief. |
+| Result | Compare with DELIVER. Mismatch ⇒ one follow-up with the delta (a `SendMessage` to a Claude worker, a dispatch to a Codex worker), not a new brief. |
 | Frozen commit | `git log -1 {sha}` from your checkout (shared object store). Absent ⇒ the work does not exist yet — "complete but uncommitted" has been the signature of a worker killed by a quota limit. |
 | Files changed | Intersect with MAY CHANGE / MUST NOT TOUCH. Any file outside ⇒ inspect the diff regardless of risk. |
 | Test results | A claim. Rerun the gate at integration; a reviewer settles a disputed test by running it. |
