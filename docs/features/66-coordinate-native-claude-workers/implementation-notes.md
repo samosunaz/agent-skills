@@ -1,9 +1,9 @@
 # Implementation Notes: 66-coordinate-native-claude-workers
 
 > **Item**: #66  ·  **Plan**: Issue #66 body, `<!-- samuel:plan -->`  ·  **Constitution**: none
-> **Counters**: D:0 V:3 T:0 Q:1 (open_remaining: 1)
-> **Status**: living
-> **Flags**: has-deviations, has-open-questions
+> **Counters**: D:0 V:3 T:0 Q:1 (open_remaining: 0)
+> **Status**: sealed
+> **Flags**: has-deviations
 
 ## Design Decisions
 
@@ -53,7 +53,7 @@
 - **Phase**: us1
 - **Step**: 8
 - **When**: 2026-10-02
-- **Status**: open
+- **Status**: deferred
 - **Blocking**: no
 - **Question**: the probe coordinator reported `Bound run` empty and the `Codex default` line delivered as an unexecuted instruction instead of a value. Both lines predate this change (`plugins/samuel/skills/coordinate/SKILL.md` § Context on `main`). Is it the `--plugin-dir` load, or are they broken on an installed plugin too?
-
+- **Resolution**: deferred to a follow-up issue. The lines are on `main` before this change, and this item's ACs do not depend on them; the check is to load the installed plugin, not `--plugin-dir`, and read both lines.
