@@ -143,7 +143,7 @@ Right after the start is verified, subscribe once per worker — no message, bar
 SendMessage({to: "{name}", notify_when_idle: true})
 ```
 
-and arm **one** `Monitor` for the whole run that prints a liveness tick every nine minutes (`while true; do sleep 540; echo tick; done`, `timeout_ms` 1800000, re-armed on expiry). With only Claude workers open, the coordinator **may end its turn**: the harness wakes it with exactly one `[Cross-session idle notice]` per subscription, carrying the worker's last line, and no orchestration message exists to nag the human. A notice that fires while the coordinator is mid-turn arrives at its next turn boundary.
+and arm **one** `Monitor` for the whole run that prints a liveness tick every nine minutes (`while true; do sleep 540; echo tick; done`, `timeout_ms` 1800000, re-armed on expiry). With only Claude workers open, an interactive coordinator **may end its turn** (under `claude -p` an ended turn ends the run — SKILL.md § Unattended runs): the harness wakes it with exactly one `[Cross-session idle notice]` per subscription, carrying the worker's last line, and no orchestration message exists to nag the human. A notice that fires while the coordinator is mid-turn arrives at its next turn boundary.
 
 On each notice, branch on the last line:
 
