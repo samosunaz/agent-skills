@@ -39,7 +39,7 @@ orca terminal list --json | jq -r '.result.terminals[] | "\(.handle) \(.title)"'
 
 Claude workers have no Dispatch, so the orchestration lists do not show them: `ListAgents` does (rows named `{task}-{role}-{model}`), together with their briefs under `.claude/briefs/{run_id}/` and reports under each worktree's `.claude/reports/`.
 
-Reuse rules: an **idle worker of the same task** takes the next Task via `worker-start --task <new> --terminal <handle>` (Orca transfers cleanup ownership); a worktree that already holds the task branch is the worktree, not a new one. Prior state from an interrupted run: settle it first — `worker-show --dispatch <id>` per open dispatch, then release, retry (`--retry-of`), or abandon (§ Recovery). Never `orchestration reset` while anything is active.
+Reuse rules: an **idle Codex worker of the same task** takes the next Task via `worker-start --task <new> --terminal <handle>` (Orca transfers cleanup ownership); a kept Claude worker takes it as a `SendMessage` with `notify_when_idle: true`; a worktree that already holds the task branch is the worktree, not a new one. Prior state from an interrupted run: settle it first — `worker-show --dispatch <id>` per open dispatch, then release, retry (`--retry-of`), or abandon (§ Recovery). Never `orchestration reset` while anything is active.
 
 ## C2 — Run, policy, tasks
 
@@ -73,11 +73,11 @@ A hit means resume that dispatch (`worker-read`, then a `send --to dispatch:<id>
 # writer: its own worktree, then the agent with the brief as its first message
 orca worktree create --name {task}-{role}-opus --repo id:<ORCA_REPO_ID> --no-parent --setup run --json
 orca terminal create --worktree name:{task}-{role}-opus --title {task}-{role}-opus \
-  --command 'claude --name {task}-{role}-opus --model opus --effort high --permission-mode auto "$(cat {abs path}/.claude/briefs/{run_id}/{task}-{role}-opus.md)"' --json
+  --command 'claude --name {task}-{role}-opus --model opus --effort high --permission-mode auto "$(cat "{abs path}/.claude/briefs/{run_id}/{task}-{role}-opus.md")"' --json
 
 # reader (research, read-only review): the current worktree, no worktree create
 orca terminal create --worktree current --title {task}-{role}-opus \
-  --command 'claude --name {task}-{role}-opus --model opus --effort high --permission-mode auto "$(cat {abs path}/.claude/briefs/{run_id}/{task}-{role}-opus.md)"' --json
+  --command 'claude --name {task}-{role}-opus --model opus --effort high --permission-mode auto "$(cat "{abs path}/.claude/briefs/{run_id}/{task}-{role}-opus.md")"' --json
 ```
 
 The session is interactive (no `-p`): the human reads the pane and can type into it, and the worker answers. `"$(cat …)"` passes the brief byte-exact — quotes, `$` and backticks included (measured, #63) — so the brief never sits in an input box and there is no lost Enter to check for. Keep the handle from the receipt (`.result.terminal.handle`).
@@ -200,7 +200,7 @@ git merge --no-ff {worker_branch}                           # or cherry-pick the
 {the project's real checks: the plan's gate, or the repo's test / typecheck / lint commands}
 ```
 
-Red ⇒ one follow-up dispatch to the owning worker with the failing output pasted, then a second failure escalates. Green ⇒ the human decides the outward step. **No `git push`, no `gh pr create`, no publish, deploy, production or secrets in any output without the human's explicit approval** — a hard stop at every autonomy level, and the one gate this skill always waits at.
+Red ⇒ one follow-up to the owning worker (a `SendMessage` to a Claude worker, a dispatch to a Codex worker) with the failing output pasted, then a second failure escalates. Green ⇒ the human decides the outward step. **No `git push`, no `gh pr create`, no publish, deploy, production or secrets in any output without the human's explicit approval** — a hard stop at every autonomy level, and the one gate this skill always waits at.
 
 Set every accepted card to `completed` (`worktree set --workspace-status completed`) and leave rejected ones `in-review` with a `--comment` naming why. Optional, only when the human has enabled Settings → Artifacts: `orca artifacts share {report.md}` publishes the final report as a link; a denial is final, deliver the file locally.
 

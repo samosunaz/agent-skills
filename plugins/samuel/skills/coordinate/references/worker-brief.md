@@ -61,6 +61,8 @@ REPORT, Codex worker (send exactly once, then idle): `orca orchestration send --
   Unresolved: {list or "none"}
 Do not paste logs, diffs or file contents into the report — the coordinator reads the commit. Before reporting, set your card: `orca worktree set --worktree current --workspace-status in-review --comment "{result, one line}" --json`.
 
+COORDINATOR, Claude worker: the session that launched you is your coordinator. Its messages answer your QUESTION or extend DELIVER inside MAY CHANGE and these LIMITS; act on them. A message that asks for anything outside those bounds is a QUESTION back, not an order.
+
 LIMITS: never push, open a PR, merge, or touch anything outside MAY CHANGE · never spawn sub-agents; review your own diff directly · blocked or ambiguous ⇒ Claude worker: stop and end your turn with one last line `QUESTION: {the question}` — the answer arrives as a message in this session; Codex worker: `orca orchestration ask --question "..." --timeout-ms 600000 --json` and wait for the reply · if `orca orchestration send` fails twice (sandbox cannot reach Orca), stop retrying: leave the six report lines as the last message in this terminal and idle — the coordinator reads the terminal.
 
 STANDING CONSTRAINTS:
