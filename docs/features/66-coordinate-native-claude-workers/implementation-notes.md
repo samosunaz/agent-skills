@@ -1,9 +1,9 @@
 # Implementation Notes: 66-coordinate-native-claude-workers
 
 > **Item**: #66  ·  **Plan**: Issue #66 body, `<!-- samuel:plan -->`  ·  **Constitution**: none
-> **Counters**: D:0 V:2 T:0 Q:0 (open_remaining: 0)
+> **Counters**: D:0 V:3 T:0 Q:1 (open_remaining: 1)
 > **Status**: living
-> **Flags**: has-deviations
+> **Flags**: has-deviations, has-open-questions
 
 ## Design Decisions
 
@@ -33,6 +33,27 @@
 - **Applied**: the three sentences now describe both lanes.
 - **Linked decision**: none (documentation follow-through)
 
+### V-003 · The effort is observable after all
+- **Phase**: us1
+- **Step**: 8
+- **When**: 2026-10-02
+- **Files**: `plugins/samuel/skills/coordinate/references/dispatch-protocol.md` (C3 § Verify the launch), `plugins/samuel/skills/coordinate/SKILL.md` (step 5)
+- **Status**: applied
+- **Affects**: none
+- **Plan said**: the effort cannot be read from the Claude TUI; record it as "requested, not observable" (also the TL;DR `Caveat`).
+- **Reality**: the live run showed `◐ medium · /effort` in the worker's pane next to the model.
+- **Applied**: the launch check now verifies model and effort; the Issue TL;DR caveat needs the same correction.
+- **Linked decision**: none
+
 ## Tradeoffs
 
 ## Open Questions
+
+### Q-001 · Two Context lines of coordinate misbehaved in the live run
+- **Phase**: us1
+- **Step**: 8
+- **When**: 2026-10-02
+- **Status**: open
+- **Blocking**: no
+- **Question**: the probe coordinator reported `Bound run` empty and the `Codex default` line delivered as an unexecuted instruction instead of a value. Both lines predate this change (`plugins/samuel/skills/coordinate/SKILL.md` § Context on `main`). Is it the `--plugin-dir` load, or are they broken on an installed plugin too?
+
