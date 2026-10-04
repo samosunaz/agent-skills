@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.15.0](https://github.com/samosunaz/agent-skills/compare/v4.14.0...v4.15.0) (2026-10-04)
+
+
+### 🚀 Features
+
+* **coordinate:** launch Claude workers with an argv brief and supervise them through idle notices ([#76](https://github.com/samosunaz/agent-skills/issues/76)) ([198b471](https://github.com/samosunaz/agent-skills/commit/198b4716aad231cf158e0c5f940618c47568ada6))
+
 ## [4.14.0](https://github.com/samosunaz/agent-skills/compare/v4.13.0...v4.14.0) (2026-10-01)
 
 
