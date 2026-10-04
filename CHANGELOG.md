@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.16.0](https://github.com/samosunaz/agent-skills/compare/v4.15.0...v4.16.0) (2026-10-04)
+
+
+### 🚀 Features
+
+* **waves:** follow claude-variant workers through idle notices instead of a log poll ([#79](https://github.com/samosunaz/agent-skills/issues/79)) ([aef0660](https://github.com/samosunaz/agent-skills/commit/aef0660d66656f50e1f902e2cb6c9c167ba80749))
+
 ## [4.15.0](https://github.com/samosunaz/agent-skills/compare/v4.14.0...v4.15.0) (2026-10-04)
 
 
