@@ -137,7 +137,7 @@ Codex's update dialog (**Update now** preselected) also passes `tui-idle`: if th
 
 ### Claude workers — idle notices, a liveness tick, the turn may end
 
-Right after the start is verified, subscribe once per worker — no message, bare name (add the `[ref]` only when `ListAgents` shows two rows with that name):
+Right after the start is verified, subscribe once per worker — omit the `message` field entirely (an empty one has failed as malformed JSON), bare name (add the `[ref]` only when `ListAgents` shows two rows with that name):
 
 ```text
 SendMessage({to: "{name}", notify_when_idle: true})
