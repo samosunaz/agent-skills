@@ -2,7 +2,7 @@
 
 > **Item**: #74  ·  **Plan**: Issue #74 body, `<!-- samuel:plan -->`  ·  **Constitution**: none
 > **Counters**: D:1 V:0 T:0 Q:0 (open_remaining: 0)
-> **Status**: living
+> **Status**: sealed
 > **Flags**: none
 
 ## Design Decisions
