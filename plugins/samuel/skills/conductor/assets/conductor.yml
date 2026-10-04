@@ -128,7 +128,7 @@ jobs:
             # result, so piping it to stdout would publish whatever the agent
             # read into the Actions log — world-readable on a public repo.
             # stderr stays on the console so failures are still visible, and out
-            # of the file so it can't shadow the result line `tail` reads.
+            # of the file so it can't shadow the result line `grep` selects.
             claude -p "/samuel:conductor $n --ship
               /goal ship a draft PR with a green gate; record assumptions; never merge/ready.
               Stop after 40 turns." \
@@ -139,10 +139,11 @@ jobs:
               --output-format stream-json --verbose \
               > "$log" || true
 
-            # Last JSONL line is the result object:
+            # The last "type":"result" line is the result object; events can follow
+            # it (a background task, an inbound message), so never read the last line:
             #   {"type":"result","subtype":"success","is_error":false,
             #    "total_cost_usd":0.4897,"num_turns":1,"usage":{...}}
-            res="$(tail -n 1 "$log" 2>/dev/null || true)"
+            res="$(grep '"type":"result"' "$log" 2>/dev/null | tail -n 1 || true)"
             if [ -z "$res" ] || ! printf '%s' "$res" | jq -e 'select(.type=="result")' >/dev/null 2>&1; then
               # A budget- or turn-killed run can die before emitting `result`.
               # Charge the full item cap so the sweep accumulator never fails open.
