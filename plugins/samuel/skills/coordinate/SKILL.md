@@ -30,7 +30,7 @@ Recipes live in `references/dispatch-protocol.md` (C0–C6); the brief, the run 
 ## Context
 
 - Orca: !`orca status --json 2>/dev/null | grep -o '"state": *"[a-z]*"' | head -1 | xargs || echo "ORCA_DOWN"`
-- Bound run: !`orca orchestration run-current --json 2>/dev/null | grep -o '"objective": *"[^"]*"' | head -1 | xargs || echo "NO_RUN"`
+- Bound run: !`orca orchestration run-current --json 2>/dev/null | grep -o '"objective": *"[^"]*"' | head -1 | xargs | grep . || echo "NO_RUN"`
 - Live worktrees: !`orca worktree ps --limit 20 2>/dev/null | head -25 || echo "NO_WORKTREES"`
 - Live terminals: !`orca terminal list --json 2>/dev/null | grep '"handle"' | wc -l | xargs || echo "0"`
 - Agent hooks: !`orca agent hooks status --json 2>/dev/null | grep -o '"enabled": *[a-z]*' | head -1 | xargs || echo "HOOKS_UNKNOWN"`
@@ -65,6 +65,8 @@ Under `claude -p` (or any run whose autonomy resolves to `autonomous`, `../../re
 
 _Add a line each time Claude trips on something._
 
+- A pure idle subscription **omits the `message` field** — `SendMessage({to: "{name}", notify_when_idle: true})`. Writing an empty `message` failed as malformed JSON three times in a row in two separate coordinator sessions; the fallback of sending a "no action needed" line works for an interactive worker but opens a new turn in a `-p` one.
+- On Claude Code ≥ 2.1.289 a Context line can arrive as a `[run this first …]` instruction instead of its output (the `Codex default` line did, measured). Run it before step 1 and use its output; an empty or instruction-shaped value is not a reading.
 - Codex workers: `input_accepted` / `dispatch_input: accepted` is NOT proof the worker started. The Enter is lost often enough that two 50-min wait windows burned on workers that never ran (measured). Prove the submit with a read within 30 s, then wait.
 - A Codex `check --wait` longer than ~10 min is where the silence comes from: the human asked "how is it going" 30+ times in two weeks, always 30–90 min after the last coordinator line. Nine-minute windows, one status line per expiry.
 - Ending the turn with a Codex dispatch open makes the runtime nag `You have 1 orchestration message` into the human's stream — 124 times in one session set. It fires once per arriving message even when a script acks it within seconds, and it is typed without Enter, so the copies pile up unseen until the human's next submit (measured, #63). Acking does not prevent it; no open dispatch does.
