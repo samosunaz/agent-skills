@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.16.1](https://github.com/samosunaz/agent-skills/compare/v4.16.0...v4.16.1) (2026-10-04)
+
+
+### 🩹 Fixes
+
+* **coordinate:** the Bound run probe falls back to NO_RUN, and a pure subscription omits message ([#81](https://github.com/samosunaz/agent-skills/issues/81)) ([31bd029](https://github.com/samosunaz/agent-skills/commit/31bd029b581704951eabe6b2e3579a67f084a8b9))
+
 ## [4.16.0](https://github.com/samosunaz/agent-skills/compare/v4.15.0...v4.16.0) (2026-10-04)
 
 
