@@ -173,7 +173,7 @@ grep '"type":"result"' ~/conductor-{N}.jsonl | tail -n 1 | jq -r '"\(.subtype) �
 
 Launch the **first** worker alone and confirm it booted before releasing the rest: the log's opening `{"type":"system","subtype":"init"}` line carries `model`, `cwd`, and the loaded plugins. No init line means the terminal died at shell start — fix that once instead of five times.
 
-Once a worker booted, confirm its `issue-{N}` row in `ListAgents` and subscribe once: `SendMessage({to: "issue-{N}", notify_when_idle: true})` with **no `message`**. Text sent to a `-p` worker opens another turn there and writes a second `result` line; the bare subscription costs it nothing. A `claude -p` worker that exits on its own sends exactly one idle notice carrying its last reply line (measured, Claude Code 2.1.288, 2026-10-03).
+Once a worker booted, confirm its `issue-{N}` row in `ListAgents` and subscribe once: `SendMessage({to: "issue-{N}", notify_when_idle: true})` with **no `message`**. Text sent to a `-p` worker opens another turn there and writes a second `result` line; the bare subscription costs it nothing. A `claude -p` worker that exits on its own sends exactly one idle notice carrying its last reply line (measured, Claude Code 2.1.288, 2026-10-03). No `issue-{N}` row, or a send that fails, means the worker already exited or has not joined yet: read the pane — exited ⇒ handle it as a notice now; still booting ⇒ retry `ListAgents` on the next tick.
 
 `--max-budget-usd` is a hard kill, not a report; the help text's `(only works with --print)` says where the flag applies, not what it does. A cap that fires mid-item leaves a half-done branch (autonomous-run.md § Failure modes), so size it above the item's expected cost and let the turn limit bind instead.
 
@@ -196,8 +196,8 @@ orca orchestration check --wait --types worker_done,escalation,decision_gate --t
 
 **Claude-variant supervision.** These workers send no *orchestration* messages; each one sends one idle notice when its `claude -p` process ends (the P3 subscription). Arm **one** `Monitor` for the wave that prints a liveness tick every nine minutes (`while true; do sleep 540; echo tick; done`, `timeout_ms` 1800000, re-armed on expiry), and let the notices arrive — never poll the logs.
 
-- **On a notice** → read the outcome once with the P3 `grep '"type":"result"' … | tail -n 1 | jq` line, keep its cost and turns for the P6 row, then the trust-but-verify PR check above. No `result` line ⇒ `aborted`.
-- **On a tick with no notice since the last one** → per open claude-variant worker, `orca terminal read --terminal {handle} --json` and `git log --oneline -1 issue-{N}-{slug}`. A pane back at a shell prompt with no `result` line is a crash (report row `aborted`, the tail quoted); anything advancing keeps running.
+- **On a notice** → `orca terminal read --terminal {handle} --json` first. `claude` still running means the notice marked a turn boundary, not the exit (a P5 `[landed]` opened another turn): re-subscribe and keep the worker open. Back at a shell prompt ⇒ read the outcome once with the P3 `grep '"type":"result"' … | tail -n 1 | jq` line, keep its cost and turns for the P6 row, then the trust-but-verify PR check above. No `result` line ⇒ `aborted`. A worker that got a `[landed]` has one `result` line per turn: read them all (`grep '"type":"result"' … | jq -s 'map({subtype,total_cost_usd,num_turns})'`) and take the outcome from the worst subtype and the PR check, never from the last line.
+- **On each tick, for every open claude-variant worker with no notice since the previous tick** → `orca terminal read --terminal {handle} --json` and `git log --oneline -1 issue-{N}-{slug}`. A pane back at a shell prompt is an exit whether or not a notice came: handle it exactly as a notice (no `result` line ⇒ `aborted`, the tail quoted). Anything advancing keeps running.
 
 The result line is the outcome claim, not the outcome: a `success` subtype still needs the trust-but-verify PR check above.
 
@@ -223,7 +223,7 @@ When every wave PR is merged (or explicitly parked by the human):
 2. Mark mirrors: `orca orchestration task-update --id {task_id} --status completed --json` for merged items whose worker already sent `worker_done` under a prior dispatch — skip when the `worker_done` itself already completed the task.
 3. Recompute the graph (§ Issue dependencies read recipes) — merged blockers are now `CLOSED`; peel the next wave.
 4. `git fetch origin` in the primary checkout — the next wave's worktrees branch from the updated base ref by construction (P3), but the coordinator's own view should match reality.
-5. **Tell the workers still running.** A merge moves `origin/main` under every in-flight worktree and can invalidate the `file:line` references in a plan that is being executed right now — the same drift P3 gates for at dispatch, arriving mid-flight where no gate is watching. Diff the merged PR's files against each live worker's plan owner files; on an intersection, `SendMessage` that worker (claude variant only — Codex workers are unreachable):
+5. **Tell the workers still running.** A merge moves `origin/main` under every in-flight worktree and can invalidate the `file:line` references in a plan that is being executed right now — the same drift P3 gates for at dispatch, arriving mid-flight where no gate is watching. Diff the merged PR's files against each live worker's plan owner files; on an intersection, `SendMessage` that worker with `notify_when_idle: true` (claude variant only — Codex workers are unreachable). The text opens another turn in a `-p` worker, so the subscription is renewed with it and the worker's P4 outcome is read from all its `result` lines:
 
    ```
    [landed] #{merged} — merged into main, touching {files}. Re-read those before your next edit; rebase if your diff conflicts. {pr-url}
@@ -246,7 +246,7 @@ esac
 gh issue comment "$LOG" --body-file {report.md}
 ```
 
-Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR | cost | turns |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Claude-variant rows take cost and turns from the one P4 `result` read; Codex rows write `—`. Escalated/parked rows name their reason; a truncated run says what it did not cover.
+Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR | cost | turns |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Claude-variant rows take cost and turns from the P4 `result` read; a claude-variant row with no `result` line writes the `--max-budget-usd` cap as cost, marked `cap`, and `—` turns; Codex rows write `—`. Escalated/parked rows name their reason; a truncated run says what it did not cover.
 
 Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca orchestration reset --tasks --json` only when nothing is active and the report is posted — it resets the Run bound in P0, so re-bind with `run-use --id {run_id}` first if this session was restarted.
 
