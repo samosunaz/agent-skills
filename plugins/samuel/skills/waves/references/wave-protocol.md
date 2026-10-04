@@ -246,7 +246,7 @@ esac
 gh issue comment "$LOG" --body-file {report.md}
 ```
 
-Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Escalated/parked rows name their reason; a truncated run says what it did not cover.
+Report shape: header `**Waves run** — {repo} · {date} · {n} waves`, one row per issue — `| issue | wave | engine | outcome | PR | cost | turns |` with outcome ∈ `shipped` (draft PR open) · `merged` (human accepted during the run) · `escalated` · `parked` (blocked external / cycle) · `aborted` — then totals and worktrees left alive. Claude-variant rows take cost and turns from the one P4 `result` read; Codex rows write `—`. Escalated/parked rows name their reason; a truncated run says what it did not cover.
 
 Cleanup: worktrees of unmerged PRs stay alive (the human reviews there); `orca orchestration reset --tasks --json` only when nothing is active and the report is posted — it resets the Run bound in P0, so re-bind with `run-use --id {run_id}` first if this session was restarted.
 
