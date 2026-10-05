@@ -1,7 +1,7 @@
 ---
 name: iaas
 description: "Drive one item through Implement → [Audit → Address] × N → Simplify as chained headless phases, each with fresh context. The round ceiling comes from the plan's size chip or --rounds. Trigger on 'iaas', 'audit loop', 'run the audit rounds', 'implement audit address simplify'."
-allowed-tools: Bash(git branch *) Bash(git rev-parse *) Bash(git status *) Bash(git log *) Bash(git diff *) Bash(gh *) Bash(awk *) Bash(test *) Bash(date *) Bash(tail *) Bash(jq *) Read Write Edit Skill Monitor AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git rev-parse *) Bash(git status *) Bash(git log *) Bash(git diff *) Bash(gh *) Bash(awk *) Bash(test *) Bash(date *) Bash(tail *) Bash(jq *) Bash(cd *) Bash(claude -p *) Read Write Edit Skill AskUserQuestion
 ---
 
 # IAAS — Implement · Audit · Address · Simplify
@@ -81,4 +81,5 @@ _Add a line each time Claude trips on something._
 - **IAAS audits behaviour.** Pixels the human judges from a capture get no audit loop and no worker phase — the reflex to wrap every item in fresh-context phases is what turns a thirty-line stylesheet change into an hour. The `direct` chip exists so that reflex has to argue with a value the human set.
 - **The size chip is read, never re-judged.** If the item has no chip, say so at CONFIRM rather than inventing a complexity estimate — a heuristic built on the agent's self-assessment is decorative (`../../reference/pipeline.md` § The unknowns seam).
 - Phase prompts go in via **stdin**, not as an argument — a multi-paragraph contract on the command line hits the shell's own limits and quoting rules.
-- Chain phases so a failure stops the chain. A phase that runs on top of a failed predecessor audits a tree nobody built.
+- Launch the next phase only after the previous one exited 0 and wrote a new `success` result line; a phase that runs on top of a failed predecessor audits a tree nobody built.
+- **The only launch is the backgrounded `claude -p` in `references/phase-contracts.md` § The chain.** An interactive `claude --name iaas-*` session never exits: six runs left 30 idle TUIs (~12 GB of memory). Diagnose leftovers with `pgrep -fl 'name iaas-'`.
