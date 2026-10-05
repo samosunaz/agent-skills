@@ -1,0 +1,17 @@
+{
+  "description": "Before every compaction, inject handoff rules into the summary plus the active branch and the item's task-context frontmatter (branch number, else the only file in .claude/task-context/, else the legacy .claude/task-context.md, else none). Fails open.",
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/precompact-handoff.sh\"",
+            "timeout": 15,
+            "statusMessage": "Injecting handoff rules into the compaction"
+          }
+        ]
+      }
+    ]
+  }
+}
