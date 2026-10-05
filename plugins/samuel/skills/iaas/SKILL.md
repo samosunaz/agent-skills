@@ -1,7 +1,7 @@
 ---
 name: iaas
 description: "Drive one item through Implement → [Audit → Address] × N → Simplify as chained headless phases, each with fresh context. The round ceiling comes from the plan's size chip or --rounds. Trigger on 'iaas', 'audit loop', 'run the audit rounds', 'implement audit address simplify'."
-allowed-tools: Bash(git branch *) Bash(git rev-parse *) Bash(git status *) Bash(git log *) Bash(git diff *) Bash(gh *) Bash(awk *) Bash(test *) Bash(date *) Bash(tail *) Bash(jq *) Read Write Edit Skill Monitor AskUserQuestion
+allowed-tools: Bash(git branch *) Bash(git rev-parse *) Bash(git status *) Bash(git log *) Bash(git diff *) Bash(gh *) Bash(awk *) Bash(test *) Bash(date *) Bash(tail *) Bash(jq *) Bash(cd *) Bash(claude -p *) Bash(pgrep *) Read Write Edit Skill AskUserQuestion
 ---
 
 # IAAS — Implement · Audit · Address · Simplify
@@ -48,6 +48,8 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 
 No chip on the item → treat as **M** and say so in the CONFIRM block. A `direct` chip is a ceiling of **0**: say so at CONFIRM and hand the item back to the open session (`../../reference/plan-templates.md` § Sizing, Direct lane) — an audit round on a stylesheet audits nothing the human's eyes did not already settle. A ceiling is a maximum, never a target: rounds stop the moment the loop converges, because every extra audit is a full model run against real money.
 
+**Before CONFIRM, check the barrier:** `test -f {worktree}/.claude/autonomous-ship.json`. Missing ⇒ stop and point at `../conductor/references/autonomous-run.md` § 2; every phase launch loads that file and exits 1 without it.
+
 **CONFIRM the item, the ceiling and its source before launching anything.** **WAIT.** (Autonomous: proceed on the derived ceiling and record it. attended-auto: announce the ceiling and its source in one line.)
 
 ## When the loop stops
@@ -81,4 +83,5 @@ _Add a line each time Claude trips on something._
 - **IAAS audits behaviour.** Pixels the human judges from a capture get no audit loop and no worker phase — the reflex to wrap every item in fresh-context phases is what turns a thirty-line stylesheet change into an hour. The `direct` chip exists so that reflex has to argue with a value the human set.
 - **The size chip is read, never re-judged.** If the item has no chip, say so at CONFIRM rather than inventing a complexity estimate — a heuristic built on the agent's self-assessment is decorative (`../../reference/pipeline.md` § The unknowns seam).
 - Phase prompts go in via **stdin**, not as an argument — a multi-paragraph contract on the command line hits the shell's own limits and quoting rules.
-- Chain phases so a failure stops the chain. A phase that runs on top of a failed predecessor audits a tree nobody built.
+- Launch the next phase only after the previous one exited 0 and wrote a `success` result line to its own log; a phase that runs on top of a failed predecessor audits a tree nobody built.
+- **The only launch for a Claude phase is the backgrounded `claude -p` in `references/phase-contracts.md` § The chain.** An interactive `claude --name iaas-*` session never exits: six runs left 30 idle TUIs (~12 GB of memory). Diagnose leftovers with `pgrep -fl 'name iaas-'`.

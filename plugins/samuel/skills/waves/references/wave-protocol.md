@@ -184,7 +184,7 @@ Autonomy resolves itself (headless `claude -p` = `autonomous`, `reference/autono
 One rolling loop for the whole wave. N in-flight Codex workers ⇒ up to N `check --wait` completions; claude-variant workers report through idle notices (below):
 
 ```bash
-orca orchestration check --wait --types worker_done,escalation,decision_gate --timeout-ms 900000 --json
+orca orchestration check --wait --types worker_done,escalation,decision_gate --timeout-ms 540000 --json
 ```
 
 - **`worker_done`** → trust but verify: `gh pr view {prUrl} --json state,isDraft` (the PR must exist and be a draft), then `gh pr checks {n} --watch --interval 30` or poll per window. Card → the worker set `in-review`; fix it if it didn't. A `signoff/*` check on that PR was written **by the worker itself** (adapter § Signed-off checks) — it restates the worker's own claim, so the verdict rides on the checks that executed. If a repo leaves signoff as the *only* green check, the wave has no independent verification at all; raise that at the WAVE PLAN gate, never mid-supervision.

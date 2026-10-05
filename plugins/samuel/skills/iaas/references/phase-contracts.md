@@ -204,32 +204,33 @@ this comment is a GitHub post like any other phase's, so it carries the block to
 
 ## The chain
 
-One process per phase, chained so a failure stops everything after it. A phase that runs on top of a
-failed predecessor audits a tree nobody built.
+One process per Claude phase, launched by the coordinator as **one Bash call with `run_in_background: true`**. A `claude -p` process exits when its turn ends, so no session survives the phase, and the harness's notice that the background task ended is the phase's end:
 
 ```bash
-cd {worktree}
-for p in 1-implement 2-audit 3-address 4-simplify; do
-  echo "=== PHASE $p start $(date +%H:%M:%S)" >> ~/iaas-{N}.log
-  claude -p --model {model} --effort {effort} \
-    --output-format stream-json --verbose \
-    < /tmp/iaas-{N}/$p.md >> ~/iaas-{N}.jsonl 2>>~/iaas-{N}.log \
-    || { echo "=== PHASE $p FAILED $(date +%H:%M:%S)" >> ~/iaas-{N}.log; exit 1; }
-  echo "=== PHASE $p done $(date +%H:%M:%S)" >> ~/iaas-{N}.log
-done
+cd {worktree} && claude -p --model {model} --effort {effort} \
+  --permission-mode bypassPermissions --settings .claude/autonomous-ship.json \
+  --output-format stream-json --verbose \
+  < /tmp/iaas-{N}/{phase}.md >> ~/iaas-{N}-{phase}.jsonl 2>> ~/iaas-{N}.log
 ```
 
-With a ceiling above 1 the middle of that list repeats — `2-audit-1 3-address-1 2-audit-2 …` — and
+This is the only launch for a Claude phase. The Codex rows (Implement S/M, Phase 2b) run through the Codex runtime per § Model routing — never as `claude -p` and never interactively. An interactive `claude --name iaas-*` session never exits, and a `for` loop over the phases cannot work either: the hub decides after each audit whether another round runs.
+
+The contracts are `1-implement 2-audit 3-address 4-simplify`, one launch each. With a ceiling above 1 the middle of that list repeats — `2-audit-1 3-address-1 2-audit-2 …` — and
 the hub decides after each audit whether the next pair is written at all (`../SKILL.md` § When the
 loop stops). **Do not pre-generate rounds that convergence may cancel**; each audit contract is
 written after the previous round closed, because a delta round needs the previous pass's IDs.
 
 The headless run needs the permission barrier every unattended run needs: bypass mode plus the
-committed deny list, never a bare allowlist. Recipe and the reason:
+committed deny list, never a bare allowlist. Phases push and open a draft PR, so they load the ship-mode file, `.claude/autonomous-ship.json`. Recipe and the reason:
 `../../conductor/references/autonomous-run.md` § 2.
 
-**Supervision** is `Monitor` over the `.jsonl`, reading `result` lines for cost, turns and outcome.
-Each phase's own final message is the machine-read report the standing rules ask for.
+**On the exit notice**, read the phase's outcome once from its own log:
+
+```bash
+jq -c 'select(.type=="result")' ~/iaas-{N}-{phase}.jsonl | tail -n 1 | jq -r '"\(.subtype) · $\(.total_cost_usd) · \(.num_turns) turns · \(.usage.input_tokens)/\(.usage.output_tokens) tokens"'
+```
+
+Launch the next phase only on exit 0 **and** a `success` line. No `result` line means the phase aborted: `--settings` pointing at a missing file exits 1 before writing one (measured). Anything else stops the chain and is reported as that phase's failure: a phase that runs on top of a failed predecessor audits a tree nobody built.
 
 ## Model routing
 
