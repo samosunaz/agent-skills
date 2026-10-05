@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.16.3](https://github.com/samosunaz/agent-skills/compare/v4.16.2...v4.16.3) (2026-10-05)
+
+
+### 🩹 Fixes
+
+* **samuel:** ship the PreCompact handoff hook with the plugin and resolve the item's task-context ([#86](https://github.com/samosunaz/agent-skills/issues/86)) ([5da2471](https://github.com/samosunaz/agent-skills/commit/5da2471f434446e3157989e575a14db99692e24b))
+
 ## [4.16.2](https://github.com/samosunaz/agent-skills/compare/v4.16.1...v4.16.2) (2026-10-05)
 
 
