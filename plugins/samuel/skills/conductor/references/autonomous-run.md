@@ -102,7 +102,7 @@ Every launch path records the same four numbers per item: **cost, turns, tokens,
 
 - **`--max-budget-usd <amount>`** — the native per-item spend cap. No custom logic needed; the CLI kills the run when it's hit.
 - **`--output-format stream-json --verbose | tee <log>.jsonl`** — machine-readable output. **`stream-json` hard-errors without `--verbose`** (`stream-json requires --verbose`); the flag is not optional. The JSONL **replaces** the old plain-text log — it carries the same transcript plus the final `result` line, so raw debugging reads the same file.
-- **`jq` over the last line** — the run's result object:
+- **`jq` over the last `"type":"result"` line** — the run's result object. Select it with `grep`, never `tail -n 1` alone: a run that had a background task or received a message keeps writing events after it.
   ```json
   {"type":"result","subtype":"success","is_error":false,"total_cost_usd":0.4897,
    "num_turns":1,"duration_ms":12371,"usage":{"input_tokens":1200,"output_tokens":340}}
@@ -133,7 +133,7 @@ claude -p \
   | tee ~/conductor-$ITEM.jsonl
 
 # What it cost and how it ended.
-tail -n 1 ~/conductor-$ITEM.jsonl | jq -r 'select(.type=="result")
+grep '"type":"result"' ~/conductor-$ITEM.jsonl | tail -n 1 | jq -r 'select(.type=="result")
   | "cost $\(.total_cost_usd) · \(.num_turns) turns · \(.usage.input_tokens)/\(.usage.output_tokens) tokens · \(.subtype)"'
 ```
 
@@ -163,7 +163,7 @@ for n in $(gh issue list --state open --label "pipeline:ready" --json number --j
     --output-format stream-json --verbose \
     | tee ~/conductor-$n.jsonl || true
 
-  res=$(tail -n 1 ~/conductor-$n.jsonl 2>/dev/null || true)
+  res=$(grep '"type":"result"' ~/conductor-$n.jsonl 2>/dev/null | tail -n 1 || true)
   if ! printf '%s' "$res" | jq -e 'select(.type=="result")' >/dev/null 2>&1; then
     cost=$ITEM_BUDGET_USD; turns='?'; tokens='?'; outcome=aborted
   else
@@ -231,7 +231,7 @@ claude -p "/samuel:conductor $n --ship
   --output-format stream-json --verbose \
   | tee "$HOME/conductor-$n.jsonl" || true
 
-res=$(tail -n 1 "$HOME/conductor-$n.jsonl" 2>/dev/null || true)
+res=$(grep '"type":"result"' "$HOME/conductor-$n.jsonl" 2>/dev/null | tail -n 1 || true)
 if ! printf '%s' "$res" | jq -e 'select(.type=="result")' >/dev/null 2>&1; then
   cost="${ITEM_BUDGET_USD:-10}"; turns='?'; tokens='?'; outcome=aborted
 else
