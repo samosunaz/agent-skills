@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.16.2](https://github.com/samosunaz/agent-skills/compare/v4.16.1...v4.16.2) (2026-10-05)
+
+
+### 🩹 Fixes
+
+* **conductor:** read the run outcome from the last result line ([#83](https://github.com/samosunaz/agent-skills/issues/83)) ([cb305d4](https://github.com/samosunaz/agent-skills/commit/cb305d4310d3a2d04215db0fb0d5e3e9f490a55f))
+* **iaas:** launch each Claude phase as one backgrounded claude -p and read it from its own log ([#84](https://github.com/samosunaz/agent-skills/issues/84)) ([00ac742](https://github.com/samosunaz/agent-skills/commit/00ac742bb83a689b1dece34e3ed178877f3ece01))
+
 ## [4.16.1](https://github.com/samosunaz/agent-skills/compare/v4.16.0...v4.16.1) (2026-10-04)
 
 
