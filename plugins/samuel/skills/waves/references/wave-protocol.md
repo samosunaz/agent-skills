@@ -109,6 +109,7 @@ orca worktree create --repo id:{ORCA_REPO_ID} --name issue-{N}-{slug} --issue {N
   orca terminal wait --terminal {handle} --for tui-idle --timeout-ms 60000 --json
   orca orchestration dispatch --task {task_id} --to {handle} --inject --json
   ```
+  A wait that returns `satisfied:false` with a `blockedReason` (Orca ≥ 1.4.221) means a menu or dialog holds the TUI: read the pane before dispatching — the injected brief would land on it.
 
 `--no-parent` + no `--base-branch` = top-level worktree from the repo's default base — every wave starts from current `origin/main` by construction. `--issue {N}` links the card; `issue:{N}` becomes a valid worktree selector for the rest of the run.
 
