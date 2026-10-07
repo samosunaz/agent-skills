@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.17.0](https://github.com/samosunaz/agent-skills/compare/v4.16.3...v4.17.0) (2026-10-07)
+
+
+### 🚀 Features
+
+* **scripts:** add session-bench to measure the human side of coordinator sessions ([#91](https://github.com/samosunaz/agent-skills/issues/91)) ([1d35c97](https://github.com/samosunaz/agent-skills/commit/1d35c973755f09bb88a13e4a27de16384413342d))
+
+
+### 📄 Documentation
+
+* **orca:** adopt the 1.4.221 tui-idle blocked verdict and the worker_done fixes ([#89](https://github.com/samosunaz/agent-skills/issues/89)) ([e4b46dc](https://github.com/samosunaz/agent-skills/commit/e4b46dc852cbb40768f71be38bf8916e92e954e5)), closes [#88](https://github.com/samosunaz/agent-skills/issues/88)
+
 ## [4.16.3](https://github.com/samosunaz/agent-skills/compare/v4.16.2...v4.16.3) (2026-10-05)
 
 
