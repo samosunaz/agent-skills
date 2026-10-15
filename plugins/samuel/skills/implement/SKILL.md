@@ -134,6 +134,7 @@ Create a handoff only at a phase boundary, and only when the harness has emitted
 6. **Mandatory validation** after all steps.
 7. **Declared e2e tier is a Step, not polish** — if the plan's Validation section carries an `**e2e tier:**` line, authoring or updating that journey is one of the Steps to execute, not optional follow-up.
 8. **Blast radius before moving on** — a recorded decision isn't closed until its cross-issue impact is assessed (e.1); cross-issue comments always get a checkpoint.
+9. **Least code** — the smallest change that meets each Acceptance Criterion: no helper with one caller, no option nobody passes, no re-implementation of something the repo already has, no vendored item nobody imports. A later simplify pass is not where code that never needed writing gets removed.
 
 ## Gotchas
 

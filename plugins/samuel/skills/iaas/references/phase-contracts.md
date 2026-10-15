@@ -71,6 +71,8 @@ Design latitude: {what the executor may choose, and the constraint that bounds i
 
 Definition of done:
 - Every Acceptance Criterion in the Brief met.
+- Least code: the smallest change that meets every criterion (no helper with one caller, no option
+  nobody passes, no copy of something the repo already has, no vendored item nobody imports).
 - Tests only at the seams the plan declared in `### Testing seams` (see `/samuel:tdd`); a Step that
   needs an undeclared seam is a plan-reality mismatch — stop and say so.
 - The repo gate green.
