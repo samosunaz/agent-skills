@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.17.1](https://github.com/samosunaz/agent-skills/compare/v4.17.0...v4.17.1) (2026-10-26)
+
+
+### 📄 Documentation
+
+* **samuel:** calibrate model routing and effort by role ([#93](https://github.com/samosunaz/agent-skills/issues/93)) ([ccf47ee](https://github.com/samosunaz/agent-skills/commit/ccf47ee969931a9aaf2515f25d42f9ce06f2a6ec))
+
 ## [4.17.0](https://github.com/samosunaz/agent-skills/compare/v4.16.3...v4.17.0) (2026-10-16)
 
 
