@@ -189,6 +189,8 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, *
 
 ## Sub-Agent Architecture
 
+Before selecting a model or reasoning effort for delegated work, read [Model Routing & Token Economy](plugins/samuel/reference/model-routing.md). It defines the personal cost preferences, evidence limits, and role-specific effort settings; named agents retain their own contracts.
+
 Agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them automatically.
 
 | `subagent_type` | Purpose |
