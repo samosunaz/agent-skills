@@ -65,7 +65,7 @@ Whichever fired, the report's last line is the output of `/samuel:land --dry-run
 
 ## Authority ceiling
 
-**Draft PR is where this skill stops.** `gh pr ready` runs only under `--ready`, and **merge is never automated at any level** — `/samuel:done`'s outward-action rules and ADR 0004 bind here unchanged. Every phase that pushes runs the repo gate first, and `gate:signoff` when `.claude/samuel.md` declares `signoff`; a phase never signs a SHA its gate did not run against.
+**Draft PR is where this skill stops.** `gh pr ready` runs only under `--ready`, and **merge is never automated at any level** — `/samuel:done`'s outward-action rules, `../../reference/autonomy.md` § Hard stops and ADR 0004 bind here unchanged. Every phase that pushes runs the repo gate first, and `gate:signoff` when `.claude/samuel.md` declares `signoff`; a phase never signs a SHA its gate did not run against.
 
 ## Run accounting
 

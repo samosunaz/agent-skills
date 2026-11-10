@@ -125,8 +125,8 @@ You change NO code in this phase.
 ## Phase 2b — SECOND AUDIT (size M and L, round 1 only)
 
 A second, **read-only** auditor from a **different model family**, launched beside Phase 2 on the same
-frozen SHA. Two instances of one model share blind spots; two families do not (§ Model routing has the
-measurement). It runs through the other engine's own runtime in read-only mode, never as a Claude
+frozen SHA. Two instances of one model share blind spots; two families do not (`../../../reference/model-routing.md` §
+Pipeline roles has the measurement). It runs through the other engine's own runtime in read-only mode, never as a Claude
 sub-agent, and it posts nothing: its final message comes back to the coordinator.
 
 ```markdown
@@ -240,34 +240,4 @@ Launch the next phase only on exit 0 **and** a `success` line. No `result` line 
 
 ## Model routing
 
-| Phase | Default | Why |
-|---|---|---|
-| Implement — size L, user-facing work, or an open design decision | opus-5.5, effort high | the delegation default for any subagent that ships code |
-| Implement — size S or M with a closed spec | gpt-5.6-luna, effort high, through the Codex runtime · fallback opus-5.5 high | matched the reference on the one matched run at half the output tokens and no Claude quota (provisional, below) |
-| **Audit** | fable-5.2, effort **high**, **with execution** · fallback opus-5.5 `xhigh` when Fable is unavailable | the adversarial phase — the one whose misses cost a whole round; past Opus `high` the next step is the bigger model, not more effort (`../../../reference/model-routing.md`) · not measured locally |
-| Second audit (M, L) | gpt-5.6-luna, read-only | a different family: its misses did not overlap the primary's |
-| Address | opus-5.5, effort high | bounded work: the findings name what to change · not measured |
-| Simplify | opus-5.5, effort high | taste-sensitive, but scoped to the diff · not measured |
-
-The rows name opus-5.5 since 2026-09-24; the evidence below was measured on opus-5 and not re-run. The Audit row names fable-5.2 on the vendor's runs alone, so one matched audit where opus-5.5 `xhigh` finds what fable-5.2 `high` missed reopens it.
-
-Routing is overridable per run. Never silently drop a phase below opus-5.5 to save tokens; the audit
-is where an under-powered model quietly returns "no findings" and looks identical to a clean pass.
-The Codex rows need two things to hold: quota, and a sandbox that can run the project's tests from
-the worktree — a build tool whose lock lives in the main checkout denies a worktree-scoped sandbox.
-Check it with one focused test before the first dispatch; either one missing ⇒ that row falls back to
-opus-5.5, **never** to a lower Claude tier.
-
-**Evidence — provisional, one task.** One matched run: five implementers on the same medium fix, same
-plan, same base, blind audit. opus-5 came back with no finding at all; gpt-5.6-luna with one Nit and
-5 of 5 on the coordinator's adversarial suite, in 15k output tokens against opus-5's 30k, written
-without being able to run a test; gpt-5.6-sol failed 1 of 5 (a source-order defect); sonnet-5 wrote
-correct code, left two declared test seams unproven, used 43k tokens and broke one brief rule;
-gpt-5.6-terra shipped an inert check. Then the same five frozen diffs went to six auditors against a
-ground truth confirmed by execution: opus-5 **with** execution found 4 of 5 real defects, opus-5
-**read-only** missed the ordering defect the executing instance found, gpt-5.6-luna read-only found 4
-of 5 — a different four — and the union was 5 of 5. Nobody invented a Blocker or an Important on the
-two clean diffs. Severity drifted between instances of the same model (one defect: Nit in one review,
-Important in another), which is why convergence counts confirmed findings, not labels. Three more
-matched tasks with the same result make these rows permanent; one contrary task reopens them.
-sonnet-5 holds no implementer row and gpt-5.6-terra holds no row until each gets a fair run.
+Model, effort and fallback per phase, the rules for falling back, and the evidence behind the rows: `../../../reference/model-routing.md` § Pipeline roles (the Implement, Audit, Second audit, Address and Simplify rows).
