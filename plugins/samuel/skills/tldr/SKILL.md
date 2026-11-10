@@ -47,13 +47,14 @@ Keep a hedge when the uncertainty is real, and name its cause: "I did not run th
 1. **One word, one meaning.** Pick a term, keep it for the whole text. If it is `issue`, it is `issue` everywhere. Never rotate to "ticket" or "task" for variety.
 2. **Active voice with an explicit subject.** "The hook blocks the command", not "the command is blocked", not "the command gets blocked".
 3. **Imperative for instructions, one action per sentence.** "Run X. Then open Y."
-4. **One idea per sentence.** Max 20 words in an instruction, 25 in an explanation. Split, do not subordinate.
+4. **One idea per sentence.** Aim for about 20 words in an instruction and 25 in an explanation. These are targets, not caps: a hard cap makes the prose choppy. Split a sentence that carries two ideas. Where ideas connect, keep them as a short paragraph of full sentences.
 5. **No ambiguous referents.** Use "this" or "that" only when the antecedent sits in the same sentence. Otherwise name the thing.
 6. **No vague quantifiers.** "Several", "some", "soon" become a number, a count, or a date.
 7. **Condition first in every conditional.** "If the PR is already merged, open a new one."
 8. **No noun stacks longer than 3.** Break them with prepositions.
 9. **Canonical tech terms stay in English and stay unexpanded** (PR, issue, squash, worktree, rollback). Abstract jargon gets replaced by the plain verb. Both lists live in the spoke § Jargon.
 10. **No em dashes, no tricolons, no packaged transitions.** Use a period, a comma, or parentheses.
+11. **Write for a reader who was not there.** The reader has not seen the tool calls, the files or the reasoning. Put the key point in the first sentences. Replace a label coined during the work with what the thing is.
 
 ## Step 5: Constraints
 

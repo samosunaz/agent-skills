@@ -31,13 +31,15 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 **Goal**: complete context, no assumptions.
 
 1. Read all referenced files/items in main context. If the item already has a **Brief** (created at triage), read it. If `docs/features/{slug}/spec.md` exists, read it FIRST. If `Constitution: present`, read `CONSTITUTION.md` and add a Constitution Check to Phase 2. Read the Issue's **comments** too (`gh issue view {item} -R {repo} --json body,comments`): `**Decision` records and `**Upstream decision` impact notices are standing constraints on the design — fold them in before choosing an approach. If the Issue has a parent (GraphQL `parent` — recipe: adapter § Blast radius), skim it and any ADR it references.
-2. Spawn parallel sub-agents in a **single message**:
+2. Spawn the sub-agents the item needs, in a **single message**:
 
    | `subagent_type` | Purpose |
    |---|---|
    | `component-locator` | WHERE relevant files/components live |
    | `implementation-analyzer` | HOW current code works |
    | `pattern-scanner` | existing patterns to follow |
+
+   Skip an agent whose question step 1 already answered: a Brief that names its files needs no locator, and a lookup that takes a handful of tool calls stays in the main context.
 
 3. Wait for ALL. Synthesize.
 
@@ -134,7 +136,7 @@ _Add a line each time Claude trips on something._
 
 ## Sub-Agent Rules
 
-- Spawn ALL agents in a **single message**. Focused prompts. Researchers, not decision-makers. Wait for ALL before synthesizing.
+- Spawn the agents the item needs in a **single message**. Focused prompts. Researchers, not decision-makers. Wait for ALL before synthesizing.
 
 ## Rules
 

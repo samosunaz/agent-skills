@@ -77,6 +77,8 @@ No level auto-advances any of these. They are not checkpoints to be optimised; t
 - Orphaned context — a `task-context.md` pointing at a CLOSED item
 - Any outward action: `git push`, opening or merging a PR, marking one ready, publishing `pr-self-audit` comments, cross-posting to another Issue
 
+Four actions are outside that last line at every level and need no approval: a local commit on the run's own branch, a comment on the run's own Issue that § Recording contract asks for, a lifecycle message to the run's own coordinator, and a retry of a read-only or idempotent command. A list that names only what to stop on gets read wider than it was written, and a run that holds back its own record is as broken as one that pushes.
+
 ## Recording contract
 
 What separates `attended-auto` from `autonomous` is *where the record goes*, and it follows from who is watching.

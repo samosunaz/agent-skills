@@ -37,13 +37,14 @@ The journal is **sealed in Step 5**, not here.
 
 ## Step 1: Gather evidence
 
-Load the plan (Issue Executor Plan) and identify what should have changed. Spawn parallel research agents in a **single message**:
+Load the plan (Issue Executor Plan) and identify what should have changed. `git diff --name-only` against the base branch is the list of modified files; no agent is needed to find them. Spawn the research agents the plan needs in a **single message**:
 
 | `subagent_type` | Job |
 |---|---|
 | `implementation-analyzer` | planned changes landed in the specified files |
-| `component-locator` | find all modified files for the feature |
 | `pattern-scanner` | tests added/modified if the plan specified them |
+
+A diff small enough to read in the main context needs neither.
 
 **Wait for ALL.**
 

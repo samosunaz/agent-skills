@@ -48,6 +48,10 @@ identity (`implement` / `audit` / `address` / `simplify`) and the skill it runs 
 - A message with no tool call ends this phase: `claude -p` exits 0 and the chain moves on. Do not end
   the turn with a summary that announces the next step, an offer to continue, or a list of choices
   that block nothing; put status notes in the same message as your next tool call.
+- An error, a timeout, a locked file, an empty result or a failing tool is an ordinary obstacle, not
+  a reason to stop: diagnose it, then work through it with the access you have (wait and retry, fix
+  the request, use another tool). A blocker someone put there on purpose (a denied permission, a
+  path the contract excludes, a red gate) is left alone and reported.
 - Your final message is read by a machine: what you did, the PR URL, gate status, deviations, open
   concerns. No padding.
 ```

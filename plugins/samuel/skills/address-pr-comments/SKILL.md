@@ -37,7 +37,7 @@ In this solo context the most common caller scenario: the repo owner left review
 
 The closing gate of the delivery loop: after the PR is open, this turns review feedback into pushed fixes before merge.
 
-## CRITICAL RULES
+## Ground rules
 
 1. **Never silent-resolve a human thread.** Bots/own-pipeline can be resolved after fixing; a human comment always gets an explicit reply before resolving.
 2. **Checkpoint before applying.** Show the triage table + proposed fixes. WAIT for approval before touching code. This gate binds at `interactive` and `attended-auto` because the push and the replies are outward actions (`reference/autonomy.md`). An **unattended** run launched with the explicit goal of addressing this PR — headless `claude -p`, an `/samuel:iaas` Address phase — carries that authority from its launch: it records the triage as the pass's Resolution comment and proceeds. Merge and ready are never in scope.

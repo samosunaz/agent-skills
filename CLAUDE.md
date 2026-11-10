@@ -202,7 +202,7 @@ Agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them a
 
 ### Key rules
 
-- Spawn ALL initial agents in a **single message** for parallelism.
+- Spawn the agents the question needs, all in a **single message** for parallelism. A lookup that takes a handful of tool calls stays in the main context.
 - Model and `effort` live in each agent's frontmatter. Do not pass `model` or `effort` when you spawn a defined agent: a call-site value overrides the definition. An agent without `effort` in its frontmatter inherits the session level only when it runs on the session's model; on another model it runs at that model's default.
 - Wait for ALL agents before synthesizing results.
 - Check a retriever's `file:line` evidence before you accept a claim. Its `Not Found` / `Not Confirmed` sections are findings, not noise.
@@ -270,7 +270,7 @@ Use `!` backtick pattern to inject runtime data before Claude reads the prompt.
 
 ### Gotchas Section (Evolving)
 
-Every skill has a `## Gotchas` section that grows over time. Add a line each time Claude trips on something.
+Every skill has a `## Gotchas` section that grows over time. Add a line each time Claude trips on something, with its scope and its reason, and delete the line when its cause is fixed: current models apply an accumulated caution literally, so a stale `never` holds back routine work.
 
 ### General Rules
 
