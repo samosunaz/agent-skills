@@ -240,12 +240,12 @@ Launch the next phase only on exit 0 **and** a `success` line. No `result` line 
 |---|---|---|
 | Implement — size L, user-facing work, or an open design decision | opus-5.5, effort high | the delegation default for any subagent that ships code |
 | Implement — size S or M with a closed spec | gpt-5.6-luna, effort high, through the Codex runtime · fallback opus-5.5 high | matched the reference on the one matched run at half the output tokens and no Claude quota (provisional, below) |
-| **Audit** | opus-5.5, effort **xhigh**, **with execution** | the adversarial phase — the one whose misses cost a whole round |
+| **Audit** | fable-5.2, effort **high**, **with execution** · fallback opus-5.5 `xhigh` when Fable is unavailable | the adversarial phase — the one whose misses cost a whole round; past Opus `high` the next step is the bigger model, not more effort (`../../../reference/model-routing.md`) · not measured locally |
 | Second audit (M, L) | gpt-5.6-luna, read-only | a different family: its misses did not overlap the primary's |
 | Address | opus-5.5, effort high | bounded work: the findings name what to change · not measured |
 | Simplify | opus-5.5, effort high | taste-sensitive, but scoped to the diff · not measured |
 
-The rows name opus-5.5 since 2026-09-24; the evidence below was measured on opus-5 and not re-run.
+The rows name opus-5.5 since 2026-09-24; the evidence below was measured on opus-5 and not re-run. The Audit row names fable-5.2 on the vendor's runs alone, so one matched audit where opus-5.5 `xhigh` finds what fable-5.2 `high` missed reopens it.
 
 Routing is overridable per run. Never silently drop a phase below opus-5.5 to save tokens; the audit
 is where an under-powered model quietly returns "no findings" and looks identical to a clean pass.

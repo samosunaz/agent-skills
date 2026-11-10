@@ -10,7 +10,7 @@ Update an existing plan based on feedback. The plan lives in the `<!-- samuel:pl
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it, and gate plan approval with `ExitPlanMode`; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
-## CRITICAL RULES
+## Ground rules
 
 1. **Surgical edits over rewrites.** Preserve good content. Change only what the feedback requires.
 2. **Forced checkpoints.** Present understanding before editing. Never update without confirmation.
@@ -52,7 +52,7 @@ Classify the change and decide if research is needed:
 | Criteria/validation update | no |
 | Technical pivot (approach B not A) | yes |
 
-If research is needed, spawn `component-locator` / `implementation-analyzer` / `pattern-scanner` (sonnet) in a **single message**; wait for ALL.
+If research is needed, spawn `component-locator` / `implementation-analyzer` / `pattern-scanner` in a **single message**; wait for ALL.
 
 ## Step 3: PROPOSE — CHECKPOINT
 

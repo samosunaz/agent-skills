@@ -203,7 +203,7 @@ Agent definitions live in `plugins/samuel/agents/`. Claude Code discovers them a
 ### Key rules
 
 - Spawn ALL initial agents in a **single message** for parallelism.
-- Model and `effort` live in each agent's frontmatter. Do not pass `model` when you spawn a defined agent: the call-site value overrides the definition. The `Agent` tool has no `effort` parameter, so an agent without `effort` in its frontmatter inherits the session level.
+- Model and `effort` live in each agent's frontmatter. Do not pass `model` or `effort` when you spawn a defined agent: a call-site value overrides the definition. An agent without `effort` in its frontmatter inherits the session level only when it runs on the session's model; on another model it runs at that model's default.
 - Wait for ALL agents before synthesizing results.
 - Check a retriever's `file:line` evidence before you accept a claim. Its `Not Found` / `Not Confirmed` sections are findings, not noise.
 - The retrieval agents are retrievers, not analysts — synthesis happens in the main context. **Exception**: `implementation-reviewer` is a deliberate analyst/critic — it returns an independent verdict, not raw findings — the plugin's one adversarial agent, used only by `/samuel:validate` Step 2.5.

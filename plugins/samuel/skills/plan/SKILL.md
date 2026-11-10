@@ -33,11 +33,11 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 1. Read all referenced files/items in main context. If the item already has a **Brief** (created at triage), read it. If `docs/features/{slug}/spec.md` exists, read it FIRST. If `Constitution: present`, read `CONSTITUTION.md` and add a Constitution Check to Phase 2. Read the Issue's **comments** too (`gh issue view {item} -R {repo} --json body,comments`): `**Decision` records and `**Upstream decision` impact notices are standing constraints on the design — fold them in before choosing an approach. If the Issue has a parent (GraphQL `parent` — recipe: adapter § Blast radius), skim it and any ADR it references.
 2. Spawn parallel sub-agents in a **single message**:
 
-   | `subagent_type` | `model` | Purpose |
-   |---|---|---|
-   | `component-locator` | sonnet | WHERE relevant files/components live |
-   | `implementation-analyzer` | sonnet | HOW current code works |
-   | `pattern-scanner` | sonnet | existing patterns to follow |
+   | `subagent_type` | Purpose |
+   |---|---|
+   | `component-locator` | WHERE relevant files/components live |
+   | `implementation-analyzer` | HOW current code works |
+   | `pattern-scanner` | existing patterns to follow |
 
 3. Wait for ALL. Synthesize.
 

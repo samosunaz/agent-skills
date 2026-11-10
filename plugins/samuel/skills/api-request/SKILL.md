@@ -33,7 +33,7 @@ Read as needed:
 
 - **Item**: from Context (`item`) > branch > ask. Optional — a spec can exist with no tracked item.
 - **Requesting platform**: `web` or `mobile` (native iOS/Android). Resolve: `--platform` flag → repo markers (`package.json` with a web framework = web; `*.xcodeproj`/`Package.swift`/`build.gradle` + `*.swift`/`*.kt` = mobile) → else ask **"From web or mobile?"**. This drives type generation and platform concerns downstream.
-- **What's being built**: if files changed, spawn a `component-locator` (sonnet) to identify components/screens being modified, the services/stores that make API calls, and existing calls in the changed files. If speccing before any code exists, skip the agent and ask **"Which flow or screen are you building?"**
+- **What's being built**: if files changed, spawn a `component-locator` to identify components/screens being modified, the services/stores that make API calls, and existing calls in the changed files. If speccing before any code exists, skip the agent and ask **"Which flow or screen are you building?"**
 
 ### 2) GATHER
 

@@ -40,7 +40,7 @@ A recurring **discovery** session with a Product Owner's mindset: read where the
 2. **Vision & front door** — `docs/vision.md` (if present) and the root `README.md`: what it's for, for whom.
 3. **Momentum** — recently shipped issues (closed) = direction & velocity; open `pipeline:*` = what's already committed (don't re-propose it); current `roadmap:*` = standing bets to revise, not duplicate.
 4. **Constraints** — skim `docs/decisions/` (ADRs) for what's locked in.
-5. **Code gaps (optional)** — if the product state is unclear from docs, spawn `component-locator` / `pattern-scanner` (sonnet, single message) to find half-built areas, TODOs, or obvious friction. Retrievers only; synthesis here.
+5. **Code gaps (optional)** — if the product state is unclear from docs, spawn `component-locator` / `pattern-scanner` (single message) to find half-built areas, TODOs, or obvious friction. Retrievers only; synthesis here.
 
 Synthesize a short **"product today"**: what exists, what's strong, what's thin.
 
