@@ -144,7 +144,7 @@ Seeding is where the TL;DR earns the most: a fresh backlog is a dozen issues nob
 
 ### Next steps
 1. Plan the first feature: `/samuel:plan {item}`  (turns a triage Brief into a planned item)
-2. Or pick work: `/samuel:next`   ·   Progress: `/samuel:progress`
+2. Or pick work: `/samuel:next`
 3. Once items are `pipeline:ready`, autonomous: `/samuel:conductor {item} --ship`
 ```
 

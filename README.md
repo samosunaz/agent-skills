@@ -142,14 +142,14 @@ agent-skills/
 │   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, plan-templates, ...)
 │   │   ├── evals/                # plugin-eval cases (`bun run eval:samuel`)
-│   │   └── skills/               # 44 skills, one directory each
+│   │   └── skills/               # 39 skills, one directory each
 │   └── shunt/                    # Token plane plugin (ADR 0007, ADR 0008)
 │       ├── hooks/hooks.json      # PreToolUse gates on Read / Grep / Bash
 │       ├── scripts/              # check-read.sh, check-search.sh (fail open), install-codex.sh
-│       ├── agents/               # bulk-reader (haiku), code-writer (sonnet) — Claude Code only
+│       ├── agents/               # bulk-reader (haiku) — Claude Code only
 │       ├── reference/            # cross-client.md (per-client tools, install, workers)
 │       ├── evals/                # plugin-eval case (`bun run eval:shunt`)
-│       └── skills/               # bulk-read, code-write
+│       └── skills/               # bulk-read
 ├── template/                     # SKILL.md, CONSTITUTION.md, REVIEW.md, samuel.md templates
 └── docs/decisions/               # ADRs (repo-level decisions)
 ```
@@ -160,17 +160,15 @@ Both plugins conform to [Agent Plugins 1.0.0](https://github.com/agentplugins/ag
 
 All skills live in the `samuel` plugin. Invoke as `/samuel:<skill-name>`.
 
-### Core Pipeline: R → [S] → P → [A] → I → V
+### Core Pipeline: [S] → P → [A] → I → V
 
 A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — bring them in when they de-risk the work, skip them for bugs and small features. State flows through `.claude/task-context/{item}.md`; per-repo config (`repo` for `gh`) lives in `.claude/samuel.md`. Committed feature artifacts (journal, validation) live under `docs/features/<slug>/`.
 
 | Skill | Purpose |
 |-------|---------|
-| [`/samuel:codebase-documentation`](plugins/samuel/skills/codebase-documentation/SKILL.md) | Parallel sub-agent codebase exploration. Documents findings without suggesting changes. |
 | [`/samuel:spec`](plugins/samuel/skills/spec/SKILL.md) *(optional)* | Generate a Spec (User Stories, FR-### MUST, SC-### measurable, Edge Cases). WHAT/WHY, not HOW. |
 | [`/samuel:plan`](plugins/samuel/skills/plan/SKILL.md) | 5-phase interactive planning with forced human checkpoints + Constitution Check. |
-| [`/samuel:refine-plan`](plugins/samuel/skills/refine-plan/SKILL.md) | Surgical edits to existing plans based on feedback. |
-| [`/samuel:analyze`](plugins/samuel/skills/analyze/SKILL.md) *(optional)* | Read-only cross-artifact consistency check (spec/research/plan/tasks/constitution). |
+| [`/samuel:analyze`](plugins/samuel/skills/analyze/SKILL.md) *(optional)* | Read-only cross-artifact consistency check (spec/plan/tasks/constitution). |
 | [`/samuel:tdd`](plugins/samuel/skills/tdd/SKILL.md) *(optional)* | Write tests at the seams the plan declared, one behaviour per red-green cycle. Refuses an unconfirmed seam. |
 | [`/samuel:implement`](plugins/samuel/skills/implement/SKILL.md) | Sequential task execution with human verification + living Implementation Notes journal. |
 | [`/samuel:validate`](plugins/samuel/skills/validate/SKILL.md) | Verifies against success criteria, seals the journal, runs documentation impact analysis. |
@@ -186,9 +184,6 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 | [`/samuel:conductor`](plugins/samuel/skills/conductor/SKILL.md) | Drive the pipeline unattended (cloud/overnight); `--ship` opens a draft PR. Safety gate: isolated worktree or a CI runner on a non-main branch. Budget caps + a run report per run. |
 | [`/samuel:iaas`](plugins/samuel/skills/iaas/SKILL.md) | Drive one item through Implement → [Audit → Address] × N → Simplify, each phase a fresh headless process. Round ceiling from `--rounds` or the size chip; stops on convergence, not on a count. |
 | [`/samuel:done`](plugins/samuel/skills/done/SKILL.md) | Open a PR (`Closes #N`, `--draft` for autonomous runs) synthesizing the journal; mark the item done; cleanup. |
-| [`/samuel:progress`](plugins/samuel/skills/progress/SKILL.md) | Personal dashboard: item status, velocity, blockers (GitHub Issues). |
-| [`/samuel:retro`](plugins/samuel/skills/retro/SKILL.md) | Personal retrospective from GitHub Issues/PRs + git history. |
-| [`/samuel:team-orchestrate`](plugins/samuel/skills/team-orchestrate/SKILL.md) | Spawn multi-session Claude Code agent teams for parallel work streams — when you need a shared task list and a lead-controlled lifecycle, not just sessions that talk (that works on its own since 2.1.224). |
 | [`/samuel:waves`](plugins/samuel/skills/waves/SKILL.md) | Attended multi-issue wave coordinator: parallel waves from the native `blockedBy` graph over Orca — one worktree + worker per issue (Codex default), draft PRs, the human merge releases the next wave. |
 | [`/samuel:coordinate`](plugins/samuel/skills/coordinate/SKILL.md) | Single-task coordinator over Orca: named workers (`<task>-<role>-<model>`, explicit model + effort checked at launch); Claude workers start with the brief as the `claude` argument and report through `notify_when_idle` + a report file, Codex workers through Orca dispatch and nine-minute wait windows; six-slot briefs, six-line reports, integration + real checks in one checkout. Never pushes or merges on its own. |
 | [`/samuel:wave-prep`](plugins/samuel/skills/wave-prep/SKILL.md) | Backlog → wave-set preparer: sweep open issues, infer inter-issue dependencies from their plans, declare missing `blockedBy` edges (human-approved, cycle-checked), hand the ready set to `/samuel:waves`. |
@@ -245,12 +240,11 @@ The backend ↔ client API handoff, in both directions. Agent-to-agent output, i
 
 Hooks and workers that keep large-file I/O out of the main model's context. A whole-file read over 350 lines (`SHUNT_MIN_LINES`) or an unbounded repo-wide content search is denied with a message naming the exits; targeted, bounded, scoped, or piped forms pass, and the gate fails open on anything it cannot parse. `SHUNT_DISABLE=1` turns it off for a session, and `SHUNT_CLIENT=claude|codex` selects the vocabulary the denial names its exits in. Every denial is logged to `~/.claude/plugin-data/shunt/denials.log`.
 
-The plane runs on both clients from one pair of scripts. Claude Code loads the plugin's `hooks/hooks.json` and delegates to the agents in `agents/`; Codex gets the same gates per repo from `install-codex.sh` and spawns its worker with `spawn_agent`, carrying the worker's contract inside the message. Per-client tool names, install paths, and worker mechanism: [`plugins/shunt/reference/cross-client.md`](plugins/shunt/reference/cross-client.md) (ADR 0008).
+The plane runs on both clients from one pair of scripts. Claude Code loads the plugin's `hooks/hooks.json` and delegates to the agent in `agents/`; Codex gets the same gates per repo from `install-codex.sh` and spawns its worker with `spawn_agent`, carrying the worker's contract inside the message. Per-client tool names, install paths, and worker mechanism: [`plugins/shunt/reference/cross-client.md`](plugins/shunt/reference/cross-client.md) (ADR 0008).
 
 | Skill | Purpose |
 |-------|---------|
 | [`/shunt:bulk-read`](plugins/shunt/skills/bulk-read/SKILL.md) | Delegate a whole-file read (or several) to a cheap worker — the `bulk-reader` agent (haiku, read-only) under Claude Code, `spawn_agent` on `gpt-5.5` at low effort under Codex — and get back structured bullets cited `file:line`. Never for debugging, architecture, or the region you are about to edit. |
-| [`/shunt:code-write`](plugins/shunt/skills/code-write/SKILL.md) | Hand pattern-following generation (tests, configs, stubs) to a cheap worker — the `code-writer` agent (sonnet) under Claude Code, `spawn_agent` on `gpt-5.5` at low effort under Codex — that writes to disk from a mandatory reference file; verify via `git diff` + the verify contract. |
 
 ### Governance *(optional)*
 

@@ -37,7 +37,6 @@ The frontmatter MUST appear at the top of the file before any prose. Existing ta
 | Phase | Set by | Meaning |
 |---|---|---|
 | `setup` | `/samuel:start-task` | Worktree ready, no artifacts yet |
-| `research` | `/samuel:codebase-documentation` | Research doc drafted |
 | `spec` | `/samuel:spec` | Spec doc drafted (only when `spec_required`) |
 | `plan` | `/samuel:plan` | Plan doc drafted |
 | `analyze` | `/samuel:analyze` | Cross-artifact analysis complete |
@@ -96,7 +95,7 @@ Skills update frontmatter via the `Edit` tool on `.claude/task-context/{item}.md
 Required pattern when updating:
 
 1. Skill reads current frontmatter (via Context section or explicit Read).
-2. Skill computes new value (e.g., `phase: plan` instead of `phase: research`).
+2. Skill computes new value (e.g., `phase: plan` instead of `phase: setup`).
 3. Skill calls `Edit` with the old/new line pair for that single key.
 4. Skill also updates `last_updated` to today's ISO date in the same Edit batch.
 
@@ -106,7 +105,7 @@ Required pattern when updating:
 |---|---|
 | **Create** | `/samuel:start-task` writes the full frontmatter to `.claude/task-context/{item}.md` (`mkdir -p .claude/task-context` first) when the worktree is initialized. |
 | **Update** | Each pipeline skill updates `phase` and `last_updated` when it runs. Other keys (`tracker`, `repo`, `item`, `spec_required`, `constitution`) are stable for the feature's lifetime. |
-| **Archive** | `/samuel:done` reads the feature dir (spec, plan, research, journal, validation) to synthesize the PR body and final summary before cleanup. |
+| **Archive** | `/samuel:done` reads the feature dir (spec, plan, journal, validation) to synthesize the PR body and final summary before cleanup. |
 | **Delete** | `/samuel:done` removes `.claude/task-context/{item}.md` once the PR is open — safe now that the file holds one item and nothing else — and `git worktree remove` takes the folder with the worktree. The GitHub PR + repo `CONSTITUTION.md` are the surviving record. |
 
 > **`phase: end` is still a staleness signal, not a state.** `done` deletes the file, but a crash between the PR and the cleanup, or a file written by an older plugin, leaves one behind. A skill that reads `item` while the phase is `end` MUST verify the item is still open (`gh issue view {item} --json state`) before acting on it. A `CLOSED` item means orphaned context: delete the file, re-resolve from the branch or ask, never trust it. This is how `/samuel:done` once came within one step of composing a `Closes` line for the wrong issue.

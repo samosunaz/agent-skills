@@ -13,7 +13,7 @@
     {
       "name": "shunt",
       "source": "./plugins/shunt",
-      "description": "Token plane: hooks that route large-file reads and boilerplate generation to cheap worker agents instead of the main context"
+      "description": "Token plane: hooks that route large-file reads to a cheap worker agent instead of the main context"
     }
   ]
 }

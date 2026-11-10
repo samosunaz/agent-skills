@@ -24,8 +24,8 @@ tool="$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null)" || exit 0
 cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
 agent="$(jq -r '.agent_type // .agent_id // .subagent_type // empty' <<<"$input" 2>/dev/null)"
 [ -n "${SHUNT_DEBUG:-}" ] && printf '%s\n' "$input" >>"$SHUNT_DEBUG" 2>/dev/null
-# The workers read whole files by design; gating them would be circular.
-case "$agent" in shunt:bulk-reader|shunt:code-writer) exit 0 ;; esac
+# The worker reads whole files by design; gating them would be circular.
+case "$agent" in shunt:bulk-reader) exit 0 ;; esac
 
 # Prints the line count when $1 is a large text file, nothing otherwise.
 large_lines() {

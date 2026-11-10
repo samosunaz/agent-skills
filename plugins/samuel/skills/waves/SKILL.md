@@ -12,7 +12,7 @@ All executable recipes live in `references/wave-protocol.md` (P0–P6). This hub
 
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 
-**Boundary.** Different from `/samuel:conductor` — the per-item engine waves dispatches (as the claude-worker variant) and never reimplements — and from `/samuel:team-orchestrate` — Claude peers that converse; wave workers are isolated implementers reporting lifecycle only. Anti-double-scheduler: an Orca automation may *invoke* waves on a schedule; waves never duplicates conductor's pipeline logic and never schedules itself. This skill is **attended-only** — a live coordinator session with the human reachable; the unattended/nocturnal variant needs a run TTL and an automatic report before it can exist, and neither is built yet.
+**Boundary.** Different from `/samuel:conductor` — the per-item engine waves dispatches (as the claude-worker variant) and never reimplements; wave workers are isolated implementers reporting lifecycle only. Anti-double-scheduler: an Orca automation may *invoke* waves on a schedule; waves never duplicates conductor's pipeline logic and never schedules itself. This skill is **attended-only** — a live coordinator session with the human reachable; the unattended/nocturnal variant needs a run TTL and an automatic report before it can exist, and neither is built yet.
 
 ## Mode
 

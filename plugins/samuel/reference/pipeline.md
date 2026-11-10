@@ -8,7 +8,7 @@ Related contracts: `tracker.md` (GitHub as SoT), `task-context.md` (frontmatter 
 
 ## 1. Entry points — where to start
 
-The `feature dir` and `phase` tracking are bootstrapped by `/samuel:start-task`. Without a task there is no `task-context.md`, so skills run **standalone** (write to `docs/research/` loose, no phase). Pick the entry that matches your situation.
+The `feature dir` and `phase` tracking are bootstrapped by `/samuel:start-task`. Without a task there is no `task-context.md`, so skills run **standalone** (no phase). Pick the entry that matches your situation.
 
 ```mermaid
 flowchart TD
@@ -16,13 +16,11 @@ flowchart TD
     Start -->|"New project, empty repo"| Kickoff["⚙️ /samuel:kickoff<br/>tracker + vision + MVP + seed items"]:::svc
     Start -->|"Not sure what to build next"| Roadmap["⚙️ /samuel:roadmap<br/>product ownership: propose bets<br/>→ roadmap:now/next/later issues"]:::svc
     Start -->|"Concrete work to build"| Create[("🗂️ capture an item<br/>gh issue create")]:::db
-    Start -->|"Just exploring to decide"| Standalone["⚙️ /samuel:codebase-documentation<br/>standalone, no item"]:::svc
 
     Kickoff --> Next["⚙️ /samuel:next"]:::svc
     Roadmap -->|"commit a bet → promote to pipeline:triage"| Next
     Create --> StartTask["⚙️ /samuel:start-task {item}"]:::svc
     Next --> StartTask
-    Standalone -->|"decided what to build"| Create
 
     StartTask --> Pipeline["📄 Full pipeline (diagram 2)"]:::doc
     classDef decision fill:#f1f5f9,stroke:#475569,color:#0f172a
@@ -37,19 +35,17 @@ flowchart TD
 
 > Anti-pattern: researching and planning at length in standalone mode, then trying to fold it into the pipeline. You end up reconciling loose docs against the feature dir. A one-line task up front avoids it.
 
-## 2. Full pipeline — R → [S] → P → [A] → I → V
+## 2. Full pipeline — [S] → P → [A] → I → V
 
 The happy path bracketed by `start-task` and `done`. Each skill owns its phase and advances `task-context.md`.
 
 ```mermaid
 flowchart LR
     next["⚙️ /samuel:next"]:::svc --> start["⚙️ /samuel:start-task<br/>phase: setup"]:::svc
-    start --> research["⚙️ /samuel:codebase-documentation<br/>phase: research"]:::svc
-    research --> specQ{"spec_required?"}:::decision
+    start --> specQ{"spec_required?"}:::decision
     specQ -->|yes| spec["⚙️ /samuel:spec<br/>phase: spec"]:::svc
     specQ -->|no| plan["⚙️ /samuel:plan<br/>phase: plan"]:::svc
     spec --> plan
-    plan <--> refine["⚙️ /samuel:refine-plan"]:::svc
     plan --> analyzeQ{"non-trivial<br/>feature?"}:::decision
     analyzeQ -->|yes| analyze["⚙️ /samuel:analyze<br/>read-only"]:::svc
     analyzeQ -->|no| implement["⚙️ /samuel:implement<br/>phase: implement<br/>+ living journal"]:::svc
@@ -62,7 +58,7 @@ flowchart LR
 ```
 
 **Minimum happy path** (bug / small feat): `next → start-task → plan → implement → validate → done`.
-**Full path** (feature with stakeholders): add `codebase-documentation`, `spec`, and `analyze`.
+**Full path** (feature with stakeholders): add `spec` and `analyze`.
 
 ## 3. Phase state machine
 
@@ -71,11 +67,9 @@ The `phase` key in `.claude/task-context/{item}.md` is the single source of trut
 ```mermaid
 stateDiagram-v2
     [*] --> setup: /samuel:start-task
-    setup --> research: /samuel:codebase-documentation
-    research --> spec: /samuel:spec when spec_required
-    research --> plan: /samuel:plan otherwise
+    setup --> spec: /samuel:spec when spec_required
+    setup --> plan: /samuel:plan otherwise
     spec --> plan: /samuel:plan
-    plan --> plan: /samuel:refine-plan
     plan --> implement: /samuel:implement
     implement --> validate: /samuel:validate
     validate --> closed: /samuel:done
@@ -155,7 +149,6 @@ flowchart LR
       brief[("🗂️ Brief, human")]:::db
       plan[("🗂️ Executor Plan<br/>/samuel:plan")]:::db
     end
-    research["⚙️ /samuel:codebase-documentation"]:::svc --> r["📄 research.md, optional"]:::doc
     spec["⚙️ /samuel:spec"]:::svc --> s["📄 spec.md, optional"]:::doc
     implement["⚙️ /samuel:implement"]:::svc --> j["📄 implementation-notes.md<br/>journal · committed"]:::doc
     validate["⚙️ /samuel:validate"]:::svc --> v["📄 validation.md<br/>committed"]:::doc
@@ -163,7 +156,6 @@ flowchart LR
     done -.-> plan
     done -.-> j
     done -.-> v
-    done -.-> r
     classDef svc fill:#e0e7ff,stroke:#4f46e5,color:#312e81
     classDef db fill:#ccfbf1,stroke:#0d9488,color:#134e4a
     classDef doc fill:#f5f5f4,stroke:#78716c,color:#292524

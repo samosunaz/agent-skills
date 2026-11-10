@@ -54,7 +54,7 @@ These name nothing. Each one hides the fact the reader wants.
 | at the end of the day | delete |
 | landscape, ecosystem (metaphor) | name the real system |
 
-`orchestrate` is the edge case. Keep it when it names agent or workflow orchestration, which is a real thing in this stack (`/samuel:team-orchestrate`). Replace it with "coordinate" anywhere else.
+`orchestrate` is the edge case. Keep it when it names agent or workflow orchestration, which is a real thing in this stack (`/samuel:coordinate`). Replace it with "coordinate" anywhere else.
 
 ## 2. Deletion patterns
 

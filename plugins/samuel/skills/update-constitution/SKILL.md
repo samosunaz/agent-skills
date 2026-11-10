@@ -112,7 +112,7 @@ Pending propagation (⚠): {skill paths to review}
 
 Next:
 1. git add CONSTITUTION.md && git commit -m "docs: amend constitution to v{new} ({bump} — {summary})"
-2. If MAJOR: in-flight features may need /samuel:refine-plan.
+2. If MAJOR: in-flight features may need /samuel:plan.
 3. If MINOR: the next /samuel:plan or /samuel:analyze picks up the new rule automatically.
 ```
 

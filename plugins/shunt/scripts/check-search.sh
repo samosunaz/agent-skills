@@ -18,7 +18,7 @@ input="$(cat)" || exit 0
 tool="$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null)" || exit 0
 cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
 agent="$(jq -r '.agent_type // .agent_id // .subagent_type // empty' <<<"$input" 2>/dev/null)"
-case "$agent" in shunt:bulk-reader|shunt:code-writer) exit 0 ;; esac
+case "$agent" in shunt:bulk-reader) exit 0 ;; esac
 
 # True when $1 is the search root or absent: the search spans the whole repo.
 is_repo_wide() {

@@ -64,5 +64,5 @@ _Add a line each time Claude trips on something._
 
 - Under auto mode the harness prefers `cat` over `Read`; both paths are gated, do not switch to `cat` to dodge a denied `Read`.
 - The hook fails open: no `jq`, a binary file, or malformed input all allow the read. A silent gate is not proof the file was small.
-- Hooks are session-wide: they fire inside subagents too. The script exempts `shunt:bulk-reader` and `shunt:code-writer` by `agent_type`; any other agent (`Explore`, `samuel:implementation-analyzer`) is gated like the main thread.
+- Hooks are session-wide: they fire inside subagents too. The script exempts `shunt:bulk-reader` by `agent_type`; any other agent (`Explore`, `samuel:implementation-analyzer`) is gated like the main thread.
 - Under Codex **no** worker is exempt — every subagent there reports `agent_type: "default"` — which is why the Codex prompt orders the bounded read itself.

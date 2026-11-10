@@ -6,7 +6,7 @@ There is **no alternate tracker backend** and no offline fallback.
 
 ## Repo config — `.claude/samuel.md`
 
-A tiny, durable, per-repo config read by skills that run **before** a task exists (`/samuel:next`, `/samuel:progress`, `/samuel:kickoff`). Frontmatter + `awk` (no `jq`, no shell expansion — same discipline as `task-context.md`):
+A tiny, durable, per-repo config read by skills that run **before** a task exists (`/samuel:next`, `/samuel:kickoff`). Frontmatter + `awk` (no `jq`, no shell expansion — same discipline as `task-context.md`):
 
 ```markdown
 ---
@@ -57,7 +57,7 @@ Committed artifacts live by **scope**, not lumped under one dir. Three orthogona
 
 The rule that keeps them apart: **task-scoped → `feature_dir` (or an ephemeral Issue comment); project-scoped → a global committed collection.** A decision or capability that outlives the task does **not** go under `features/<task-slug>/` — that buries it where no other task can find it.
 
-- `feature_dir` holds **process** artifacts: research, the journal (`implementation-notes.md`, schema in `reference/implementation-notes.md`), validation. Derive it from `task-context.md`; never re-type it. (The Issue body holds the Brief + Executor Plan.)
+- `feature_dir` holds **process** artifacts: the journal (`implementation-notes.md`, schema in `reference/implementation-notes.md`), validation. Derive it from `task-context.md`; never re-type it. (The Issue body holds the Brief + Executor Plan.)
 - `docs/decisions/` holds **ADRs** — the durable decision index. Format: `github-operations.md`.
 - `docs/product/` holds **dossiers** — one per capability, versioned. Owned by `/samuel:feature-dossier`.
 - `CLAUDE.md` (root / module / `.claude.local.md`) holds **operating guidance for agents** — project-wide gotchas, discovered commands, config/env quirks, conventions or re-architectures that change *how* future sessions work here.
@@ -78,7 +78,7 @@ A `.claude/task-context/{item}.md` (or `.claude/samuel.md`) whose `tracker` key 
 
 1. Resolve `repo` + `item` from `.claude/task-context/{item}.md` (or `.claude/samuel.md` pre-task) — surface them in `## Context`.
 2. Open `reference/github-operations.md` for the exact `gh` invocation.
-3. The *process* (research → plan → implement → validate → done, human checkpoints, the committed journal) is the pipeline's; the adapter only says where state lives.
+3. The *process* (plan → implement → validate → done, human checkpoints, the committed journal) is the pipeline's; the adapter only says where state lives.
 
 ## Gotchas
 
@@ -86,5 +86,5 @@ _Add a line each time Claude trips on something._
 
 - `gh` needs `repo` (owner/name) explicitly — the SSH alias breaks origin parsing. See `github-operations.md`.
 - No `gh` available or unauthenticated: stop and tell the user to install/auth `gh`. There is no offline tracker fallback (ADR 0002) — offline work continues on the branch; item state syncs when back online.
-- Don't store `repo` only in `task-context.md` — pre-task skills (`next`, `progress`, `kickoff`) need it from `.claude/samuel.md`.
+- Don't store `repo` only in `task-context.md` — pre-task skills (`next`, `kickoff`) need it from `.claude/samuel.md`.
 - The journal and `validation.md` are **committed files** — a skill that writes them into the tracker is wrong. Files are the durable layer; the tracker holds only ephemeral, task-scoped state.

@@ -211,7 +211,7 @@ If yes: `git checkout main && git pull origin main 2>/dev/null || true`. In both
 - Issue: #{item} → in-review, closes on merge
 - Branch: {on main | on branch}
 
-Next: /samuel:next  ·  /samuel:progress
+Next: /samuel:next
 {- /samuel:feature-dossier "{capability}"  ← only if this changed product behavior}
 ```
 

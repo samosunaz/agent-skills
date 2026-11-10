@@ -1,6 +1,6 @@
 # Orca Substrate — what the runtime gives a coordinator, and what it does not
 
-Facts about Orca (≥ 1.4.193) that more than one skill depends on: `coordinate`, `waves`, `team-orchestrate`, the conductor's launch recipes. One home so a runtime change is fixed once. Recipes that belong to a single skill stay in that skill's spoke; this file carries the substrate.
+Facts about Orca (≥ 1.4.193) that more than one skill depends on: `coordinate`, `waves`, the conductor's launch recipes. One home so a runtime change is fixed once. Recipes that belong to a single skill stay in that skill's spoke; this file carries the substrate.
 
 The version-matched command reference is served by the binary itself — `orca skills get orca-cli`, `orca skills get orchestration`, `orca agent-context --json` — and outranks anything written here when they disagree. Resolve the executable once per session (`orca`; `orca-ide` on Linux outside an Orca terminal, where bare `orca` is the GNOME screen reader).
 
@@ -60,10 +60,6 @@ Scoped per worktree: `orca tab create --url … --worktree name:X`, `orca snapsh
 ## Publishing — gated by a human switch, on purpose
 
 `orca artifacts share <file.md|.html>` publishes a public link; `orca skills share --skill <id> --bundle-name <n>` publishes an unlisted skill bundle. Both are off until the human enables them in the desktop app (Settings → Artifacts / Share Skills); a denial (`artifact_sharing_disabled`, `agent_skill_sharing_disabled`) is final for the run — deliver the file locally, do not retry.
-
-## Agent Teams inside Orca
-
-`orca claude-teams [claude args…]` from an Orca terminal starts Claude Code Agent Teams with teammates as native Orca splits — no tmux. `team-orchestrate` prefers it when the session already runs inside Orca.
 
 ## Gotchas
 

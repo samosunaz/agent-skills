@@ -1,6 +1,6 @@
 ---
 name: conductor
-description: "Drive the pipeline unattended phase-by-phase. Can bootstrap from an item id, drive research→…→validate, and (in --ship mode) open a draft PR. Can be fired automatically by GitHub (schedule / issue-labeled) — see reference/automated-trigger.md. Trigger on 'conductor', 'run pipeline', 'run the pipeline unattended', overnight/autonomous runs paired with /goal."
+description: "Drive the pipeline unattended phase-by-phase. Can bootstrap from an item id, drive setup→…→validate, and (in --ship mode) open a draft PR. Can be fired automatically by GitHub (schedule / issue-labeled) — see reference/automated-trigger.md. Trigger on 'conductor', 'run pipeline', 'run the pipeline unattended', overnight/autonomous runs paired with /goal."
 allowed-tools: Bash(git branch *) Bash(git rev-parse *) Bash(git worktree *) Bash(git status *) Bash(git add *) Bash(git commit *) Bash(git push *) Bash(gh *) Bash(bun *) Bash(npm *) Bash(pnpm *) Bash(node *) Bash(grep *) Bash(wc *) Bash(xargs *) Bash(test *) Bash(awk *) Bash(printenv *) Bash(date *) Bash(cat *) Bash(ls *) Read Edit Skill Agent PushNotification ListAgents SendMessage
 ---
 
@@ -73,8 +73,7 @@ Two rules that survive any wording of the goal: never ask the peer to do somethi
 | Current `phase` | Next action | Autonomy |
 |---|---|---|
 | *(no state, item given)* | `/samuel:start-task {item}` (worktree) | bootstrap |
-| `setup` | `/samuel:codebase-documentation` | auto |
-| `research` | `/samuel:spec` if `spec_required`, else `/samuel:plan` | auto (records assumptions) |
+| `setup` | `/samuel:spec` if `spec_required`, else `/samuel:plan` | auto (records assumptions) |
 | `spec` | `/samuel:plan` | auto (records assumptions) |
 | `plan` | `/samuel:analyze` for non-trivial, else `/samuel:implement` | auto |
 | `analyze` | `/samuel:implement` | auto (FIC between plan phases) |

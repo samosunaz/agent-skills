@@ -32,7 +32,7 @@ Create or resume handoff documents for Frequent Intentional Compaction (FIC) —
 - Phase: !`awk -v k=phase -v d=NO_PHASE 'BEGIN{"git branch --show-current"|getline b;if(match(b,/[0-9]+/))f=".claude/task-context/"substr(b,RSTART,RLENGTH)".md";n=0;while(("ls .claude/task-context/ 2>/dev/null"|getline g)>0){n++;o=".claude/task-context/"g}if(f==""||(getline t<f)<0){close(f);f=(n==1)?o:".claude/task-context.md"}close(f);while((getline l<f)>0)if(l~"^"k":"){sub(/^[^:]*: */,"",l);print l;x=1}if(!x)print d}' 2>/dev/null || echo "NO_PHASE"`
 
 > **Tracker**: `../../reference/tracker.md`. The handoff persists as a committed file `{feature_dir}/handoff-{phase}.md`.
-> **Pipeline state**: `../../reference/task-context.md`. Inside a flow feature, the handoff MUST capture the current `phase` and the status of every feature-dir artifact (spec, research, plan, implementation-notes journal, validation) so a fresh session can resume from the exact pipeline point. Note the journal's open questions and `living/sealed` status explicitly.
+> **Pipeline state**: `../../reference/task-context.md`. Inside a flow feature, the handoff MUST capture the current `phase` and the status of every feature-dir artifact (spec, plan, implementation-notes journal, validation) so a fresh session can resume from the exact pipeline point. Note the journal's open questions and `living/sealed` status explicitly.
 
 ---
 

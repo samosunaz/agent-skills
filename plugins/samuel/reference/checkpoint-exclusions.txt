@@ -15,16 +15,10 @@
 # afterwards, in their own turn, with no option list to answer.
 plugins/ops/skills/catchup/SKILL.md
 plugins/ops/skills/pr-radar/SKILL.md
-plugins/samuel/skills/progress/SKILL.md
 plugins/samuel/skills/debrief/SKILL.md
 
 # Read-only analysis. Severity-tagged findings, no auto-edits, nothing to approve.
 plugins/samuel/skills/analyze/SKILL.md
-
-# Waits, but never on a decision: it collects the open-ended research question
-# and joins subagents. SKILL.md:116 asks for follow-ups after presenting —
-# input collection, not a gate.
-plugins/samuel/skills/codebase-documentation/SKILL.md
 
 # Applies its fixes directly and reports afterwards (SKILL.md:139, :151).
 # A summary is not a gate.
@@ -41,8 +35,7 @@ plugins/samuel/skills/mermaid/SKILL.md
 # (SKILL.md Step 6); posting or committing it is the caller's turn, not a gate.
 plugins/samuel/skills/tldr/SKILL.md
 
-# Delegation recipes (shunt plugin). Each spawns one worker and verifies its
+# Delegation recipe (shunt plugin). It spawns one worker and verifies its
 # output; the only decision is the caller's own routing, never a question to
 # the human.
 plugins/shunt/skills/bulk-read/SKILL.md
-plugins/shunt/skills/code-write/SKILL.md

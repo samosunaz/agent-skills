@@ -14,7 +14,7 @@ Pick a work item, prepare the dev environment (branch/worktree), and inject pipe
 ## Pipeline Position
 
 ```
-/samuel:next → /samuel:start-task → /samuel:plan ⇄ /samuel:refine-plan → /samuel:implement → /samuel:validate → /samuel:done
+/samuel:next → /samuel:start-task → /samuel:plan → /samuel:implement → /samuel:validate → /samuel:done
                      ↑
                YOU ARE HERE
 ```
@@ -164,7 +164,6 @@ Context: .claude/task-context/{item}.md
 Next:
 {if not planned:}  /samuel:plan          — write the Brief + Executor Plan
 {if spec_required:} /samuel:spec          — capture WHAT/WHY first
-- Understand the code: /samuel:codebase-documentation
 - Autonomous run (worktree): /samuel:conductor
 ```
 
@@ -173,7 +172,7 @@ Next:
 - **Clean starts.** Always start from a clean working tree. Stash or commit first.
 - **Branch naming.** `{type}/{item}-{slug}`, consistently.
 - **Context injection.** Always write `.claude/task-context/{item}.md` — it's the handoff to future/headless sessions.
-- **Status tracking.** Mark in-progress immediately so `/samuel:progress` reflects reality.
+- **Status tracking.** Mark in-progress immediately so the tracker reflects reality.
 
 ## Gotchas
 
