@@ -59,11 +59,4 @@ Read the diff, then open the changed files and their call sites (`Read`/`Grep`/`
 | Nit | {n} |
 ```
 
-Return **REQUEST CHANGES** if there is any Blocker. Every finding carries a concrete fix. A Blocker or Important finding you cannot describe a failing case for is below the confidence bar: drop it.
-
-## What NOT to do
-
-- Don't praise or add performative niceties.
-- Don't flag pre-existing code outside the diff.
-- Don't report anything you're below 80% confident is real.
-- Don't APPROVE without having actually read the changed files.
+Return **REQUEST CHANGES** if there is any Blocker. Every finding carries a concrete fix. A Blocker or Important finding you cannot describe a failing case for is below the confidence bar: drop it. The verdict and the findings are the whole reply: leave praise out.

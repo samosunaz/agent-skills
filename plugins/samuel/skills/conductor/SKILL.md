@@ -113,7 +113,7 @@ The narrative comment (and any Issue comment this run posts for a hard STOP or a
 ## Guidelines
 
 1. **Orchestrate, don't reimplement.** Each `/samuel:*` skill owns its phase.
-2. **Bias to stop over to guess.** A clean handoff with an open question beats code on a wrong assumption.
+2. **Stop on an open question, work through an obstacle.** A decision the plan left open, or a `Blocking: yes` question, ends in a clean handoff: that beats code on a wrong assumption. An error, a timeout, a locked file, an empty result or a failing tool is an ordinary obstacle: diagnose it, then work through it with the access the run has (wait and retry, fix the request, use another tool). A blocker someone put there on purpose (a denied permission, a deny-list entry, a red gate) is left alone and reported.
 3. **Record everything.** Unattended decisions are invisible unless written to the tracker + journal + handoff. The morning review depends on this trail.
 4. **GitHub is SoT** for items/decisions; task-context `phase` is SoT for pipeline position.
 5. **Ship mode is gated on `Overall: PASS`.** That means the objective gate is green AND the independent reviewer (validate Step 2.5) raised no Blocker. A draft PR on a red gate or an unaddressed reviewer Blocker is worse than no PR — hand off the failure instead.

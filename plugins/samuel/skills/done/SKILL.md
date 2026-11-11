@@ -11,7 +11,7 @@ Open the PR, mark the Issue done, and clean up. The inverse of `start-task`. Sup
 > **Checkpoints:** ask with `AskUserQuestion` when the runtime exposes it; otherwise use the numbered-text fallback — `../../reference/interaction-tools.md`.
 > **Autonomy:** which gates below auto-advance, and what gets recorded instead of asked — `../../reference/autonomy.md`. Every outward action in this skill (push, PR, signoff, merge, ready) stays gated at **every** level. An **unattended** run — headless `claude -p`, CI, or `/samuel:conductor` — is `autonomous` and ignores the `Autonomy:` value in Context.
 
-## CRITICAL RULES
+## Rules
 
 1. **Run `/samuel:validate` first.** If no validation report exists / the journal isn't sealed, warn and recommend it. Do not open a non-draft PR on a red local gate.
 2. **Never force-push, delete branches, or remove worktrees without explicit confirmation.**

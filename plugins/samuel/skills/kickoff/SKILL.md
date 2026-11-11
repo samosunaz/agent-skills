@@ -19,7 +19,7 @@ Initialize a new indie project with a clear vision, scoped MVP, and actionable t
 
 > **Tracker**: `../../reference/tracker.md`. Adapter: `../../reference/github-operations.md`. **Brief/plan format**: `../../reference/plan-templates.md`.
 
-## CRITICAL RULES
+## Ground rules
 
 1. **MVP or nothing.** Every feature gets the question: "Can the product validate without this?" If yes, it's post-MVP.
 2. **Revenue-aware.** Every project needs a clear path to money, even if it's indirect.

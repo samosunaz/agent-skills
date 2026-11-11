@@ -21,7 +21,7 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 - Compatibility: {none — pre-launch, legacy paths are removed | keep public contracts stable}.
 - Comments state a constraint the code cannot show; never narrate the change.
 - No AI attribution anywhere. Conventional commits.
-- Turn endings: when a step does not need the coordinator, keep going and put status in the same message as the next action. Never end a turn with a summary that announces the next step, an offer to continue, or a list of choices that block nothing.
+- Turn endings: when a step does not need the coordinator, keep going and put status in the same message as the next action. Never end a turn with a summary that announces the next step, an offer to continue, or a list of choices that block nothing. An error, a timeout, a locked file or a failing tool is an ordinary obstacle: diagnose it and work through it. A MUST NOT TOUCH path or a denied permission is a deliberate blocker: leave it and ask (LIMITS).
 - Scope exclusions: {e.g. "mobile is out of scope for this epic — register an issue, do not implement"}.
 - Any GitHub comment, review, or PR body you post carries a `samuel:run` block (`agent`/`model`/`effort` from the routing row above) — `../../../reference/github-operations.md` § Run metadata.
 
@@ -84,7 +84,7 @@ STANDING CONSTRAINTS:
 |---|---|
 | Result | Compare with DELIVER. Mismatch ⇒ one follow-up with the delta (a `SendMessage` to a Claude worker, a dispatch to a Codex worker), not a new brief. |
 | Frozen commit | `git log -1 {sha}` from your checkout (shared object store). Absent ⇒ the work does not exist yet — "complete but uncommitted" has been the signature of a worker killed by a quota limit. |
-| Files changed | Intersect with MAY CHANGE / MUST NOT TOUCH. Any file outside ⇒ inspect the diff regardless of risk. |
+| Files changed | A claim. Intersect `git diff --stat {base}..{sha}`, not this line, with MAY CHANGE / MUST NOT TOUCH. Any file outside ⇒ inspect the diff regardless of risk. |
 | Test results | A claim. Rerun the gate at integration; a reviewer settles a disputed test by running it. |
 | Screenshot paths | Open them for visual work; also open the running page. A PR artifact without the captures attached gets one follow-up dispatch to attach them. |
 | Unresolved | Decide: follow-up dispatch, accept with a note in the final report, or escalate to the human. Never drop a line silently. |

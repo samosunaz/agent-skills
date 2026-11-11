@@ -40,7 +40,7 @@ the question or area of interest and wait for it.
 
 3. **Spawn parallel sub-agents for comprehensive research:**
 
-   Spawn ALL agents in a **single message** so they run in parallel.
+   Spawn the agents the decomposition calls for in a **single message** so they run in parallel. An area that step 1's reading already answered needs none.
 
    **Round 1 — Locators** (all in one message):
 

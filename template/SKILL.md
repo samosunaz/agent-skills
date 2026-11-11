@@ -30,7 +30,7 @@ Brief description of what this skill does.
 
 ## Gotchas
 
-_Add a line each time Claude trips on something._
+_Add a line each time Claude trips on something, with its scope and its reason. Delete it when its cause is fixed._
 
 ## Rules
 
