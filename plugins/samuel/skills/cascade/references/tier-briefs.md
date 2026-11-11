@@ -12,7 +12,7 @@ Cascade writes this table into the run policy (`../../coordinate/references/work
 | planner | claude | {model} | {effort} |
 | implementer — S, M, closed spec | codex | {model} | {effort} |
 | implementer — L, user-facing, or Codex unavailable · address · simplify | claude | {model} | {effort} |
-| audit / independent review, executing | claude (fresh instance) | {model} ({fallback model} at {fallback effort} when Fable is unavailable) | {effort} |
+| audit / independent review, executing | claude (fresh instance) | {model} | {effort} |
 | second audit — any size whose diff touches a write path or a persisted shape, read-only, round 1 | codex | {model} | {effort} |
 | coordinator · ratification · final read | this session | the owner's flagship | — |
 ```

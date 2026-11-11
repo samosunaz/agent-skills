@@ -22,7 +22,7 @@ Recipes live in `references/dispatch-protocol.md` (C0–C6); the brief, the run 
 /samuel:coordinate <task text | issue N>          — coordinate one task (an issue's Executor Plan becomes the brief)
 /samuel:coordinate N --via conductor              — opt-in: the worker runs /samuel:conductor N --ship instead of an Orca-mail brief
 /samuel:coordinate N --via iaas [--rounds R]      — opt-in: the worker runs /samuel:iaas N — implement, blind audit rounds, simplify — the coordinator watches the PR
-/samuel:coordinate … --effort xhigh               — raise every Codex implementer to xhigh (Codex reviewers already run there); a Claude worker past `high` moves to `fable`, not to more effort
+/samuel:coordinate … --effort xhigh               — raise every implementer to xhigh (reviewers already run there)
 /samuel:coordinate … --engine codex|claude        — force one engine for the implementers
 /samuel:coordinate status                          — inventory only: run, workers, worktrees, policy; no dispatch
 ```
