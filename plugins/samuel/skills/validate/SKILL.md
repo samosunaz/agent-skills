@@ -37,7 +37,7 @@ The journal is **sealed in Step 5**, not here.
 
 ## Step 1: Gather evidence
 
-Load the plan (Issue Executor Plan) and identify what should have changed. Spawn parallel research agents in a **single message** (all `sonnet`):
+Load the plan (Issue Executor Plan) and identify what should have changed. Spawn parallel research agents in a **single message**:
 
 | `subagent_type` | Job |
 |---|---|

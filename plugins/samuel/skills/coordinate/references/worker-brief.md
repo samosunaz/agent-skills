@@ -14,7 +14,7 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 |---|---|---|---|
 | frontend / UI / copy | claude | opus | high |
 | backend / architecture / debugging / tests | codex | {model from ~/.codex/config.toml} | high |
-| independent review | the model that did NOT write the diff | — | xhigh |
+| independent review | the engine that did NOT write the diff | codex: {model} · claude: opus | xhigh |
 
 ## Standing constraints (binding in every brief)
 - Least code: the smallest change that meets the outcome, before any simplify pass.

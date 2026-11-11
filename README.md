@@ -265,7 +265,7 @@ Sub-agents are spawned by skills for parallel data retrieval. They are retriever
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| `component-locator` | sonnet | Find files/components relevant to a feature |
+| `component-locator` | haiku | Find files/components relevant to a feature |
 | `implementation-analyzer` | sonnet | Analyze implementation details of specific components |
 | `pattern-scanner` | sonnet | Find similar implementations and usage patterns |
 | `implementation-reviewer` | opus | Independent adversarial review of a diff vs spec/AC (`validate` Step 2.5) |
