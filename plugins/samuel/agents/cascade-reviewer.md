@@ -1,7 +1,7 @@
 ---
 name: cascade-reviewer
-model: fable
-effort: high
+model: opus
+effort: xhigh
 description: "Review tier of /samuel:cascade — a fresh-context adversarial audit of one frozen commit against the issue's acceptance criteria and the ratified plan. Validates every finding by executing it, leaves the tree as it found it."
 tools: Read Write Edit Grep Glob Bash
 ---
