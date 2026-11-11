@@ -1,5 +1,28 @@
 # Changelog
 
+## [5.0.0](https://github.com/samosunaz/agent-skills/compare/v4.17.1...v5.0.0) (2026-11-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* /samuel:team-orchestrate, /samuel:codebase-documentation, /samuel:refine-plan, /samuel:progress, /samuel:retro and /shunt:code-write no longer exist, and task-context files no longer accept `phase: research`.
+
+### 🚀 Features
+
+* retire six superseded skills and the code-writer agent ([#97](https://github.com/samosunaz/agent-skills/issues/97)) ([aaf4a60](https://github.com/samosunaz/agent-skills/commit/aaf4a60beb971a19f0ad9e45c67369cbd3d94596))
+* **samuel:** route file location to Haiku 5.5 and keep Fable 5.2 on demand ([#95](https://github.com/samosunaz/agent-skills/issues/95)) ([0a4958b](https://github.com/samosunaz/agent-skills/commit/0a4958b1917a386786f22a1350609068c45b7ffa))
+
+
+### 🩹 Fixes
+
+* **samuel:** adapt skill instructions to the Fable 5.2 prompting guidance ([#96](https://github.com/samosunaz/agent-skills/issues/96)) ([86d7541](https://github.com/samosunaz/agent-skills/commit/86d754172cdfd19fd5966371972cded0a75983a0))
+* **samuel:** describe the scan permission as the deny list it runs behind ([#99](https://github.com/samosunaz/agent-skills/issues/99)) ([0c986b4](https://github.com/samosunaz/agent-skills/commit/0c986b489f46a42177ae03283ddc0c8e003678a8))
+
+
+### ♻️ Refactoring
+
+* **samuel:** give each repeated rule a single owner ([#98](https://github.com/samosunaz/agent-skills/issues/98)) ([63f85b1](https://github.com/samosunaz/agent-skills/commit/63f85b188b36bf5fb9656a20cce48da74c928134))
+
 ## [4.17.1](https://github.com/samosunaz/agent-skills/compare/v4.17.0...v4.17.1) (2026-10-26)
 
 
