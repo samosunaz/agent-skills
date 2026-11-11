@@ -23,6 +23,6 @@ Copy this to `.claude/samuel.md` in a repo to pin the pipeline config. Keep `.cl
   - **`autonomous` is not settable here.** That level belongs to `/samuel:conductor`, which earns it by passing a SAFETY GATE (isolated worktree or CI runner, never a local `main`); a file that granted it would hand an ordinary session the conductor's authority with none of its guard. The reader enforces this — `autonomous`, a typo, or an empty value all resolve to `interactive`.
   - The only field here with a **global fallback**: `~/.claude/samuel.md` supplies it for every repo that doesn't override it, because it describes how its owner likes to work rather than anything about the repo. A conductor-driven run ignores it in both directions.
 
-Skills that run before a task exists (`/samuel:next`, `/samuel:progress`, `/samuel:kickoff`) read this file directly (same awk-on-frontmatter pattern as `task-context.md`, no `jq`, no shell expansion). `/samuel:start-task` copies `repo` into `.claude/task-context.md` so the rest of the pipeline reads a single file.
+Skills that run before a task exists (`/samuel:next`, `/samuel:kickoff`) read this file directly (same awk-on-frontmatter pattern as `task-context.md`, no `jq`, no shell expansion). `/samuel:start-task` copies `repo` into `.claude/task-context.md` so the rest of the pipeline reads a single file.
 
 If this file is absent, skills ask for `owner/name` once and offer to write it.

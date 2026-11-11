@@ -19,17 +19,15 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Shunt",
-    "shortDescription": "Route large-file reads and boilerplate generation to a cheap worker",
-    "longDescription": "A token plane for coding agents. Two PreToolUse gates deny a whole-file read of a text file over a line limit and an unbounded repo-wide content search, and name the exits in the vocabulary of the client they run under (SHUNT_CLIENT). Two delegation recipes carry the first exit: bulk-read sends the read to a cheap worker and brings back structured bullets cited as file:line; code-write sends pattern-following generation to a worker that writes straight to disk from a mandatory reference file. Under Claude Code the gates load with the plugin; under Codex they are installed into a repo with scripts/install-codex.sh and each handler is trusted once.",
+    "shortDescription": "Route large-file reads to a cheap worker",
+    "longDescription": "A token plane for coding agents. Two PreToolUse gates deny a whole-file read of a text file over a line limit and an unbounded repo-wide content search, and name the exits in the vocabulary of the client they run under (SHUNT_CLIENT). A delegation recipe carries the first exit: bulk-read sends the read to a cheap worker and brings back structured bullets cited as file:line. Under Claude Code the gates load with the plugin; under Codex they are installed into a repo with scripts/install-codex.sh and each handler is trusted once.",
     "developerName": "Samuel Osuna",
     "category": "Development",
     "capabilities": [
-      "Read",
-      "Write"
+      "Read"
     ],
     "defaultPrompt": [
-      "Bulk-read these files and list every public method with its file:line",
-      "Code-write a test file for this module using the sibling test as the reference"
+      "Bulk-read these files and list every public method with its file:line"
     ],
     "websiteURL": "https://github.com/samosunaz/agent-skills"
   }

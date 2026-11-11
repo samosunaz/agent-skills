@@ -65,7 +65,7 @@ Generate and maintain a **living dossier** per platform capability: enriched mar
 
 **Goal**: gather the real state of the capability. Priority: pipeline artifacts → git → live code.
 
-1. **Pipeline artifacts** (in `{feature_dir}` — `docs/features/<slug>/`): read the **Brief + Executor Plan** of the work item (Issue body via `gh issue view`), `spec.md`/`research.md` if present, `implementation-notes.md` (D/V/T/Q decisions), `validation.md`. Also recorded decisions (Issue comments) and any ADRs in `docs/decisions/` touching this capability.
+1. **Pipeline artifacts** (in `{feature_dir}` — `docs/features/<slug>/`): read the **Brief + Executor Plan** of the work item (Issue body via `gh issue view`), `spec.md` if present, `implementation-notes.md` (D/V/T/Q decisions), `validation.md`. Also recorded decisions (Issue comments) and any ADRs in `docs/decisions/` touching this capability.
 2. **Git / releases**: `gh pr view`, `git log` of the feature range, `gh release view` if applicable — for key PRs and the changelog.
 3. **Live code — sub-agents** (retrievers, not analysts; spawn the ones the gaps left by steps 1-2 call for, in a **single message**):
 
@@ -144,13 +144,12 @@ Pending:
 |-------|--------|------|
 | **feature-dossier** (this) | Canonical technical+product reference, with diagrams | **Lives and accretes** in the repo |
 | `feature-brief` | Audience-tailored one-pager | Published to a comms surface, archived |
-| `codebase-documentation` | Read-only research feeding an in-flight feature | Transient (`research.md`) |
 
 ## Pipeline Hook
 
 It's **on-demand** and also **suggested at close**: `/samuel:validate` (Step 4, doc impact) and `/samuel:done` recommend creating/updating the dossier when a change alters product behavior. It never runs on its own — the user always triggers it.
 
-**Storage (don't confuse with the task's feature_dir):** the dossier lives in the **global product catalog** (`docs/product/<slug>/README.md`), versioned by *capability* — NOT in `docs/features/<task-slug>/` (that's task process: research/journal/validation). A capability evolves across many tasks; that's why it's global. Full map: `reference/tracker.md` (Storage map).
+**Storage (don't confuse with the task's feature_dir):** the dossier lives in the **global product catalog** (`docs/product/<slug>/README.md`), versioned by *capability* — NOT in `docs/features/<task-slug>/` (that's task process: journal/validation). A capability evolves across many tasks; that's why it's global. Full map: `reference/tracker.md` (Storage map).
 
 **Close:**
 - **Interactive**: you run the dossier on the task branch → it's **committed and rides the same PR** (code + docs merge atomically), along with the README/CLAUDE.md pointer.

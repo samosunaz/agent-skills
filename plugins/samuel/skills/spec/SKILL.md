@@ -15,8 +15,8 @@ Optional by design: only runs when `spec_required: true` in `.claude/task-contex
 ## Pipeline Position
 
 ```
-/samuel:start-task → /samuel:codebase-documentation? → /samuel:spec → /samuel:plan → ...
-                                                        ↑ YOU ARE HERE (only if spec_required)
+/samuel:start-task → /samuel:spec → /samuel:plan → ...
+                      ↑ YOU ARE HERE (only if spec_required)
 ```
 
 ## Critical Rules
@@ -58,8 +58,7 @@ WAIT for choice.
 
 1. **Read `.claude/task-context/{item}.md`** to confirm feature_slug, item, spec_required, constitution.
 2. **Read the work item** — `gh issue view {item} -R {repo}` (the Brief seeds the requirements). Use its TL;DR/Scope/AC.
-3. **Read the research doc** if `{feature_dir}/research.md` exists. Research informs scope but does NOT belong in the spec body — the spec stays implementation-agnostic.
-4. **Read `CONSTITUTION.md`** if present. Extract MUST/SHOULD principles.
+3. **Read `CONSTITUTION.md`** if present. Extract MUST/SHOULD principles.
 
 If there is no item content, proceed from the user's invocation prompt.
 
@@ -68,7 +67,7 @@ If there is no item content, proceed from the user's invocation prompt.
 Generate the spec following `references/spec-template.md` — frontmatter + User Scenarios (Story by priority with Independent Verification and Given/When/Then), Edge Cases, Requirements (FR-### MUST), Key Entities, Success Criteria (SC-### measurable + technology-agnostic), Assumptions, Out of Scope, Clarifications log.
 
 ### Drafting rules
-- Make informed guesses from the task + research + context. Default to reasonable industry standards (and document the assumption).
+- Make informed guesses from the task + context. Default to reasonable industry standards (and document the assumption).
 - Maximum 3 `[NEEDS CLARIFICATION: question]` markers in the draft.
 - Every FR must be testable. "User-friendly" is not testable; "Users can complete signup in 3 clicks" is.
 - Every SC must be verifiable without knowing implementation details.

@@ -89,7 +89,7 @@ BLAST RADIUS — decision {V-NNN · comment URL / ADR}
 Post these updates? (Y/N/Edit)
 ```
 
-**WAIT for approval.** Then post one `Upstream decision` comment per affected issue and apply the label rules (§ Blast radius), record the outcome on the journal entry's `Affects` line (e.g. `#45 (commented, demoted), #46 (commented)`), and suggest `/samuel:refine-plan {affected issue}` for each invalidated plan — never edit another issue's plan from here.
+**WAIT for approval.** Then post one `Upstream decision` comment per affected issue and apply the label rules (§ Blast radius), record the outcome on the journal entry's `Affects` line (e.g. `#45 (commented, demoted), #46 (commented)`), and suggest `/samuel:plan {affected issue}` for each invalidated plan — never edit another issue's plan from here.
 
 An `INVALIDATED` issue labelled `pipeline:in-progress` has a session executing that plan right now, and a comment does not reach it — after posting, check the peer roster and send that session one line pointing at the comment (§ Blast radius → Notify the live session). It rides this same approval; it is part of the cross-issue write, not a lighter action outside it.
 

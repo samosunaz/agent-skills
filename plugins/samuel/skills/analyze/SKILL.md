@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: "Read-only cross-artifact consistency check across spec, research, plan, tasks, journal, and constitution. Severity-tagged findings, no auto-edits. Trigger on 'analyze', 'consistency check', before implementing a non-trivial feature."
+description: "Read-only cross-artifact consistency check across spec, plan, tasks, journal, and constitution. Severity-tagged findings, no auto-edits. Trigger on 'analyze', 'consistency check', before implementing a non-trivial feature."
 allowed-tools: Bash(gh *) Bash(which *) Bash(awk *) Bash(test *) Bash(date *) Bash(cat *) Bash(ls *) Read Agent
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(awk *) Bash(test *) Bash(date *) Ba
 
 Read-only diagnostic. Runs after `/samuel:plan` and before `/samuel:implement` for any non-trivial feature. Detects inconsistencies, gaps, and conflicts between the spec, plan, tasks, and constitution.
 
-A cross-artifact consistency pass over the work item (Brief + Executor Plan), any spec/research, the Issue's recorded decisions, and the repo-root `CONSTITUTION.md`. Optional for small features; valuable for multi-story work.
+A cross-artifact consistency pass over the work item (Brief + Executor Plan), any spec, the Issue's recorded decisions, and the repo-root `CONSTITUTION.md`. Optional for small features; valuable for multi-story work.
 
 ## Pipeline Position
 
@@ -19,7 +19,7 @@ A cross-artifact consistency pass over the work item (Brief + Executor Plan), an
 
 ## Critical Rules
 
-1. **STRICTLY READ-ONLY.** Never edit any artifact. Never silently apply fixes. Output is a structured report + a remediation offer; the user runs the actual edits via `/samuel:refine-plan`, `/samuel:spec` (overwrite), or manual updates.
+1. **STRICTLY READ-ONLY.** Never edit any artifact. Never silently apply fixes. Output is a structured report + a remediation offer; the user runs the actual edits via `/samuel:plan`, `/samuel:spec` (overwrite), or manual updates.
 2. **Constitution is non-negotiable.** Any MUST principle violation is automatically `CRITICAL`. Do not soften, reinterpret, or work around it.
 3. **Evidence-based findings.** Every finding cites a specific location (doc + section / task ID / file:line). Never report "this is vague" without quoting the vague text.
 4. **High-signal output.** Cap findings at 50 rows; aggregate overflow in a summary. Don't pad with low-impact noise.
@@ -39,10 +39,10 @@ A cross-artifact consistency pass over the work item (Brief + Executor Plan), an
 
 ## Pre-checks
 
-Resolve the plan and any spec/research from the Issue:
+Resolve the plan and any spec from the Issue:
 
 - **Plan** — the `<!-- samuel:plan -->` section of `gh issue view {item} -R {repo} --json body`. **If no Executor Plan exists** (item still `pipeline:triage`), abort: `"No Executor Plan for {item}. Run /samuel:plan first, then come back."`
-- **Spec / research** (optional) — `{feature_dir}/spec.md`, `{feature_dir}/research.md` (Read/Glob).
+- **Spec** (optional) — `{feature_dir}/spec.md` (Read/Glob).
 
 If `Feature: NO_FEATURE`, abort: `"No active feature in .claude/task-context/{item}.md. Run /samuel:start-task first."`
 
@@ -55,7 +55,6 @@ Load only the minimal necessary slice from each artifact (progressive disclosure
 | Brief | item body `<!-- samuel:brief -->` | TL;DR, Scope, Acceptance Criteria (SC), type/priority |
 | Executor Plan | item body `<!-- samuel:plan -->` | Context, Approach, Steps, Guardrails, Validation/gate, DoD, Constitution Check |
 | `spec.md` (optional) | `{feature_dir}/spec.md` | User Stories with priorities, FR-###, SC-###, Edge Cases, Assumptions |
-| `research.md` (optional) | `{feature_dir}/research.md` | Decisions, constraints, file references |
 | Steps | inline plan Steps + AC | the granular units of work + their criteria |
 | Decisions | `gh issue view {item} --comments` | Accepted decisions tied to this item |
 | `CONSTITUTION.md` | Repo root | MUST and SHOULD principles |
@@ -121,7 +120,7 @@ Output a structured Markdown report. Do not write files.
 
 **Date**: {YYYY-MM-DD}
 **Feature**: {slug}
-**Scope**: {spec ✓ / research ✓ / plan ✓ / tasks (N) ✓ / constitution ✓}
+**Scope**: {spec ✓ / plan ✓ / tasks (N) ✓ / constitution ✓}
 
 ### Overall: {PASS | PASS WITH NOTES | FAIL}
 
@@ -157,12 +156,12 @@ Output a structured Markdown report. Do not write files.
 ## Next Actions
 
 {If CRITICAL: "Resolve CRITICAL findings before /samuel:implement."}
-{If HIGH only: "Address HIGH findings via /samuel:refine-plan before implementing."}
+{If HIGH only: "Address HIGH findings via /samuel:plan before implementing."}
 {If only LOW/MEDIUM: "Plan is implementable; polish the listed items but not blocking."}
 {If PASS: "No critical issues found. Proceed to /samuel:implement."}
 
 Suggested commands:
-- `/samuel:refine-plan` — modify the plan (Issue body) to address findings
+- `/samuel:plan` — update the plan (Issue body) to address findings
 - `/samuel:spec` in iterate mode — revise spec ambiguities
 - Manual edit to {file} — for specific Recommendation rows
 ```
@@ -176,11 +175,11 @@ Want me to prepare concrete remediation edits for the top {N} findings?
 (I will NOT apply them — I'll prepare the patches and you decide.)
 ```
 
-If yes, for each top finding (CRITICAL → HIGH) prepare: the quoted current text, the proposed replacement, and the artifact + location. Output as a numbered list; the user runs `/samuel:refine-plan` or manual edits. If no, end the report.
+If yes, for each top finding (CRITICAL → HIGH) prepare: the quoted current text, the proposed replacement, and the artifact + location. Output as a numbered list; the user runs `/samuel:plan` or manual edits. If no, end the report.
 
 ## Pipeline integration
 
-- **Reads**: the item Brief + Executor Plan (Issue body), optional `{feature_dir}/spec.md` + `research.md`, Issue decisions, `CONSTITUTION.md`.
+- **Reads**: the item Brief + Executor Plan (Issue body), optional `{feature_dir}/spec.md`, Issue decisions, `CONSTITUTION.md`.
 - **Modifies**: NOTHING. Read-only.
 - **Updates**: `.claude/task-context/{item}.md` is NOT touched by analyze (it's diagnostic). The conductor advances `phase` based on the user's follow-up action.
 - **Triggered by**: manual invocation or the conductor after `/samuel:plan` for non-trivial features.

@@ -20,7 +20,7 @@ An autonomous run (`/samuel:conductor`, `claude -p` + `/goal`) invokes **no inte
 |---|---|---|
 | `AskUserQuestion` | A checkpoint offers **enumerable options** — the common case. The direct replacement for the plain-text question. | 1-4 questions per call. `multiSelect: true` when the choices aren't mutually exclusive. `preview` renders side-by-side mockups or code snippets — use it only when the user must *compare artifacts*, not for preference questions. Never add an "Other" option; the runtime supplies one. |
 | `EnterPlanMode` / `ExitPlanMode` | A planning phase that ends in an approve-the-plan gate. | `ExitPlanMode` **is** the approval gate — don't ask for approval separately alongside it. Plan approval never auto-resolves on idle. |
-| `TaskCreate` · `TaskGet` · `TaskList` · `TaskUpdate` | Multi-phase execution the user should be able to watch — long sweeps, multi-agent runs (`team-orchestrate`). | Not for one- or two-step work, where the checklist costs more than it shows. Superseded `TodoWrite`, which is disabled by default since Claude Code v2.1.142. |
+| `TaskCreate` · `TaskGet` · `TaskList` · `TaskUpdate` | Multi-phase execution the user should be able to watch — long sweeps, multi-agent runs. | Not for one- or two-step work, where the checklist costs more than it shows. Superseded `TodoWrite`, which is disabled by default since Claude Code v2.1.142. |
 | `PushNotification` | A long or background run finishes and the user has likely stepped away — `conductor`, overnight runs. | A notification is not a checkpoint. It announces; it does not collect an answer. |
 
 Availability is a runtime fact, not a guess: if the tool isn't in the session's tool list (or its deferred index), it isn't there. Declare whichever ones a skill uses in its `allowed-tools` frontmatter.
@@ -77,4 +77,4 @@ _Add a line each time Claude trips on something._
 - A skill that asks with the tool but writes its options only inside the tool call leaves the fallback path with nothing to print — options live in the step body.
 - One line per skill, above the first checkpoint — not one per checkpoint. A skill with five gates still gets one, because the agent reads the whole SKILL.md before executing any of it.
 - **Coverage is a complement, never a grep.** Gates get written as `**WAIT.**`, "Confirm:", "On confirmation", "requires approval" — every phrase list tried missed a real one, and reported green while doing it. The check above is the complement of the exclusions file, so a skill worded in a way nobody anticipated shows up as unclassified instead of passing silently.
-- Waiting is not always a checkpoint. Collecting an open-ended input (`codebase-documentation` waits for the research question) or joining subagents is not a decision with options; those skills stay outside the convention deliberately.
+- Waiting is not always a checkpoint. Joining subagents is not a decision with options; those skills stay outside the convention deliberately.

@@ -361,7 +361,7 @@ Read each candidate's Brief + Executor Plan and classify: **unaffected** (report
 **Impact here:** {what in this issue's Brief/plan is affected}
 **Refs:** {decision comment URL · ADR path}
 
-Re-plan before pickup: `/samuel:refine-plan {this issue}`.
+Re-plan before pickup: `/samuel:plan {this issue}`.
 ```
 
 (The `#{A}` reference is deliberate — it plants a backlink on the deciding issue's timeline, so the propagation is navigable from both ends.)

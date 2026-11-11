@@ -2,13 +2,13 @@
 
 Spoke for `/samuel:feature-dossier`. Defines WHERE dossiers live, the canonical document template, the changelog spine, and the Mermaid recipes. The hub (`SKILL.md`) owns the process; this file owns the artifacts.
 
-A **dossier** is a *living, canonical, technical+product reference* for one platform capability. It reflects the code **as it exists today**, plus a changelog of how it got there. It is NOT audience-tailored communication (that is `feature-brief`) and NOT a transient research doc (that is `codebase-documentation`).
+A **dossier** is a *living, canonical, technical+product reference* for one platform capability. It reflects the code **as it exists today**, plus a changelog of how it got there. It is NOT audience-tailored communication (that is `feature-brief`).
 
 ---
 
 ## Storage & Catalog Conventions
 
-Dossiers live in the **product repo**, versioned alongside the code — not in the skills repo. They sit in the **global product catalog** (`docs/product/`), organized by *capability* — deliberately separate from `docs/features/<task-slug>/` (a task's process artifacts: research/journal/validation). A capability evolves across many tasks, so it can't live under any single task dir. Full reasoning: the **Storage map** in `reference/tracker.md`.
+Dossiers live in the **product repo**, versioned alongside the code — not in the skills repo. They sit in the **global product catalog** (`docs/product/`), organized by *capability* — deliberately separate from `docs/features/<task-slug>/` (a task's process artifacts: journal/validation). A capability evolves across many tasks, so it can't live under any single task dir. Full reasoning: the **Storage map** in `reference/tracker.md`.
 
 ```
 docs/product/

@@ -66,7 +66,7 @@ If only one is available, still confirm. (attended-auto: pull it without asking,
 ## Edge Cases
 
 - **Empty / nothing ready** → if `roadmap:now` bets exist (Context above), surface them and offer to **promote** one into delivery: `gh issue edit {n} --add-label pipeline:triage --remove-label "roadmap:now"`, expand its `## Opportunity` into a `## Brief`, then `/samuel:plan {n}`. Otherwise offer `/samuel:roadmap` (decide what to build next), `/samuel:plan` (plan a triage item), `/samuel:kickoff` (new project), or capture a new item (`gh issue create`).
-- **All done** → `/samuel:validate` pending? `/samuel:progress`? plan the next phase?
+- **All done** → `/samuel:validate` pending? `/samuel:debrief`? plan the next phase?
 - **All blocked** → list each item and its open blocker; offer to work the dependency first.
 
 ## Rules

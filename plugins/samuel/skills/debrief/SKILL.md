@@ -10,7 +10,7 @@ After a wave, an epic slice or a merged PR the owner asks the same three questio
 
 This skill answers all three in one fixed shape, from evidence. A PR is read through its diff and its issue's acceptance criteria, never through its title: the title is the claim, the diff is the fact. Nothing is written, posted or started — no comment, no label, no dev server, no capture.
 
-**Boundary.** `/samuel:tldr` is the prose standard this output must already satisfy, not a results report — invoking it bare is what forced the owner to re-frame the question by hand every time. `/samuel:progress` is the dashboard of **open** work; `/samuel:retro` judges **how** the work went; `/samuel:done` closes one item and records what it left behind. `debrief` reports the **outcome** of work that already landed, and changes nothing.
+**Boundary.** `/samuel:tldr` is the prose standard this output must already satisfy, not a results report — invoking it bare is what forced the owner to re-frame the question by hand every time. `/samuel:next` picks the **open** work to do; `/samuel:done` closes one item and records what it left behind. `debrief` reports the **outcome** of work that already landed, and changes nothing.
 
 ## Mode
 
@@ -65,7 +65,7 @@ _Add a line each time Claude trips on something._
 - **A PR title is testimony.** It says what the author set out to do, and a draft carries the same title as a merged PR. Read `state`, `mergedAt` and the diff before writing a verb in the past tense.
 - **"Tests pass" in a sub-agent or worker report is a claim.** Quote the check state from the PR (`gh pr view --json statusCheckRollup`), never from the report that asked to be believed.
 - **The scope phrase is ambiguous across parallel sessions.** "This wave", "the last thing" resolve differently in two checkouts of the same repo. Printing the resolved PR list first is what makes a wrong scope cost one glance instead of a whole wrong answer.
-- **Do not pad `Next`.** Three ranked items and the reason for the first; the full inventory of open work is `/samuel:progress`, and a twenty-item list buries the one that matters.
+- **Do not pad `Next`.** Three ranked items and the reason for the first; a twenty-item list buries the one that matters.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 # Implementation Notes — Schema & Lifecycle
 
-The `implementation-notes.md` is a **living journal** kept alongside `validation.md` (and any `spec.md`/`research.md`) inside `{feature_dir}/` — `docs/features/<slug>/`. It captures the small, high-context choices made during implementation that don't reach the threshold of a recorded **Issue decision**.
+The `implementation-notes.md` is a **living journal** kept alongside `validation.md` (and any `spec.md`) inside `{feature_dir}/` — `docs/features/<slug>/`. It captures the small, high-context choices made during implementation that don't reach the threshold of a recorded **Issue decision**.
 
 It is a **plain committed file** — created and edited with `Write`/`Edit`, committed on the feature branch so a resuming (or headless) session reads it directly. Created by `/samuel:implement` on entry, populated proactively during execution, read and sealed by `/samuel:validate`, synthesized into the PR body by `/samuel:done`.
 

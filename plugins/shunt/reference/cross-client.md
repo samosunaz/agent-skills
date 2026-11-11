@@ -1,6 +1,6 @@
 # Shunt Across Clients
 
-The token plane runs on **Claude Code** and on **Codex**. The two gate scripts are the same files on both; what differs is where the hooks file lives, what the tools are called, and how a worker is spawned. This spoke holds those facts once — `shunt:bulk-read` and `shunt:code-write` link here instead of restating them, because a fact written twice drifts.
+The token plane runs on **Claude Code** and on **Codex**. The two gate scripts are the same files on both; what differs is where the hooks file lives, what the tools are called, and how a worker is spawned. This spoke holds those facts once — `shunt:bulk-read` links here instead of restating them, because a fact written twice drifts.
 
 ## The two clients
 
@@ -11,13 +11,13 @@ The token plane runs on **Claude Code** and on **Codex**. The two gate scripts a
 | Hook tool names | `Read`, `Grep`, `Bash`, `Agent` | `Bash` for every shell-like tool, `apply_patch` (matcher aliases `Write`, `Edit`), `spawn_agent` (alias `Agent`). There is **no `Read` and no `Grep`** |
 | Whole-file read (denied) | `Read` with no `offset`/`limit` | `cat`, `less`, `more`, `bat` through `Bash` |
 | Bounded read (passes) | `Read` with `offset`/`limit` | `sed -n '<start>,<end>p'` |
-| Worker | `Agent` on a plugin agent definition (`agents/bulk-reader.md`, `agents/code-writer.md`) | `spawn_agent` with `model` and `reasoning_effort` per call; there is no agent definition file, so the contract travels inside the message |
-| Worker model | haiku (read) · sonnet (write) | `gpt-5.5` at `reasoning_effort: low` |
+| Worker | `Agent` on a plugin agent definition (`agents/bulk-reader.md`) | `spawn_agent` with `model` and `reasoning_effort` per call; there is no agent definition file, so the contract travels inside the message |
+| Worker model | haiku | `gpt-5.5` at `reasoning_effort: low` |
 | Denial vocabulary | `SHUNT_CLIENT=claude` | `SHUNT_CLIENT=codex` |
 
 ## A Codex worker is gated like the main thread
 
-The gates exempt the two workers by `agent_type` (`shunt:bulk-reader`, `shunt:code-writer`). Measured on `codex-cli 0.154.0`: every Codex subagent reports `agent_type: "default"` with a UUID `agent_id`, so that exemption can never match one. In a live probe the spawned worker was denied a `cat` of a large file, took none of the three exits the denial named, and reported failure to its parent.
+The gates exempt the worker by `agent_type` (`shunt:bulk-reader`). Measured on `codex-cli 0.154.0`: every Codex subagent reports `agent_type: "default"` with a UUID `agent_id`, so that exemption can never match one. In a live probe the spawned worker was denied a `cat` of a large file, took none of the three exits the denial named, and reported failure to its parent.
 
 Every Codex spawn message therefore **orders the bounded read itself** — `read <file> with sed -n '1,<line count>p'` — which is the deliberate override the gate already honours. Without that sentence the recipe produces a worker that is denied and gives up. Exempting `agent_type: "default"` was rejected: it would exempt every Codex subagent, against ADR 0007's intent that a non-worker subagent pays what the main model pays.
 

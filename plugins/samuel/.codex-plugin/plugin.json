@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Samuel",
     "shortDescription": "Spec-driven pipeline for indie hacker projects",
-    "longDescription": "A GitHub-native delivery pipeline: work items are Issues carrying a human Brief and a self-contained Executor Plan. Runs research → spec → plan → analyze → implement → validate with forced human checkpoints and a living implementation journal, then opens a PR. Includes an autonomous conductor for headless runs and a wave coordinator that parallelizes issues from the native dependency graph.",
+    "longDescription": "A GitHub-native delivery pipeline: work items are Issues carrying a human Brief and a self-contained Executor Plan. Runs spec → plan → analyze → implement → validate with forced human checkpoints and a living implementation journal, then opens a PR. Includes an autonomous conductor for headless runs and a wave coordinator that parallelizes issues from the native dependency graph.",
     "developerName": "Samuel Osuna",
     "category": "Development",
     "capabilities": [
