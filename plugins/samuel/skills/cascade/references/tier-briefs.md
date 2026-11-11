@@ -4,16 +4,16 @@ Everything a tier receives is English, self-contained, and assumes **no chat his
 
 ## Routing row for the run policy
 
-Cascade writes this table into the run policy (`../../coordinate/references/worker-brief.md` § Run policy) so every brief and every `/samuel:iaas` phase reads the same routing:
+Cascade writes this table into the run policy (`../../coordinate/references/worker-brief.md` § Run policy) so every brief and every `/samuel:iaas` phase reads the same routing. Fill each `{model}` and `{effort}` from the matching row of `../../../reference/model-routing.md` § Pipeline roles when writing it:
 
 ```markdown
 | role | agent | model | effort |
 |---|---|---|---|
-| planner | claude | opus | high |
-| implementer — S, M, closed spec | codex | gpt-5.6-luna | high |
-| implementer — L, user-facing, or Codex unavailable · address · simplify | claude | opus | high |
-| audit / independent review, executing | claude (fresh instance) | opus | xhigh |
-| second audit — any size whose diff touches a write path or a persisted shape, read-only, round 1 | codex | gpt-5.6-luna | high |
+| planner | claude | {model} | {effort} |
+| implementer — S, M, closed spec | codex | {model} | {effort} |
+| implementer — L, user-facing, or Codex unavailable · address · simplify | claude | {model} | {effort} |
+| audit / independent review, executing | claude (fresh instance) | {model} | {effort} |
+| second audit — any size whose diff touches a write path or a persisted shape, read-only, round 1 | codex | {model} | {effort} |
 | coordinator · ratification · final read | this session | the owner's flagship | — |
 ```
 

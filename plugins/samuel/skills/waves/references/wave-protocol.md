@@ -4,7 +4,7 @@ The executable recipes behind `/samuel:waves`. The coordinator is a **live atten
 
 Boundary (anti-double-scheduler): **waves = coordinator** (which items enter which wave, and when) · **conductor = per-item engine** · **Orca automations = calendar trigger**. An automation may *invoke* waves; waves never duplicates conductor's pipeline logic and never schedules itself.
 
-Authority ceiling (ADR 0004): the launch itself grants each worker push + **draft** PR authority and the coordinator comment authority **on the issues being driven** — nothing else. Merge, `gh pr ready`, and issue close are the human's, at every step of this protocol.
+Authority ceiling: `../SKILL.md` § Authority ceiling (ADR 0004).
 
 ## P0 — Preconditions
 
@@ -192,10 +192,10 @@ orca orchestration check --wait --types worker_done,escalation,decision_gate --t
 - **Red CI** → distinguish a real failure from a run cancelled by a subsequent push. A real failure gets **one** re-dispatch to the same worker — same task, new dispatch, the failing check's output pasted into the prompt — then any second failure escalates to the human. The orchestration circuit breaker (3 failed dispatches → task `failed`) is the backstop, not the policy.
 - **`decision_gate` / `ask`** → answer from the coordinator's context (`orca orchestration reply --id {msg_id} --body "..."`); anything touching scope, schema, or another issue's territory goes to the human first.
 - **`escalation`** → park the issue (report row: `escalated`), free its concurrency slot, continue the wave.
-- **Timeout** → a checkpoint, not a failure: `worker-show --dispatch <id>` first (`observation.agentWait` — `prompt-text` is a lost Enter, one `terminal send --text "" --enter`; absent means Orca never looked), then `task-list --brief` and `worker-read`/`terminal read`; a live worker (output advancing, heartbeats) keeps running. Never kill a worker for slowness; 15-60 min tasks are normal. A dirty tree with no commits and a spend-limit line is a quota death: name the account (`orca account list`), re-dispatch on the other engine or an allowed account (`reference/orca-substrate.md` § Accounts).
+- **Timeout** → a checkpoint, not a failure: `worker-show --dispatch <id>` first (`observation.agentWait`, read per `../../../reference/orca-substrate.md` § Agent status hooks), then `task-list --brief` and `worker-read`/`terminal read`; a live worker (output advancing, heartbeats) keeps running. Never kill a worker for slowness; 15-60 min tasks are normal. A dirty tree with no commits and a spend-limit line is a quota death: name the account (`orca account list`), re-dispatch on the other engine or an allowed account (`reference/orca-substrate.md` § Accounts).
 - Dispatch queued issues as slots free. Update the coordinator's own card comment at wave milestones (`orca worktree set --worktree active --comment "wave 2: 3/4 PRs open"`).
 
-**Claude-variant supervision.** These workers send no *orchestration* messages; each one sends one idle notice when its `claude -p` process ends (the P3 subscription). Arm **one** `Monitor` for the wave that prints a liveness tick every nine minutes (`while true; do sleep 540; echo tick; done`, `timeout_ms` 1800000, re-armed on expiry), and let the notices arrive — never poll the logs.
+**Claude-variant supervision.** These workers send no *orchestration* messages; each one sends one idle notice when its `claude -p` process ends (the P3 subscription). Arm **one** `Monitor` liveness tick for the wave, the one in `../../coordinate/references/dispatch-protocol.md` § C4 — Supervise, and let the notices arrive — never poll the logs.
 
 - **On a notice** → `orca terminal read --terminal {handle} --json` first. `claude` still running means the notice marked a turn boundary, not the exit (a P5 `[landed]` opened another turn): re-subscribe and keep the worker open. Back at a shell prompt ⇒ read the outcome once with the P3 `grep '"type":"result"' … | tail -n 1 | jq` line, keep its cost and turns for the P6 row, then the trust-but-verify PR check above. No `result` line ⇒ `aborted`. A worker that got a `[landed]` has one `result` line per turn: read them all (`grep '"type":"result"' … | jq -s 'map({subtype,total_cost_usd,num_turns})'`) and take the outcome from the worst subtype and the PR check, never from the last line.
 - **On each tick, for every open claude-variant worker with no notice since the previous tick** → `orca terminal read --terminal {handle} --json` and `git log --oneline -1 issue-{N}-{slug}`. A pane back at a shell prompt is an exit whether or not a notice came: handle it exactly as a notice (no `result` line ⇒ `aborted`, the tail quoted). Anything advancing keeps running.
@@ -212,7 +212,7 @@ The result line is the outcome claim, not the outcome: a `success` subtype still
 
 ## P5 — Release (the human merge gate)
 
-The human merging the wave's draft PRs **is** the gate — the coordinator never asks to merge, never marks ready, only detects:
+The human merging the wave's draft PRs **is** the gate (`../SKILL.md` § Authority ceiling (ADR 0004)); the coordinator only detects it:
 
 ```bash
 gh pr view {n} --json state,mergedAt --jq '"\(.state) \(.mergedAt)"'   # per wave PR, each supervision window

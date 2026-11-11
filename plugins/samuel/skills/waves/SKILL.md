@@ -38,7 +38,7 @@ Launching this skill is the explicit grant — and its limit:
 
 - Each **worker** may push its branch and open a **draft** PR (`Closes #N`), only inside its own worktree.
 - The **coordinator** may comment on the issues being driven and post the run report to `conductor:log` — nothing outside the wave set.
-- **Never**, by anyone, at any step: `gh pr merge`, `gh pr ready`, closing issues, pushing to `main`. The human's merge IS the release gate (Step 6) — the coordinator detects it, never requests it, never performs it.
+- **Never**, by anyone, at any step: `gh pr merge`, `gh pr ready`, closing issues, pushing to `main` (`../../reference/autonomy.md` § Hard stops). The human's merge IS the release gate (Step 6) — the coordinator detects it, never requests it, never performs it.
 
 ## Process
 

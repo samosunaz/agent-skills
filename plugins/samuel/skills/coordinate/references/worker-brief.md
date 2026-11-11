@@ -4,7 +4,7 @@ The three texts the coordinator writes for a worker. All three are English, self
 
 ## Run policy — `.claude/run-policy/{run_id}.md`
 
-Keyed by the Orca Run id this session bound in C2 — one file per run, never per checkout, because sibling coordinator sessions in the same checkout overwrite a shared path mid-brief (measured). Written at the first dispatch of a task or epic, re-read before every brief, **appended** to every brief verbatim under `STANDING CONSTRAINTS` — appended, not prepended: Orca's lifecycle preamble already takes the opening of what the worker sees, and 63 % of measured dispatches spent their whole visible opening on protocol before the task appeared. The task goes first. It exists because the same five constraints were retyped by the human on almost every dispatch for two weeks; a constraint that lives here is stated once and inherited by every worker until the human changes it. `.claude/` is gitignored in consumer repos (`/samuel:repo-audit` checks it), so the file never lands in a diff. The Run objective carries the same policy's first line (`coordinate: {task} · policy .claude/run-policy/{run_id}.md`) so `run-show` finds it after a compaction or from another session.
+Keyed by the Orca Run id this session bound in C2 — one file per run, never per checkout, because sibling coordinator sessions in the same checkout overwrite a shared path mid-brief (measured). Written at the first dispatch of a task or epic, re-read before every brief, **appended** to every brief verbatim under `STANDING CONSTRAINTS` — appended, not prepended: Orca's lifecycle preamble already takes the opening of what the worker sees, and 63 % of measured dispatches spent their whole visible opening on protocol before the task appeared. The task goes first. It exists because the same five constraints were retyped by the human on almost every dispatch for two weeks; a constraint that lives here is stated once and inherited by every worker until the human changes it. `.claude/` is gitignored in consumer repos (`/samuel:repo-audit` checks it), so the file never lands in a diff. The Run objective carries the same policy's first line (`coordinate: {task} · policy .claude/run-policy/{run_id}.md`) so `run-show` finds it after a compaction or from another session. Fill each `{model}` and `{effort}` in § Routing from the matching row of `../../../reference/model-routing.md` § Pipeline roles when writing the file.
 
 ```markdown
 # Run policy — {task or epic} — {date}
@@ -12,9 +12,9 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 ## Routing
 | role | agent | model | effort |
 |---|---|---|---|
-| frontend / UI / copy | claude | opus | high |
-| backend / architecture / debugging / tests | codex | {model from ~/.codex/config.toml} | high |
-| independent review | the engine that did NOT write the diff | codex: {model} · claude: opus | xhigh |
+| frontend / UI / copy | claude | {model} | {effort} |
+| backend / architecture / debugging / tests | codex | {model from ~/.codex/config.toml} | {effort} |
+| independent review | the engine that did NOT write the diff | codex: {model} · claude: {model} | codex: {effort} · claude: {effort} |
 
 ## Standing constraints (binding in every brief)
 - Least code: the smallest change that meets the outcome, before any simplify pass.

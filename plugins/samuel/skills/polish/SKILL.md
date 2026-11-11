@@ -24,7 +24,7 @@ Three passes, one run, one report: `/samuel:interrogate` deletes what should not
 /samuel:polish --dry-run                   — verdicts only: no edits, no commits, no push
 ```
 
-`--worker` takes `<agent>:<model>:<effort>` and defaults to the Simplify row of `../iaas/references/phase-contracts.md` § Model routing. Launch through the protocol `/samuel:coordinate` already owns (`../coordinate/references/dispatch-protocol.md`); this skill never invents a launcher, and never drops a run below that default to save tokens.
+`--worker` takes `<agent>:<model>:<effort>` and defaults to the Simplify row of `../../reference/model-routing.md` § Pipeline roles. Launch through the protocol `/samuel:coordinate` already owns (`../coordinate/references/dispatch-protocol.md`); this skill never invents a launcher, and never drops a run below that default to save tokens.
 
 ## Context
 
