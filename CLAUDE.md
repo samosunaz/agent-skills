@@ -22,7 +22,7 @@ Adding or renaming a skill needs no sync step — the plugin dir is the only sou
 
 Codex ignores Claude-specific frontmatter fields (`allowed-tools`, `model`). Skills that shell out with `${CLAUDE_PLUGIN_ROOT}` (`repo-audit`, `create-review-md`) resolve only under Claude Code — Codex needs the path passed another way.
 
-**Three manifest files, two contents.** `plugin.json` at the plugin root is the portable one (§5): a **closed** field set — `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, `extensions`, and nothing else. `.claude-plugin/plugin.json` is a **symlink to `../plugin.json`**, so Claude Code and a conformant client never drift. Codex needs two fields the closed schema forbids, so `.codex-plugin/plugin.json` stays a separate regular file:
+**Three manifest files, two contents.** `plugin.json` at the plugin root is the portable one (§5): a **closed** field set — `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, `extensions`, and nothing else. `.claude-plugin/plugin.json` is a **symlink to `../plugin.json`**, so Claude Code and a conformant client never drift. The one exception is a plugin with hooks modules (`nx-panel`): `claude plugin validate` loses the module's state contract behind a symlinked manifest, so it carries a regular file identical to the root manifest, tracked in `extra-files`, and it is Claude Code only (no Codex manifest, no Codex marketplace entry). Codex needs two fields the closed schema forbids, so `.codex-plugin/plugin.json` stays a separate regular file:
 
 | Field | `plugin.json` (portable) | `.codex-plugin/plugin.json` |
 |---|---|---|

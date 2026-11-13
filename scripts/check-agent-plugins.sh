@@ -50,8 +50,15 @@ for root in plugins:
 
     # Claude Code reads .claude-plugin/plugin.json; the symlink keeps one manifest.
     claude = f"{root}/.claude-plugin/plugin.json"
+    # A plugin with hooks modules is the exception: `claude plugin validate` loses the
+    # module's state contract behind a symlinked manifest, so it carries an identical copy.
+    hooks = f"{root}/hooks/hooks.json"
+    has_modules = os.path.isfile(hooks) and "modules" in json.load(open(hooks))
     if os.path.lexists(claude):
-        if not os.path.islink(claude):
+        if has_modules:
+            if os.path.islink(claude) or open(claude).read() != open(manifest).read():
+                errors.append(f"{claude}: a plugin with hooks modules needs a regular file identical to ../plugin.json")
+        elif not os.path.islink(claude):
             errors.append(f"{claude}: must be a symlink to ../plugin.json, not a second copy")
         elif os.readlink(claude) != "../plugin.json":
             errors.append(f"{claude}: symlink must point at ../plugin.json")

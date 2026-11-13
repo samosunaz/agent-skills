@@ -14,6 +14,11 @@
       "name": "shunt",
       "source": "./plugins/shunt",
       "description": "Token plane: hooks that route large-file reads to a cheap worker agent instead of the main context"
+    },
+    {
+      "name": "nx-panel",
+      "source": "./plugins/nx-panel",
+      "description": "Live progress band above the prompt for Nx runs that write to a log file"
     }
   ]
 }
