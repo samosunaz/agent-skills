@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "nx-panel",
+  "version": "5.0.0",
+  "description": "A live band above the prompt for Nx runs that write to a log file: tasks done per target, failing tasks, elapsed time and machine load",
+  "author": {
+    "name": "Samuel Osuna",
+    "url": "https://github.com/samosunaz"
+  },
+  "homepage": "https://github.com/samosunaz/agent-skills#readme",
+  "repository": "https://github.com/samosunaz/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "nx",
+    "progress",
+    "hooks",
+    "mod"
+  ]
+}
