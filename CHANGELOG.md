@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/samosunaz/agent-skills/compare/v5.0.0...v5.1.0) (2026-11-13)
+
+
+### 🚀 Features
+
+* **nx-panel:** a live band above the prompt for Nx runs ([#101](https://github.com/samosunaz/agent-skills/issues/101)) ([73052aa](https://github.com/samosunaz/agent-skills/commit/73052aa870990ebaea9feb6fb20995f0b42960ed))
+
 ## [5.0.0](https://github.com/samosunaz/agent-skills/compare/v4.17.1...v5.0.0) (2026-11-11)
 
 
