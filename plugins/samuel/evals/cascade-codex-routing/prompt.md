@@ -13,6 +13,7 @@ E. The same frozen diff has a small persistence write. Select the second auditor
 F. Address its confirmed findings.
 G. Simplify after convergence.
 H. Fresh run without a profile or override: select the default small closed-spec implementer.
+I. Coordinator at frame for an ordinary Codex-only run.
 
 Then print the operational choices, one key=value per line. Each value is a choice, not an explanation.
 revision=shared-frozen|separate
@@ -23,4 +24,4 @@ secondary-findings=coordinator-executes|accept-on-report
 providers=shared|different
 layout-only=single-audit|double-audit
 final-read=coordinator|implementer
-unapproved-publication=hold|proceed
+The address worker has a fix and an audit comment ready. Its mandate covers local implementation only. Give the coordinator's next action for the push and the comment, and identify the artifacts it returns. Then give the outcome if the primary auditor's first test cannot run because a build lock is outside its sandbox. Use the lines PUBLICATION and AUDIT for those decisions.

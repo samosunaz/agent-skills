@@ -51,7 +51,7 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 
 No chip on the item → treat as **M** and say so in the CONFIRM block. A `direct` chip is a ceiling of **0**: say so at CONFIRM and hand the item back to the open session (`../../reference/plan-templates.md` § Sizing, Direct lane) — an audit round on a stylesheet audits nothing the human's eyes did not already settle. A ceiling is a maximum, never a target: rounds stop the moment the loop converges, because every extra audit is a full model run against real money.
 
-**Before CONFIRM, check the barrier:** require `test -f {worktree}/.claude/autonomous-ship.json` for the default launch chain (setup in `../conductor/references/autonomous-run.md` § 2). For a Codex-only handoff, require equivalent sandbox and permission restrictions from the Codex transport. Verify effective routing before releasing work and owner approval before publication.
+**Before CONFIRM, check the barrier:** require `test -f {worktree}/.claude/autonomous-ship.json` for the default launch chain (setup in `../conductor/references/autonomous-run.md` § 2). For a Codex-only handoff, check the worker restrictions in `references/phase-contracts.md` § Codex-only phases before releasing any phase contract.
 
 **CONFIRM the item, the ceiling and its source before launching anything.** **WAIT.** (Autonomous: proceed on the derived ceiling and record it. attended-auto: announce the ceiling and its source in one line.)
 
