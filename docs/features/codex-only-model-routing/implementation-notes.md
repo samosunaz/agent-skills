@@ -2,7 +2,7 @@
 
 > **Item**: #103 · **Plan**: [Executor Plan](https://github.com/samosunaz/agent-skills/issues/103) · **Constitution**: none
 > **Counters**: D:0 V:1 T:0 Q:0 (open_remaining: 0)
-> **Status**: living
+> **Status**: sealed
 > **Flags**: has-deviations
 
 ## Design Decisions
