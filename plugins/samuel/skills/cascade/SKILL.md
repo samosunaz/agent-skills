@@ -30,8 +30,15 @@ Briefs, the ratification checklist and the final-read checklist live in `referen
 /samuel:cascade N --from review             — a branch or draft PR exists; start at the audit
 /samuel:cascade N --final                   — another session ran the loop; do only the final read and the verdict
 /samuel:cascade N --transport orca|agents   — Orca workers (default when Orca is up) or in-session sub-agents
+/samuel:cascade N --profile codex-only      — use the named profile throughout this run
 /samuel:cascade N --medium <model>:<effort> — override the implementer tier for this run
 ```
+
+### Profile selection
+
+On every entry, including `--from execute`, `--from review` and `--final`, resolve the explicit profile against the current run policy. Save `profile: codex-only` when selected and recover it on resume. Stop on an unknown name, conflicting saved profile or incompatible `--medium` override. A fresh run with no selection uses the default tier table above.
+
+For `codex-only`, use the role and escalation table in `../../reference/model-routing.md` § Codex-only Cascade profile throughout the process below. It replaces the default tier, sandbox fallback and transport choices. Require runtime evidence of the coordinator's current model and effort before framing, ratifying or signing off (including final-only entry). Halt if the pair is missing or differs. Apply the verified launch in `references/tier-briefs.md` to every worker, including the planner, retries and optional QA. Pass `--profile codex-only` to IAAS on review entry and on resumption. Keep the final read with this coordinator. Give workers only the owner's existing publication authority. Hold each outward action, including a draft PR or an audit comment, for approval when it falls outside that grant.
 
 ## Context
 

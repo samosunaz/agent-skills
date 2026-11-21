@@ -4,7 +4,7 @@ Everything a tier receives is English, self-contained, and assumes **no chat his
 
 ## Routing row for the run policy
 
-Cascade writes this table into the run policy (`../../coordinate/references/worker-brief.md` § Run policy) so every brief and every `/samuel:iaas` phase reads the same routing. Fill each `{model}` and `{effort}` from the matching row of `../../../reference/model-routing.md` § Pipeline roles when writing it:
+For the default profile, Cascade writes this table into the run policy (`../../coordinate/references/worker-brief.md` § Run policy) so every brief and every `/samuel:iaas` phase reads the same routing. Fill each `{model}` and `{effort}` from the matching row of `../../../reference/model-routing.md` § Pipeline roles when writing it:
 
 ```markdown
 | role | agent | model | effort |
@@ -18,6 +18,14 @@ Cascade writes this table into the run policy (`../../coordinate/references/work
 ```
 
 With `--transport agents` the Claude rows are the plugin's agent definitions: `cascade-planner`, `cascade-reviewer`, and `cascade-implementer` (`sonnet`, `high` — the `--medium sonnet:high` override). An agent definition pins model and effort; a bare `model:` override on a generic sub-agent pins only the model. The Codex rows never run as a Claude sub-agent: they go through the Codex plugin's own runtime with the working directory set to the worktree — write-capable for the implementer, read-only for the second audit — and their final message is the report.
+
+## Verified Codex-only launch
+
+Resolve this phase's model and effort from `../../../reference/model-routing.md` § Codex-only Cascade profile. Keep the selected profile name in the run policy. Keep the brief with the coordinator until release.
+
+1. Start a fresh worker with the explicit pair. Put **only** a wait instruction in the initial Task spec and launch prompt: “Wait for the coordinator's brief. Take no action and keep this task open.” Use a neutral task title. Omit the issue, policy and work instructions from the launch payload.
+2. Inspect the runtime receipt for this dispatch. With Orca use `worker-start --full --json` and require `ok: true`, a successful start, a dispatch ID, and exact matches in `result.launch.effective.model` and `result.launch.effective.effort`. Record the dispatch ID and observed pair. A request echo or worker self-report supplies no proof.
+3. Only after verification, deliver the six-slot brief with `orca orchestration send --to dispatch:<id>` and confirm delivery on the same dispatch. Use another transport only if it supports wait-only launch, independent evidence of both effective fields and addressed follow-up. If launch fails, evidence is absent or the pair differs, withhold the brief, retire the waiting worker and report the phase, requested pair and observed result. Repeat verification for every replacement dispatch.
 
 ## Planner
 
