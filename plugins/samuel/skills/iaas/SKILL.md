@@ -19,8 +19,11 @@ Drive **one work item** through an implementation and a convergent review loop, 
 /samuel:iaas 42 --rounds 3    — ceiling of 3 [Audit → Address] rounds
 /samuel:iaas 42 --rounds 0    — Implement + Simplify, no audit loop
 /samuel:iaas 42 --from audit  — the branch and draft PR already exist; start at the loop
+/samuel:iaas 42 --from audit --profile codex-only  — resume Cascade with its named routing profile
 /samuel:iaas 42 --ready       — let Simplify mark the PR ready for review (off by default)
 ```
+
+For a Cascade handoff, recover the profile from the run policy and check it against any explicit name. Stop on an unknown or conflicting profile. With `codex-only`, use `references/phase-contracts.md` § Codex-only phases for every launch, review trigger and publication decision. Standalone runs without a selected profile follow the defaults below.
 
 ## This skill never reimplements a phase
 
@@ -48,7 +51,7 @@ Each phase is an existing skill, launched as its own process. IAAS reads state, 
 
 No chip on the item → treat as **M** and say so in the CONFIRM block. A `direct` chip is a ceiling of **0**: say so at CONFIRM and hand the item back to the open session (`../../reference/plan-templates.md` § Sizing, Direct lane) — an audit round on a stylesheet audits nothing the human's eyes did not already settle. A ceiling is a maximum, never a target: rounds stop the moment the loop converges, because every extra audit is a full model run against real money.
 
-**Before CONFIRM, check the barrier:** `test -f {worktree}/.claude/autonomous-ship.json`. Missing ⇒ stop and point at `../conductor/references/autonomous-run.md` § 2; every phase launch loads that file and exits 1 without it.
+**Before CONFIRM, check the barrier:** require `test -f {worktree}/.claude/autonomous-ship.json` for the default launch chain (setup in `../conductor/references/autonomous-run.md` § 2). For a Codex-only handoff, check the worker restrictions in `references/phase-contracts.md` § Codex-only phases before releasing any phase contract.
 
 **CONFIRM the item, the ceiling and its source before launching anything.** **WAIT.** (Autonomous: proceed on the derived ceiling and record it. attended-auto: announce the ceiling and its source in one line.)
 

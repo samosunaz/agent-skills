@@ -30,8 +30,15 @@ Briefs, the ratification checklist and the final-read checklist live in `referen
 /samuel:cascade N --from review             — a branch or draft PR exists; start at the audit
 /samuel:cascade N --final                   — another session ran the loop; do only the final read and the verdict
 /samuel:cascade N --transport orca|agents   — Orca workers (default when Orca is up) or in-session sub-agents
+/samuel:cascade N --profile codex-only      — use the named profile throughout this run
 /samuel:cascade N --medium <model>:<effort> — override the implementer tier for this run
 ```
+
+### Profile selection
+
+On every entry, including `--from execute`, `--from review` and `--final`, resolve the explicit profile against the current run policy. Save `profile: codex-only` when selected and recover it on resume. Stop on an unknown name, conflicting saved profile or incompatible `--medium` override. A fresh run with no selection uses the default tier table above.
+
+For `codex-only`, use the role and escalation table in `../../reference/model-routing.md` § Codex-only Cascade profile throughout the process below. It replaces the default tier, sandbox fallback and transport choices. Before framing, ratifying or signing off (including final-only entry), compare the coordinator's active pair to its profile row. On Codex CLI, use the latest runtime `turn_context.payload.model` and `.effort` in the rollout whose session ID matches `CODEX_THREAD_ID`. Read only those fields. A configured default or a prior turn's pair is insufficient. Halt if current evidence is unavailable or differs. Apply the verified launch in `references/tier-briefs.md` to every worker, including the planner, retries and optional QA. After verification, the implementer must run a focused project check in its own sandbox before editing. If it cannot execute the check, stop and report the command and error. Pass `--profile codex-only` to IAAS on review entry and on resumption. Keep the final read with this coordinator. Give workers only the owner's existing publication authority. Hold each outward action, including a draft PR or an audit comment, for approval when it falls outside that grant.
 
 ## Context
 

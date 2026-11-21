@@ -208,6 +208,16 @@ this comment is a GitHub post like any other phase's, so it carries the block to
 {if --ready:} Then mark the PR ready for review.
 ```
 
+## Codex-only phases
+
+Resolve the named profile at every phase boundary using `../../../reference/model-routing.md` § Codex-only Cascade profile. Apply `../../cascade/references/tier-briefs.md` § Verified Codex-only launch before delivering each contract. Fill run metadata from the effective receipt, including `agent=codex`. Use the Codex dispatch result for completion and usage. Record unavailable usage fields explicitly.
+
+Require the repo's committed ship barrier before CONFIRM. For a Codex handoff the coordinator owns all GitHub writes. Before release, verify the transport enforces read-only access for the second auditor and worktree-scoped writes for phases that execute tests or edit files. Check the worker's effective sandbox policy in its runtime metadata (the matched worker rollout's `turn_context.payload.sandbox_policy` and `turn_context.payload.approval_policy` from the verified launch). Require disabled network access, `approval_policy: never`, no write-capable external tools, and the applicable repo restrictions. An unrestricted worker, missing evidence or a restriction the transport cannot enforce stops the phase. The owner may approve a pending action for the coordinator at its normal gate.
+
+Build briefs with the owner's approval scope: replace template instructions to push, publish reviews or comments, change PR state, or post the run report with a pending artifact for the coordinator. The coordinator checks the grant at each outward boundary and pauses for any missing grant. Preserve the pass markers and round stop rules.
+
+Freeze the review SHA before launching auditors. The primary auditor starts fresh and runs the focused check in its own sandbox before judging the diff. If it cannot execute the check or its adversarial cases, halt the round and report the command and failure. A read-only verdict cannot satisfy the executing audit. In round one, any write path, cache, async ordering or persisted shape requires a separate fresh, read-only second auditor on the same SHA with its own cases. Layout-only and copy-only diffs skip the second audit. Use this diff rule at every size. Report the reviewers' shared provider. If the required auditor cannot launch or verify its route, halt the round. The coordinator executes its material findings before they enter Address. Resolve Address and Simplify independently. For Codex, render the middle Simplify pass as a direct instruction to reuse existing code and simplify control flow and unnecessary work within the branch diff. Keep the Interrogate and Remove Slop passes on either side. Return the reviewed SHA to Cascade for its coordinator's final read.
+
 ## The chain
 
 One process per Claude phase, launched by the coordinator as **one Bash call with `run_in_background: true`**. A `claude -p` process exits when its turn ends, so no session survives the phase, and the harness's notice that the background task ended is the phase's end:

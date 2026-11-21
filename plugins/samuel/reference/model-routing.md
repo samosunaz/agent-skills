@@ -97,6 +97,25 @@ Important in another), which is why convergence counts confirmed findings, not l
 matched tasks with the same result make these rows permanent; one contrary task reopens them.
 sonnet-5 holds no implementer row and gpt-5.6-terra holds no row until each gets a fair run.
 
+## Codex-only Cascade profile
+
+Select `codex-only` explicitly in Cascade. Use these rows for the whole run, including IAAS rounds. Resolve the role before launch. A missing route, unavailable model, insufficient quota or unsupported effort stops the phase. Report the requested pair and the runtime evidence.
+
+| Role | Model | Reasoning effort and selection |
+|---|---|---|
+| Coordinator (frame, ratify, final read and verdict), planner | `gpt-6.2-astra` | `high`. Escalate the decision to `xhigh` when two viable designs still conflict after checking the plan against the code. |
+| Implement a closed plan | `gpt-6.2-sol` | `medium` for a small single-file change, `high` for multi-file work. |
+| Implement original UI, rendering, large cross-layer work or an escalated implementation step | `gpt-6.2-astra` | `high`. This row takes precedence over plan closure. |
+| Execute the primary audit | `gpt-6.2-astra` | `xhigh`, fresh context on the frozen SHA. |
+| Second audit of write paths or persisted state | `gpt-6.2-sol` | `xhigh`, fresh context on the same SHA with independently chosen cases. Both auditors use OpenAI. |
+| Address findings or simplify the diff | `gpt-6.2-sol` | `high`. |
+| Visual QA against an approved reference | `gpt-6.1-terra` | `medium`. |
+| Bounded extraction or mechanical work | `gpt-6-luna` | `low` for a direct extraction, `medium` when reconciling multiple supplied inputs. |
+
+**Public evidence, retrieved 2026-11-21.** Artificial Analysis Coding Agent Index v2.1 scored Astra in Codex at 53 with both `xhigh` and `max`. Average time and API cost per task were 16.5 minutes and $3.20 at `xhigh`, 25.1 minutes and $5.12 at `max`. Claude Code with its default fallback scored 58 for Opus 5.5 `max` and Fable 5.2 `xhigh`. In OpenAI's FrontierCode 2.0 results, both at `max`, Sol finished within 0.5 points of Astra at about one fifth of its API cost. Local acceptance at the selected efforts remains unmeasured. [Artificial Analysis comparison](https://artificialanalysis.ai/agents/coding-agents/comparisons/codex-vs-claude-code) · [OpenAI results](https://openai.com/index/introducing-gpt-6-2-astra-sol/)
+
+**Local calibration.** Give each candidate the same issue, plan, base SHA, tools and acceptance checks. Record each dispatch's effective model and effort, acceptance result, elapsed time, reported token usage and API cost when available, plus retries and rework. Run blind audits on frozen diffs. Record executed findings and misses against the same verified defect set. Mark unavailable measurements explicitly.
+
 ## GPT-6.1 Terra routing
 
 Use `gpt-6.1-terra` through the Codex plugin when the task has explicit inputs, a bounded outcome, and an observable acceptance check. Its cost score reflects my OpenAI allowance; intelligence is provisionally estimated; visual taste remains unrated and neither has a local evaluation.
