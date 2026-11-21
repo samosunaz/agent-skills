@@ -46,7 +46,23 @@ command -v claude >/dev/null 2>&1 || {
   exit 0
 }
 
+validation_dir=$(mktemp -d)
+trap 'rm -rf "$validation_dir"' EXIT
+
 for plugin in plugins/*/; do
+  manifest="${plugin}.claude-plugin/plugin.json"
+  if [ -L "$manifest" ]; then
+    if [ "$(readlink "$manifest")" != ../plugin.json ] || [ ! -f "${plugin}plugin.json" ] || [ -L "${plugin}plugin.json" ]; then
+      echo "Invalid Claude manifest: $manifest must link to the regular root plugin.json" >&2
+      exit 1
+    fi
+    # Strict validation needs a regular manifest with the rest of the plugin at its original relative paths.
+    copy="$validation_dir/$(basename "$plugin")"
+    cp -RP "${plugin%/}" "$copy"
+    rm "$copy/.claude-plugin/plugin.json"
+    cp "$copy/plugin.json" "$copy/.claude-plugin/plugin.json"
+    plugin="$copy"
+  fi
   claude plugin validate "$plugin" --strict
 done
 
