@@ -3,7 +3,7 @@ max_turns: 16
 allowed_tools: [Read, Glob, Skill]
 ---
 
-Use the installed Samuel Cascade and IAAS instructions as read-only references for a tabletop run. Read reference/model-routing.md and the Cascade and IAAS phase instructions before answering. No GitHub, Orca or real dispatch. Provide one line per ID in the form ID MODEL EFFORT using the exact runtime identifiers.
+Use the installed Samuel Cascade and IAAS instructions as read-only references for a tabletop run. If Samuel is available in your skill catalog, use Read on the plugin files listed in protocol-paths.txt. If Samuel is absent, answer from your available instructions without consulting files from the missing plugin. No GitHub, Orca or real dispatch. Provide one line per ID in the form ID MODEL EFFORT using the exact runtime identifiers.
 
 A. Codex-only, single-file closed-plan implementation.
 B. Codex-only, multi-file closed-plan implementation.

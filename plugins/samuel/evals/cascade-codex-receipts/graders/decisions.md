@@ -1,5 +1,5 @@
 ---
-type: llm
+type: regex
+target: last_message
+pattern: '\bamber\b[^\n]*\bHOLD\b[\s\S]*?\bblue\b[^\n]*\bHOLD\b[\s\S]*?\bred\b[^\n]*\bHOLD\b[\s\S]*?\bgreen-initial\b[^\n]*\bHOLD\b[\s\S]*?\bgreen-receipt\b[^\n]*\bRELEASE\b[\s\S]*?INITIAL[^\n]*WAIT-ONLY[\s\S]*?REQUIRED-AUDITOR[^\n]*HALT'
 ---
-
-Require four holds (denied launch, missing evidence, wrong effort, green still waiting) then green released after verification. The initial task must contain only a wait instruction without the brief. An unverifiable mandatory second auditor halts the round.
