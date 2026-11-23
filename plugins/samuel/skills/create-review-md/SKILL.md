@@ -59,6 +59,8 @@ Present the diff (new `REVIEW.md`, or the conformance fix on regenerate).
 
 Branch (`chore/review-md`), conventional commit (`chore: add REVIEW.md review overrides`), then `gh pr create -R {repo}` with the TL;DR block on top (adapter § TL;DR) and the citation table below it — repo always from `samuel.md`, never parsed from the remote. Report the PR URL.
 
+Before creating the PR, append `samuel:run` to its body with `phase: create-review-md` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 ## Autonomy
 
 Under `/samuel:conductor` (or headless `/goal`): Steps 1 (GUARD) and 2 (EVIDENCE) run straight through; Step 3 (DERIVE)'s WAIT becomes record-and-proceed — journal the draft + citation table as a pending confirmation, continue to WRITE. Step 5 always opens `--draft`. Checkpoint mode (default): Steps 3 and 5 WAIT as written.

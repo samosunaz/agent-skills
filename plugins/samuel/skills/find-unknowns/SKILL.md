@@ -56,6 +56,8 @@ Standalone — runs with zero pipeline state, in any repo or none. When `.claude
 4. **Deliver the Unknowns Map** — format in `references/formats.md`: per finding, quadrant × cost-if-ignored × resolution path (answer / prototype / spike / accept-risk), closing with the **rewritten brief**: the sharper prompt the user should have written. That rewrite is the deliverable — the audit exists to produce it.
 5. **Persist by context.** Feature dir present → offer `{feature_dir}/unknowns.md` (committed). Issue given → offer ONE consolidated comment on the Issue (decision surface). Bare idea → inline only.
 
+   Before posting any Issue comment from this skill, append `samuel:run` with `phase: find-unknowns` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 ## PREFLIGHT (audit an Issue before autonomy)
 
 AUDIT with input = the Issue's Brief + Executor Plan (`gh issue view N --json title,body,comments`). Two additions:

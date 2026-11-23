@@ -75,6 +75,8 @@ Present the block **inline, fenced for copy-paste**. Then: "Review the spec. Cha
 
 Ask once: **"Keep it in the chat, or save it to GitHub? (chat / save)"**. Only on "save": `gh issue comment {item}` with the block, or a new `pipeline:triage` Issue `API Spec: {name}` if none.
 
+Before posting a comment, append `samuel:run` with `phase: api-request` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 Close with: `Spec {inline | issue #N} · platform {web|mobile} · {N} endpoints, {N} data points · the backend agent can consume it directly.`
 
 ## Gotchas

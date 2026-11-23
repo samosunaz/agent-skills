@@ -74,6 +74,8 @@ Present the block **inline, fenced for copy-paste**. Then: "Review the contract.
 
 Ask once: **"Keep it in the chat, or save it to GitHub? (chat / save)"**. Only on "save": `gh issue comment {item}` with the block, or a new Issue `API Contract: {name}` if none.
 
+Before posting a comment, append `samuel:run` with `phase: api-contract` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 Close with: `Contract {inline | issue #N} · consumers {web|mobile|both} · {N} endpoints, {N} fields · the client agent(s) can consume it directly.`
 
 ## Gotchas
