@@ -24,7 +24,7 @@ for skill, directory in skills.items():
             continue
         content = path.read_bytes()
         joined_content = re.sub(rb"\\\r?\n", b"", content)
-        if posting_command.search(joined_content):
+        if posting_command.search(content) or posting_command.search(joined_content):
             candidates.add(skill)
         if b"samuel:run" in content:
             covered.add(skill)
