@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/samosunaz/agent-skills/compare/v5.1.0...v5.2.0) (2026-11-21)
+
+
+### 🚀 Features
+
+* **samuel:** Codex-only routing profile for Cascade and IAAS ([#104](https://github.com/samosunaz/agent-skills/issues/104)) ([8de67ad](https://github.com/samosunaz/agent-skills/commit/8de67adca6c84d3509e35a59f85d080671e669f0))
+
 ## [5.1.0](https://github.com/samosunaz/agent-skills/compare/v5.0.0...v5.1.0) (2026-11-13)
 
 
