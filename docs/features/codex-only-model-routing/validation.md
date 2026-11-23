@@ -27,7 +27,7 @@ Both focused evals ran on the gated SHA with one run per arm. With the plugin, r
 1. Started a wait-only worker in run `run_f7880b224c7f`. The full receipt identified dispatch `ctx_8171562ae500` and effective `gpt-6-luna/low`.
 2. After checking the pair, sent marker instructions to that dispatch in `msg_e12a652a2311`.
 3. Received `worker_done` message `msg_f93f88282e00` from that dispatch with outcome `succeeded` and marker `RECEIPT103_OK`. Released the worker.
-4. An exact transcript message ID matched one local Codex rollout. Its effective sandbox was `danger-full-access` with approval policy `never`. That configuration fails the restricted IAAS execution barrier. The live exercise covered the mechanical worker's launch and delivery. The phase matrix and negative receipts were simulated.
+4. An exact transcript message ID matched one Codex rollout. The worker under test ran with an unrestricted sandbox (`danger-full-access`, approval policy `never`), which fails the restricted IAAS execution barrier. The live exercise covered the mechanical worker's launch and delivery. The phase matrix and negative receipts were simulated.
 
 ## Independent review
 
