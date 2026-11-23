@@ -53,7 +53,7 @@ agent-skills/
 │   │   ├── agents/               # Sub-agent definitions (7)
 │   │   ├── hooks/hooks.json      # PreCompact → scripts/precompact-handoff.sh: handoff rules + branch + the item's task-context frontmatter into every compaction (fails open)
 │   │   ├── reference/            # Shared reference docs (tracker, github-operations, task-context, implementation-notes, plan-templates, cross-session, orca-substrate)
-│   │   ├── evals/                # plugin-eval cases: tldr-rewrite, biz-tldr-retell, mermaid-standard (§ Evals)
+│   │   ├── evals/                # plugin-eval cases: tldr-rewrite, biz-tldr-retell, mermaid-standard, cascade-codex-routing, cascade-codex-receipts (§ Evals)
 │   │   └── skills/               # 39 skills, one dir each (flat — §7.1)
 │   └── shunt/                    # Token plane: PreToolUse gates on large reads/searches + delegation skills (ADR 0007)
 │       ├── plugin.json           # + .claude-plugin/plugin.json symlink + .codex-plugin/plugin.json
@@ -130,7 +130,7 @@ A spec-driven pipeline with two optional gates (`[S]`pec and `[A]`nalyze) — br
 
 - `bun run eval:samuel` · `bun run eval:shunt` — the full measurement: 3 runs per case per arm. Each case runs again with no plugin loaded, and `Δ` (with minus without) is what the plugin contributed. Expect roughly $2 per plugin per full run, a few minutes each. Both scripts pass `--no-publish`: publishing the HTML report to claude.ai is the runner's default, and the report carries every prompt and reply.
 - Iterate with `--case <name> --ablation none --runs 1` (one arm, one run, ~$0.20). Measure with the defaults.
-- **A case with a `scaffold_script` needs `--scaffold`, which is off by default and which `--trust-plugin` does not imply.** Without it the fixture is never copied, the agent finds an empty workspace, and the case scores 0 without erroring. `eval:shunt` carries the flag; a hand-built command must too.
+- **A case with a `scaffold_script` needs `--scaffold`, which is off by default and which `--trust-plugin` does not imply.** Without it the fixture is never copied, the agent finds an empty workspace, and the case scores 0 without erroring. `eval:samuel` and `eval:shunt` carry the flag; a hand-built command must too.
 - **Grade structure with `regex`, prose with `llm`.** A judge asked to rule on shapes and class syntax votes FAIL against diagrams that satisfy every clause; the same claims as regex are free, deterministic, and checkable by a human reading the pattern. Keep rubrics to short outputs, and state that any note the skill appends is expected.
 - **A grader must fail on material the case did not ask for.** Every mermaid grader passes on the example inside the style spoke, which the case grants `Read` on, so `domain-anchored` ties the diagram to the asked process. A Δ carried by the most cosmetic rule in a skill misreports what the skill contributes.
 - A `tool_used: Skill` grader never scores: it can't pass without the plugin, so the runner reports it as an indicator in the with-arm only. Give every case one grader on the result and one on the trajectory.
