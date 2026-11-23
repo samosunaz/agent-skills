@@ -43,15 +43,18 @@ fi
 
 # --- labels ---------------------------------------------------------------------
 if [ -n "$REPO" ]; then
-  MISSING=""
-  EXISTING=$(gh label list -R "$REPO" --limit 200 --json name --jq '.[].name' 2>/dev/null)
-  for L in pipeline:triage pipeline:planned pipeline:ready pipeline:in-progress pipeline:in-review roadmap:now roadmap:next roadmap:later promo:blog promo:bip; do
-    printf '%s\n' "$EXISTING" | grep -qx "$L" || MISSING="$MISSING $L"
-  done
-  if [ -z "$MISSING" ]; then
-    pass "labels" "pipeline:* + roadmap:* + promo:* complete"
+  if EXISTING=$(gh api --paginate "repos/$REPO/labels" --jq '.[].name' 2>/dev/null); then
+    MISSING=""
+    for L in pipeline:triage pipeline:planned pipeline:ready pipeline:in-progress pipeline:in-review roadmap:now roadmap:next roadmap:later promo:blog promo:bip; do
+      grep -qx "$L" <<< "$EXISTING" || MISSING="$MISSING $L"
+    done
+    if [ -z "$MISSING" ]; then
+      pass "labels" "pipeline:* + roadmap:* + promo:* complete"
+    else
+      gap "labels" "missing:$MISSING (idempotent fix: gh label create --force)"
+    fi
   else
-    gap "labels" "missing:$MISSING (idempotent fix: gh label create --force)"
+    gap "labels" "could not list labels for $REPO (gh api failed)"
   fi
 fi
 
