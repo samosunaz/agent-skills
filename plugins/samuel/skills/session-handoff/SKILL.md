@@ -164,6 +164,8 @@ Option 3 — Implement all remaining:
 
 ## Step 4: Link to Parent Item
 
+Before posting the parent-item comment, append `samuel:run` with `phase: session-handoff` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 ```bash
 gh issue comment [item-number] --body "Handoff created: [handoff-path] on [date]. Resume with: /samuel:session-handoff resume [handoff-path]"
 ```

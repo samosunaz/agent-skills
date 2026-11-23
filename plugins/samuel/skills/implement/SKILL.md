@@ -59,6 +59,8 @@ Tests go only at the seams the plan declared in `### Testing seams` — the huma
 
 **c. Track acceptance criteria** as outcomes are met: flip the matching Brief AC `- [ ]`→`- [x]` (fetch body → splice → `gh issue edit --body-file`). Optionally `gh issue comment` a short progress note for big steps.
 
+Before posting any Issue comment from this skill, append `samuel:run` with `phase: implement` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 **d. Journal**: append any `D/V/T/Q` surfaced this step to `{feature_dir}/implementation-notes.md` with their fields — `D`/`V` entries also carry `Affects` (issues outside this one the entry constrains, or `none`; a non-`none` value triggers e.1); re-render the counter line. Keep it append-only (supersede via `Status`, never renumber). When the re-rendered counter shows **open `Q-NNN` ≥ 3**, suggest pausing for `/samuel:find-unknowns` (audit) before the next phase — questions accumulating faster than they resolve is a map-quality signal, not bookkeeping. A suggestion only; per-entry `Blocking: yes` remains the sole gate.
 
 **e. Plan-reality mismatch → HARD STOP.** If the plan doesn't match the codebase:

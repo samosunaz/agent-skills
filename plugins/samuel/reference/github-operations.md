@@ -508,26 +508,34 @@ Three rules, because a signed check and an executed check are indistinguishable 
 
 ## Run metadata — who produced this artifact
 
-GitHub has no native field for which agent, model, or effort produced a comment, review, or PR body. The convention is an HTML-comment block, invisible when rendered, appended to the visible content — the same family as `<!-- samuel:plan -->` / `<!-- samuel:brief -->` / `<!-- samuel:review-pass -->` / `<!-- samuel:address-pass -->`:
+Before each authorized GitHub write through a Samuel skill, apply this rule to the final body, including bodies composed from command examples. Append one `samuel:run` block to each agent-authored issue comment, PR comment, review body, and PR body. For inline review comments, including `comments[].body` in a batched review, stamp the parent review body. For thread replies, stamp the address pass's Resolution comment. Issue bodies and deterministic CI status messages are outside this convention.
+
+Append the metadata as an HTML comment:
 
 ```
 <!-- samuel:run
 phase: audit
 round: 2
 agent: claude
-model: opus-5.5
+model: claude-opus-5-5
 effort: xhigh
 sha: f917ba48
 run: run_6876fb2702f7
 -->
 ```
 
-- **`phase`** (required): one of `implement | audit | address | simplify | validate | done | conductor | waves | coordinate` — extend only when a skill genuinely needs another value.
+- **`phase`** (required): one of `plan | implement | audit | address | simplify | validate | done | conductor | waves | coordinate | api-contract | api-request | create-review-md | find-unknowns | session-handoff`. Extend only when a posting skill needs another value.
 - **`agent`** (required): `claude | codex | opencode` — the engine, not the harness.
-- **`model`** and **`effort`** (required): come from the **launcher**, never a guess. A headless phase started with `claude -p --model X --effort Y` (iaas) or an explicit `orca orchestration worker-start` (coordinate/waves) injects these values into the phase's own prompt, and the phase stamps exactly what it was told. In an interactive session a skill cannot reliably observe its own model — write `model: unknown` / `effort: unknown` rather than guess.
+- **`model`** and **`effort`** (required) follow the field resolution below.
 - **`sha`** (required): the short HEAD SHA at the moment of posting.
 - **`round`** (required only for `audit` / `address`): the pass number `P` — the same count as that surface's own `review-pass` / `address-pass` marker.
 - **`run`** (optional): the run/job id when one exists — a conductor run, an Orca run, an iaas job.
+
+**Field resolution.** Resolve `model` and `effort` independently, including when a skill or template says to use the launcher or `unknown`.
+
+- **Claude Code** uses the exact model ID from the session system prompt, including under `claude -p`. Effort comes from the launcher's effective value when supplied.
+- **Codex** uses the rollout for the current `CODEX_THREAD_ID`. Verify that `session_meta.payload.id` equals that ID and extract only `model` and `effort` from the latest `turn_context.payload`.
+- **Fallback.** For each field without runtime evidence, use the exact effective value supplied for this launch, then `unknown` if unavailable. Use the exact runtime model ID. Launch aliases such as `opus` and engine-prefixed values such as `codex-gpt-6.2-astra` are invalid. Profiles, engine names, configured defaults, and other sessions cannot establish the value.
 
 **Placement.** The block is appended as its **own separate block**, after any existing pass marker — it never replaces or merges into `<!-- samuel:review-pass … -->` or `<!-- samuel:address-pass -->`. Those markers are matched with `startswith` / `contains` on their exact prefix (§ Passes in `pr-self-audit/references/review-output.md`, § Pass markers in `address-pr-comments/references/pr-comment-resolution.md`); folding a multi-line block into either would silently break that match and reset every pass count back to 1.
 

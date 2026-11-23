@@ -56,6 +56,8 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 
 Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {chosen approach} — {why}. (phase: plan)"`
 
+Before posting any Issue comment from this skill, append `samuel:run` with `phase: plan` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+
 **No Open Questions Gate**: verify all ambiguities resolved. If ANY remain → ask now. (An undecided plan is not pickup-ready.)
 
 ## Phase 3: STRUCTURE
