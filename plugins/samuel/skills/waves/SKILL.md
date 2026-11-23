@@ -61,7 +61,6 @@ _Add a line each time Claude trips on something._
 - `startupTerminal.handle` is the sole worker handle; re-resolve via `terminal list` only on `terminal_handle_stale`, never dual-send.
 - `worktree create --agent codex` accepts no model/effort flags — Settings agentDefaultArgs or the two-step fallback (P3).
 - `check --wait` returns ONE message per call — N workers finishing needs N waits.
-- `addBlockedBy` re-add fails loudly without duplicating — read-then-add (§ Issue dependencies).
 - Do not add conductor/autonomous bypass parentheticals to this file — `lint-autonomy.sh` G5 counts a literal 9 repo-wide (and its grep matches the marker even inside a warning about the marker).
 - Heartbeat ≠ done; a `check --wait` timeout is a checkpoint, not a failure — inspect, don't restart.
 - Orca repo selectors: resolve the repo **id by path** (P0) and use `id:` everywhere — `name:` matches Orca's displayName, not the GitHub repo name; and Orca CLI errors return `ok:false` with **exit code 0**, so check `.ok`, never the exit status.
