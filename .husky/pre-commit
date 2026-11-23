@@ -20,3 +20,10 @@ if ! bun run check:context; then
   echo "Fix the reported lines before committing."
   exit 1
 fi
+
+if ! bun run check:run-metadata; then
+  echo
+  echo "Samuel run metadata coverage check failed."
+  echo "Fix the reported coverage or exclusion errors before committing."
+  exit 1
+fi
