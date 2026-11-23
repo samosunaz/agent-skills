@@ -23,7 +23,8 @@ for skill, directory in skills.items():
         if not path.is_file() or path.is_symlink():
             continue
         content = path.read_bytes()
-        if posting_command.search(content):
+        joined_content = re.sub(rb"\\\r?\n[ \t]*", b" ", content)
+        if posting_command.search(joined_content):
             candidates.add(skill)
         if b"samuel:run" in content:
             covered.add(skill)
