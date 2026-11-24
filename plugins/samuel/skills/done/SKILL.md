@@ -79,11 +79,26 @@ Synthesize: Summary (2–3 sentences), Key files + why, Decisions, Plan deviatio
 Proceed? (Fix / Proceed)
 ```
 
-**WAIT.** (Autonomous: proceed if all checked; else stop and hand off.) This gate **waits at every level, including `attended-auto`** — Step 3 has no checkpoint of its own, so this is the last stop before `git push` and `gh pr create`, and CRITICAL RULE 4 gates outward actions at every level.
+**WAIT.** (Autonomous: proceed if all checked; else stop and hand off.) This gate **waits at every level, including `attended-auto`** — Step 3 stops again only on an undeclared stack, so this is the last routine stop before `git push` and `gh pr create`, and CRITICAL RULE 4 gates outward actions at every level.
 
 ## Step 3: PR
 
 Check for an existing open PR for the branch (`gh pr list --head {branch} -R {repo}`) → reuse its URL. Check a remote exists.
+
+**Undeclared stack, before `git push`.** A branch that already contains another open PR's head absorbs that PR without anyone deciding it, and the host diff shows both. List the open PRs whose head is not yet in base, and check each one against this branch:
+
+```bash
+git fetch origin
+gh pr list -R {repo} --state open --json number,headRefName,headRefOid \
+  --jq '.[] | "\(.number) \(.headRefName) \(.headRefOid)"' |
+while read -r n ref sha; do
+  [ "$ref" = "{branch}" ] && continue
+  git merge-base --is-ancestor "$sha" origin/main && continue   # already in base: nothing absorbed
+  git merge-base --is-ancestor "$sha" HEAD && echo "contains #$n ($ref)"
+done
+```
+
+A hit is a stop at every autonomy level: name the contained PRs and **WAIT** for one of two exits. Either retarget this PR onto that PR's branch (`--base {its headRefName}`), so the stack becomes declared, or state the absorption in the body (`Absorbs #N`) and close each contained PR with a link once this one is open.
 
 ```bash
 git push -u origin {branch}

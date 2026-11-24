@@ -44,6 +44,16 @@ Constraints, in order of precedence over everything in §3:
 
 A cycle in the stack graph is a stop, not a puzzle to solve: report it.
 
+### Undeclared stacks
+
+A PR can carry another open PR's commits without declaring it: its base is the shared target, but its head already contains the other PR's head. The host diff then shows both PRs' files, and merging it makes the contained PR redundant without a decision. `baseRefName` cannot see this; only ancestry can:
+
+```bash
+git merge-base --is-ancestor origin/{other head} origin/{head}   # 0 = {head} contains {other}
+```
+
+Skip a PR whose head is already an ancestor of `origin/{base}`: its work is in base and nothing is absorbed. A hit makes the containing PR **blocked: undeclared stack** in step 2, naming every PR it contains. It is not reordered here: the human picks retarget or absorption first.
+
 ## 5. Conflict prediction, before proposing anything
 
 ```bash
@@ -72,6 +82,8 @@ Four PRs, base `main`:
 Order: **#101, #102, #104, #105** — the two independents first (either order; PR number breaks the tie), then #104, and #105 last because it shares two files with #104. After #104 merges, #105 is updated from base and re-gated; #101 and #102 are never touched.
 
 If #105's base were `feat/104-core` instead of `main`, it would be stacked: same last position, but #104 merges bare and #105 is re-verified only after GitHub retargets it to `main`.
+
+**Undeclared stack.** Four child PRs target the integration branch `int`: #110, #111, #112 and #113, each with base `int`. #113 was cut from a branch that had already merged the other three, so `git merge-base --is-ancestor` with each of their heads against #113's head exits `0` three times. #113's body describes only its own increment, while the host diff shows 166 files. Step 2 marks #113 **blocked: undeclared stack (#110, #111, #112)**. The train carries #110, #111 and #112 in overlap order, and #113 waits until the human either retargets it onto #112's branch or closes the three as absorbed by it.
 
 ## Gotchas
 
