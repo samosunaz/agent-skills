@@ -67,6 +67,7 @@ _Add a line each time Claude trips on something._
 - **"Did it pass the whole review loop?" was asked 12 times before an authorisation.** The evidence is already on the PR (pass markers, `## Resolution` comments); step 1 reads it so the plan answers the question instead of the human asking it at the gate.
 - **Runs end at a verdict, and nobody runs land.** Seven open PRs and twelve worktrees accumulated in one week because `/samuel:cascade` and `/samuel:iaas` stopped at the draft PR. Both now close with `--dry-run`; a session that produced a PR and did not print that list has not finished.
 - **A branch is not an orphan because one checkout's `origin/<branch>` ref is missing.** A sibling worktree may have pushed it; read the branch through the host API before reporting unpushed work, and before pushing "as a backup".
+- **A stacked child predicted clean can still conflict after its base squash-merges.** The dry-run's `merge-tree` ran against the base branch; once the base lands as one squash commit, merging `main` into the child conflicted on a spec both PRs edited. The child already contains the base's commits, so take the child's side, then confirm `git diff <pre-merge head> HEAD` is empty before re-verifying. Predict the child against a simulated squash of its base: `S=$(git commit-tree $(git merge-tree --write-tree origin/main <base-head>) -p origin/main -m sim)`, then `git merge-tree --write-tree --name-only $S <child-head>`.
 
 ## Rules
 
