@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.2.1](https://github.com/samosunaz/agent-skills/compare/v5.2.0...v5.2.1) (2026-11-24)
+
+
+### 🩹 Fixes
+
+* **samuel:** polish scopes e2e by product; done and land refuse undeclared stacks ([#107](https://github.com/samosunaz/agent-skills/issues/107)) ([#111](https://github.com/samosunaz/agent-skills/issues/111)) ([8a4b2d0](https://github.com/samosunaz/agent-skills/commit/8a4b2d03cb40757635f7a1f74dd39295446882cc))
+* **samuel:** predict a stacked child's conflicts against its base's squash ([#117](https://github.com/samosunaz/agent-skills/issues/117)) ([27eba2f](https://github.com/samosunaz/agent-skills/commit/27eba2f46b7fa8532f74c0522e35069b2095ce64))
+* **samuel:** re-read PR state before pushing, write blockedBy with gh flags, report a failed label read ([#116](https://github.com/samosunaz/agent-skills/issues/116)) ([c04f6d7](https://github.com/samosunaz/agent-skills/commit/c04f6d7000a2c147c378c7ea45b6b055e93cf186))
+* **samuel:** stamp run metadata on every artifact an agent posts ([#112](https://github.com/samosunaz/agent-skills/issues/112)) ([4e3d11c](https://github.com/samosunaz/agent-skills/commit/4e3d11cb07bac60f927a58331e3645b6cac7184e))
+
+
+### 📄 Documentation
+
+* close out the eval inventory and validation wording from [#103](https://github.com/samosunaz/agent-skills/issues/103) ([#109](https://github.com/samosunaz/agent-skills/issues/109)) ([4d54711](https://github.com/samosunaz/agent-skills/commit/4d54711801dfe1baec5e81ce7472ffccbb0e5151))
+
 ## [5.2.0](https://github.com/samosunaz/agent-skills/compare/v5.1.0...v5.2.0) (2026-11-21)
 
 
