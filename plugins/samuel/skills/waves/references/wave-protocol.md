@@ -53,7 +53,7 @@ If prior wave state exists (after binding, `task-list` is non-empty from an inte
 
 1. Fetch candidates + their plans + the graph (recipes: `reference/github-operations.md` § Issue dependencies — batch by alias, one call):
    - body must contain a filled `<!-- samuel:plan -->` section (an unplanned body says `_Not planned yet_` — exclude).
-   - `blockedBy.nodes` with `number` + `state` per issue.
+   - `blockedBy.nodes` with `number` + `state`, and `blockedBy.totalCount` per issue. Park and report any issue whose node count is below `totalCount` before computing waves.
    - TL;DR must not carry the `direct` chip (§ Sizing in `reference/plan-templates.md`) — exclude as `direct lane: implement in-session`.
 2. Partition into waves by **peeling**, two ordered passes: **(a) exclude** every candidate with an open (`state: OPEN`) blocker *outside* the candidate set — external dependency, park it and report it; **(b)** wave 1 = remaining candidates with **zero open blockers**. Remove them, treat them as satisfied-on-merge, peel again for wave 2, and so on. A cycle (no peelable issue while candidates remain) is a graph bug — stop and report the cycle members.
 3. Report exclusions explicitly: not `pipeline:ready` · plan missing · direct lane · blocked by an issue outside the candidate set · cycle member. Silent exclusion reads as "covered" — never do it.

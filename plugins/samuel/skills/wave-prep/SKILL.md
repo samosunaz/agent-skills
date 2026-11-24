@@ -57,4 +57,4 @@ _Add a line each time Claude trips on something._
 
 - File overlap is not a dependency — declaring edges from co-location serializes work that could run in parallel and pollutes the graph waves trusts. Soft conflicts are for the human's eyes.
 - GitHub does not reject dependency cycles — a cycle written here deadlocks waves' dispatch (no issue ever unblocks). Check the union graph at EDGE PLAN, before any write.
-- `addBlockedBy` on an existing edge fails loudly without duplicating — read-then-add, never blind-add in a loop (adapter § Issue dependencies).
+- Exclude and report issues whose blocker list remains incomplete after the adapter's count check, because a missing edge can invalidate the cycle check.

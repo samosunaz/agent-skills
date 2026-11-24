@@ -246,6 +246,8 @@ committed deny list, never a bare allowlist. Phases push and open a draft PR, so
 jq -c 'select(.type=="result")' ~/iaas-{N}-{phase}.jsonl | tail -n 1 | jq -r '"\(.subtype) · $\(.total_cost_usd) · \(.num_turns) turns · \(.usage.input_tokens)/\(.usage.output_tokens) tokens"'
 ```
 
+After Address, also re-read the PR state: `gh pr view {branch} --json state --jq .state`. Anything but `OPEN` stops the chain even on a `success` line, because the PR merged or closed during the pass and Address pushed nothing. The report names the stranded branch and commit SHAs from Address's final output.
+
 Launch the next phase only on exit 0 **and** a `success` line. No `result` line means the phase aborted: `--settings` pointing at a missing file exits 1 before writing one (measured). Anything else stops the chain and is reported as that phase's failure: a phase that runs on top of a failed predecessor audits a tree nobody built.
 
 ## Model routing

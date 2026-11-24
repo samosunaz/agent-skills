@@ -115,7 +115,7 @@ Edit `.claude/task-context/{item}.md`: `phase: plan`, `last_updated: {today}`.
 
    Then route:
    - **Now** → dispatch `/samuel:implement` in this same turn via the Skill tool (or `/samuel:analyze` first for multi-story / constitution-sensitive work). Don't restate the plan; implement's own phase gate is the next checkpoint.
-   - **Defer** → the Executor Plan becomes the only carrier. Re-read it the way a cold agent would (the `plan-templates.md` litmus test) and patch whatever still lives only in this chat, then set `pipeline:ready` if it's unblocked — unblocked means no OPEN `blockedBy` blocker in the graph (adapter § Issue dependencies), not an impression from the body — so autopilot can pick it up.
+   - **Defer** → the Executor Plan becomes the only carrier. Re-read it the way a cold agent would (the `plan-templates.md` litmus test) and patch whatever still lives only in this chat, then set `pipeline:ready` if it's unblocked — unblocked means a complete `blockedBy` list with no OPEN blocker (adapter § Issue dependencies), not an impression from the body — so autopilot can pick it up.
 
 ## Gotchas
 

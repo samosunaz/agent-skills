@@ -170,63 +170,56 @@ gh issue list -R owner/repo --state all --label "promo:bip" --json number,title,
 
 ## Issue dependencies — the native DAG
 
-GitHub Issues carry first-class dependencies (`blockedBy` / `blocking`), exposed on **both APIs**: REST for the single-issue read, GraphQL for the batched set query and the write mutations. They are the pipeline's dependency graph: declared explicitly at planning time, read by coordinators (`/samuel:waves`) to compute execution order. Never infer dependencies from titles or body text when the native edge can be declared.
+GitHub Issues carry first-class dependencies (`blockedBy` / `blocking`). They are the pipeline's dependency graph: declared explicitly at planning time, read by coordinators (`/samuel:waves`) to compute execution order. Never infer dependencies from titles or body text when the native edge can be declared.
 
 ### Read an issue's blockers
 
-REST is the short path for one issue. Caution: REST `state` is lowercase (`open`/`closed`), GraphQL yields `OPEN`/`CLOSED` — never mix the two cases in one satisfaction check:
+With gh ≥ 2.94.0:
 
 ```bash
-gh api repos/OWNER/REPO/issues/N/dependencies/blocked_by --jq '.[] | {number, state}'
+gh issue view N -R owner/repo --json blockedBy --jq '{total: .blockedBy.totalCount, listed: (.blockedBy.nodes | length), open: [.blockedBy.nodes[] | select(.state == "OPEN") | .number], all: [.blockedBy.nodes[].number]}'
 ```
 
-The GraphQL shape (same fields; the building block for the batched set query below):
+Require `listed == total`. The CLI reads at most 50 blockers. If the list is short, re-read at the GraphQL page limit:
 
 ```bash
 gh api graphql -f query='query {
   repository(owner: "OWNER", name: "REPO") {
     issue(number: N) {
-      blockedBy(first: 50) { nodes { number state title } }
+      blockedBy(first: 100) { totalCount nodes { number state } }
     }
   }
-}' --jq '.data.repository.issue.blockedBy.nodes'
+}' --jq '.data.repository.issue.blockedBy'
 ```
+
+If the node count is still below `totalCount`, treat the issue as blocked and report the incomplete list.
 
 **Satisfaction rule:** a blocker is satisfied only when its `state` is `CLOSED`. For pipeline items that happens through the merged PR's `Closes #N` — so "blocker closed" and "blocker's code is on `main`" coincide by construction. An OPEN blocker parks the issue regardless of its labels: `pipeline:ready` + an open blocker means *eligible later*, not *dispatchable now*.
 
 ### Read the graph for a set (one call, no N+1)
 
-Batch with aliases instead of looping single queries:
+Batch with aliases at the GraphQL page limit. Apply the same count check to each issue: one whose node count is still below `totalCount` is treated as blocked and reported.
 
 ```bash
 gh api graphql -f query='query {
   repository(owner: "OWNER", name: "REPO") {
-    i42: issue(number: 42) { number blockedBy(first: 50) { nodes { number state } } }
-    i43: issue(number: 43) { number blockedBy(first: 50) { nodes { number state } } }
+    i42: issue(number: 42) { number blockedBy(first: 100) { totalCount nodes { number state } } }
+    i43: issue(number: 43) { number blockedBy(first: 100) { totalCount nodes { number state } } }
   }
 }' --jq '[.data.repository | to_entries[].value]'
 ```
 
 ### Declare an edge (write)
 
-Two steps — resolve node IDs, then mutate. Re-adding an existing edge **fails loudly** (`Validation failed: Target issue has already been taken`, non-zero exit) while leaving the graph correct — no duplicate edge is created. So recipes must **read-then-add** (fetch current blockers, add only the missing edges), the same list-first idempotence rule as § Blast radius — never blind-add inside a loop that dies on the first existing edge:
+With gh ≥ 2.94.0, set known blockers when creating the issue. `gh` sends one `addBlockedBy` mutation per blocker, and re-adding an existing edge **fails loudly** (`Validation failed: Target issue has already been taken`, non-zero exit) while leaving the graph correct. So an existing issue is **read-then-add**: compare against the complete blocker list (`all` above, closed blockers included) and add only the missing edges, never blind-add inside a loop that dies on the first existing edge.
 
 ```bash
-gh api graphql -f query='query {
-  repository(owner: "OWNER", name: "REPO") {
-    blocked:  issue(number: N) { id }
-    blocker:  issue(number: M) { id }
-  }
-}' --jq '.data.repository'
-# then, with the two IDs:
-gh api graphql -f query='mutation {
-  addBlockedBy(input: {issueId: "ID_BLOCKED", blockingIssueId: "ID_BLOCKER"}) {
-    issue { number }
-  }
-}'
+gh issue create -R owner/repo --title "TITLE" --body "BODY" --blocked-by M
+gh issue edit N -R owner/repo --add-blocked-by M
+gh issue edit N -R owner/repo --remove-blocked-by M
 ```
 
-`removeBlockedBy` takes the same input shape. Declare edges at planning time (`/samuel:plan`, `/samuel:roadmap` when committing a multi-item bet) — a graph declared after dispatch is a graph nobody executed.
+Declare edges at planning time (`/samuel:plan`, `/samuel:roadmap` when committing a multi-item bet) — a graph declared after dispatch is a graph nobody executed.
 
 > **Guards.** GraphQL emits real JSON `null`s, so `--jq` over these results doesn't hit the `gh --jq` empty-list trap directly — but the moment a recipe post-processes with `.[0]` or string interpolation, the repo rule applies unchanged: `.[0]//empty`, never a bare `.[0].x` (see CLAUDE.md § Critical Patterns). An issue with no blockers returns `nodes: []` — iterate it; don't index it.
 
