@@ -1,8 +1,1 @@
-# Seeds feature issues using issue bodies.
-plugins/samuel/skills/kickoff/SKILL.md
-
-# Routes selected work and offers issue creation or promotion through body and label edits.
-plugins/samuel/skills/next/SKILL.md
-
-# Creates bet issues and updates issue bodies, labels, and dependency edges.
-plugins/samuel/skills/roadmap/SKILL.md
+# Format: a '# reason' line, then the SKILL.md path it exempts.

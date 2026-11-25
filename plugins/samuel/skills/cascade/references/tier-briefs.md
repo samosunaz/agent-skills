@@ -50,7 +50,7 @@ QUESTIONS: you will meet decisions you cannot settle from the framing and the co
 
 OUT OF SCOPE: every line you cut carries a verdict — FOLD, FILE or DROP — under ../../../reference/finding-verdicts.md. A cut that is small and sits in a file the plan already touches is a FOLD: put it back in scope instead of cutting it.
 
-REPORT: the plan's location (issue body or file path), the three decisions you are least sure of, and everything marked `[unmeasured]`.
+REPORT: the plan's location (issue body or file path), the three decisions you are least sure of, everything marked `[unmeasured]`, and a last line `Run: {agent} {your exact runtime model ID} {your effort}`.
 ```
 
 ## Ratification — the top tier's checklist before any code
@@ -83,7 +83,7 @@ ALSO CHECK: every project the diff touches was linted, type-checked and tested (
 
 ADJACENT FINDINGS (outside the acceptance criteria): give each a verdict — FOLD, FILE or DROP — under finding-verdicts.md ({pasted or linked}). A FOLD goes back to the implementer before ship, so name the file and the fix.
 
-REPORT: verdict (APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES), then findings as `severity · path:line · what breaks · the evidence`, then adjacent findings as `FOLD|FILE|DROP · path:line · one line`. "No findings" must say what you executed to earn it.
+REPORT: verdict (APPROVE | APPROVE WITH COMMENTS | REQUEST CHANGES), then findings as `severity · path:line · what breaks · the evidence`, then adjacent findings as `FOLD|FILE|DROP · path:line · one line`. "No findings" must say what you executed to earn it. End with `Run: {agent} {your exact runtime model ID} {your effort}`.
 ```
 
 ## Fold brief — the top tier's ruling on each finding

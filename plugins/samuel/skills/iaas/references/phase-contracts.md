@@ -144,7 +144,8 @@ Report: `VERDICT:` line, `COUNTS: B= I= N=` line, then each finding as
 
 The coordinator **executes every Blocker and Important it returns** before anyone acts on it (a
 read-only claim is a hypothesis), posts the confirmed ones as one PR comment headed
-`## Second audit — confirmed findings`, and names that comment in the round's ADDRESS contract.
+`## Second audit — confirmed findings`, whose `samuel:run` block carries `worker: audit {agent} {model} {effort}`
+from the second auditor's launch receipt or exact launch values, and names that comment in the round's ADDRESS contract.
 Convergence needs both lists empty of Blockers and Importants. Engine out of quota or unable to
 start ⇒ skip 2b, write `second audit: skipped ({reason})` in the run report, and never substitute a
 lower tier of the primary family for it.

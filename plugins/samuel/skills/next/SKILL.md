@@ -75,6 +75,7 @@ If only one is available, still confirm. (attended-auto: pull it without asking,
 - **Context awareness.** Show in-progress items before offering new ones.
 - **Dependency respect.** Never offer an item with an open dependency.
 - **Priority first.** High priority always on top.
+- **Run metadata.** An issue body this skill creates or expands ends with a `samuel:run` block, `phase: next`, per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact); an expansion replaces only that phase's block.
 
 ## Gotchas
 

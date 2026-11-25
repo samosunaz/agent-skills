@@ -161,7 +161,7 @@ One rolling loop. Windows of **at most nine minutes**, in the foreground (the Ba
 orca orchestration check --wait --types worker_done,escalation,question --timeout-ms 540000 --json
 ```
 
-- **`worker_done`** → read the six-line body (C5). Then decide the terminal's next owner *before* acknowledging: `worker-start --task <next> --terminal <handle>` for an immediate follow-up by the same agent, else `worker-release --dispatch <id>`. Acknowledge with `check --ack <delivery_id> --wait …` and keep waiting for the rest.
+- **`worker_done`** → read the seven-line body (C5). Then decide the terminal's next owner *before* acknowledging: `worker-start --task <next> --terminal <handle>` for an immediate follow-up by the same agent, else `worker-release --dispatch <id>`. Acknowledge with `check --ack <delivery_id> --wait …` and keep waiting for the rest.
 - **`question`** → answer from your context with `reply --id <msg_id> --body "…"`; anything about scope, schema, or another worker's files goes to the human first, in one `AskUserQuestion`. A question the human has not answered before the worker gives up becomes a follow-up dispatch, not a late reply.
 - **`escalation`** → park it in the final report, free the slot, continue.
 - **Timeout / `{count:0}`** → a liveness checkpoint, in this order:

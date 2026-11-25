@@ -242,7 +242,9 @@ gh label create conductor:log -c 0E8A16 -d "Rolling conductor run log" --force  
 LOG=$(gh issue list --label conductor:log --state open --json number --jq '.[0].number')
 case "$LOG" in
   ""|null) LOG=$(gh issue create --title "Conductor run log" --label conductor:log \
-             --body "Rolling log — one comment per conductor run. Keep open." | sed 's#.*/##') ;;
+             --body "$(printf '%s\n' 'Rolling log — one comment per conductor run. Keep open.' '' \
+               '<!-- samuel:run' 'phase: waves' 'agent: {claude | codex}' 'model: {model, or unknown}' \
+               'effort: {effort, or unknown}' "sha: $(git rev-parse --short HEAD)" '-->')" | sed 's#.*/##') ;;
 esac
 gh issue comment "$LOG" --body-file {report.md}
 ```

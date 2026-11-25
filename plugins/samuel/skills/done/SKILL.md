@@ -110,7 +110,8 @@ gh pr create -R {repo} --base main --head {branch} \
     '## Summary' '{…}' '' '## Changes' '{…}' '' '## Test plan' '- [ ] {AC}' '' 'Closes #{item}' '' \
     '<!-- samuel:run' 'phase: {implement | done}' 'agent: {claude | codex}' \
     'model: {model, or unknown}' 'effort: {effort, or unknown}' 'sha: {HEAD SHA}' \
-    'run: {run/job id, omit the line if none}' '-->')"
+    'run: {run/job id, omit the line if none}' \
+    '{worker: <role> <agent> <model> <effort>, one line per delegated worker, omit if none}' '-->')"
 ```
 
 ### Run metadata — `phase: implement` vs `phase: done`
@@ -123,8 +124,10 @@ reason (`../iaas/references/phase-contracts.md` Phase 1) — **echo that phase's
 (`phase: implement`) instead of overriding it; the draft PR is that phase's deliverable, not a
 separate close-out. **In every other case** — an interactive close, conductor's Ship-mode termination,
 a waves worker's own close — stamp `phase: done`. `agent`/`model`/`effort` follow the same rule: pull
-them from the injected line when one exists, else `unknown` for an interactive session that cannot
-observe its own model.
+them from the injected line when one exists, else resolve them per the spec's field resolution. When
+the branch ships commits a delegated worker wrote (a `coordinate` or `cascade` worker, a Codex job),
+add one `worker: implement …` line per worker, from the report or receipt the caller holds. A PR body
+edit replaces only this phase's block.
 
 - **`Closes #{item}`** is mandatory — it auto-closes the Issue on merge.
 - **Title** = valid conventional commit (matches commitlint if present). **No AI attribution.**
@@ -166,7 +169,10 @@ Homes for what outlives the task — evaluate each. Source: the journal (D/V/T/Q
   ```bash
   gh issue create -R {repo} --title "docs: dossier — {capability}" \
     --label "type:docs,pipeline:triage" \
-    --body "Update the feature dossier for **{capability}** — changed by #{item} (PR {url}). Run /samuel:feature-dossier \"{capability}\"."
+    --body "$(printf '%s\n' \
+      'Update the feature dossier for **{capability}** — changed by #{item} (PR {url}). Run /samuel:feature-dossier "{capability}".' '' \
+      '<!-- samuel:run' 'phase: done' 'agent: {claude | codex}' 'model: {model, or unknown}' \
+      'effort: {effort, or unknown}' 'sha: {HEAD SHA}' '-->')"
   ```
 
 **3. CLAUDE.md learnings** — the *operating instruction*. Scan the journal + session for a **project-wide, generic** learning that would help *future* implementations — a build/test gotcha, a config/env quirk, a discovered command or workflow, a convention or re-architecture. **NOT** the task itself, **NOT** a one-off fix, **NOT** an architectural decision (that's an ADR) or a product capability (that's the dossier). Adopt `claude-md-management`'s discipline: keep only what's project-specific, recurring, and concise — **one line per concept** (`pattern` — brief why); drop obvious info, generic best-practice, and one-offs (the validation bar: "would a new session find this helpful, and is it the most concise form?").
