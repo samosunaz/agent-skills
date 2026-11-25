@@ -8,6 +8,7 @@ from pathlib import Path
 
 posting_command = re.compile(
     rb"\bgh[ \t]+(?:issue[ \t]+(?:comment|create)\b"
+    rb"|issue[ \t]+edit\b[^\n]*--body"
     rb"|pr[ \t]+(?:create|review|comment|edit)\b"
     rb"|api[ \t]+[^\n]*\b(?:comments|reviews)\b)"
 )

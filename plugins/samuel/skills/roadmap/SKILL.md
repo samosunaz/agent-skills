@@ -79,7 +79,7 @@ gh issue create -R {repo} --title "{type}: {bet}" \
   --label "type:feat,roadmap:{now|next|later}" \
   --body-file /tmp/bet-{n}.md
 ```
-Revise existing `roadmap:*` issues in place (re-horizon, update, or close a dropped one) instead of duplicating.
+Revise existing `roadmap:*` issues in place (re-horizon, update, or close a dropped one) instead of duplicating. Every body this skill writes, on create, revision or promotion, ends with a `samuel:run` block, `phase: roadmap`, per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact); a rewrite replaces only that phase's block.
 
 **Optional `ROADMAP.md`** (if the founder wants a strategic view): regenerate `docs/product/ROADMAP.md` from the `roadmap:*` issues — north star on top, a table per horizon linking each bet. It's a **projection**, not the source; note "generated from roadmap:* issues — don't hand-edit."
 

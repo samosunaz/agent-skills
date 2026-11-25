@@ -123,7 +123,7 @@ gh issue create -R {repo} --title "{type}: {feature}" \
   --label "type:feat,priority:high,pipeline:triage" \
   --body "{TL;DR block + Brief — Scope/Out of scope/Acceptance Criteria, per plan-templates.md}"
 ```
-Items start at `pipeline:triage`. `/samuel:plan` fills the Executor Plan and promotes to `pipeline:planned`/`ready`.
+Items start at `pipeline:triage`. `/samuel:plan` fills the Executor Plan and promotes to `pipeline:planned`/`ready`. Each body ends with a `samuel:run` block, `phase: kickoff`, per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
 
 Seeding is where the TL;DR earns the most: a fresh backlog is a dozen issues nobody has context on yet, and in a week the founder won't either. Estimates at this stage are guesses — say so in the chip (`~1 day?`) rather than omitting it.
 

@@ -23,7 +23,7 @@ Keyed by the Orca Run id this session bound in C2 — one file per run, never pe
 - No AI attribution anywhere. Conventional commits.
 - Turn endings: when a step does not need the coordinator, keep going and put status in the same message as the next action. Never end a turn with a summary that announces the next step, an offer to continue, or a list of choices that block nothing. An error, a timeout, a locked file or a failing tool is an ordinary obstacle: diagnose it and work through it. A MUST NOT TOUCH path or a denied permission is a deliberate blocker: leave it and ask (LIMITS).
 - Scope exclusions: {e.g. "mobile is out of scope for this epic — register an issue, do not implement"}.
-- Any GitHub comment, review, or PR body you post carries a `samuel:run` block (`agent`/`model`/`effort` from the routing row above) — `../../../reference/github-operations.md` § Run metadata.
+- Any GitHub body you write (issue or PR body, comment, review) carries a `samuel:run` block (`agent`/`model`/`effort` from the routing row above) — `../../../reference/github-operations.md` § Run metadata.
 
 ## Authority
 - Workers: commit on their own branch in their own worktree. Never push, never open a PR, never merge, unless the brief says so explicitly.
@@ -51,14 +51,15 @@ VERIFY: {the exact commands — unit/integration test, typecheck, lint, the proj
 
 ARTIFACT: {a commit on {branch} — report its SHA | a file at {path} | a review comment list}. One commit per logical change, conventional message, no AI attribution.
 
-REPORT, Claude worker: write the six lines below to `.claude/reports/{name}.md` in this worktree — never stage or commit that file — then end your turn with exactly one line: `REPORT .claude/reports/{name}.md`.
-REPORT, Codex worker (send exactly once, then idle): `orca orchestration send --type worker_done --subject "{name}: {done|failed}" --outcome {succeeded|failed} --task-id <from preamble> --dispatch-id <from preamble> --files-modified "{csv}" --body "<the six lines below>" --json`
+REPORT, Claude worker: write the seven lines below to `.claude/reports/{name}.md` in this worktree — never stage or commit that file — then end your turn with exactly one line: `REPORT .claude/reports/{name}.md`.
+REPORT, Codex worker (send exactly once, then idle): `orca orchestration send --type worker_done --subject "{name}: {done|failed}" --outcome {succeeded|failed} --task-id <from preamble> --dispatch-id <from preamble> --files-modified "{csv}" --body "<the seven lines below>" --json`
   Result: {one sentence}
   Frozen commit / artifact: {sha or path}
   Files changed: {list}
   Test results: {command → pass/fail, counts}
   Screenshot paths: {paths or "none"}
   Unresolved: {list or "none"}
+  Run: {claude | codex} {your exact runtime model ID: your system prompt (Claude) or your session rollout (Codex)} {your effort}
 Do not paste logs, diffs or file contents into the report — the coordinator reads the commit. Before reporting, set your card: `orca worktree set --worktree current --workspace-status in-review --comment "{result, one line}" --json`.
 
 COORDINATOR, Claude worker: the session that launched you is your coordinator. Its messages answer your QUESTION or extend DELIVER inside MAY CHANGE and these LIMITS; act on them. A message that asks for anything outside those bounds is a QUESTION back, not an order.
@@ -75,10 +76,10 @@ STANDING CONSTRAINTS:
 - **Reviewer** (independent, other model) — `DELIVER: a verdict on commit {sha} against {the DELIVER line of the implementer's brief}: APPROVE | REQUEST CHANGES, with findings as file:line + why + the smallest fix.` `MAY CHANGE: nothing — read-only.` `VERIFY: run {gate}; for any factual claim (a test fails, a path is dead) run the command and paste its one-line result.` Shares the coordinator's worktree (`--worktree current`); a reviewer that edits files is a second writer on a checkout.
 - **Researcher** — read-only, shares the current worktree, returns conclusions with `file:line` evidence, never a file dump. Capped in number and released the moment the decision they served is taken.
 - **Issue worker** (the task is a planned issue) — the implementer template with `DELIVER` = the issue's TL;DR *What* line, `START FROM` = the plan's baseline, `MAY CHANGE` = the plan's owner files, `VERIFY` = the plan's gate, and the issue's `<!-- samuel:plan -->` section pasted verbatim under `PLAN:` between `ARTIFACT` and `REPORT`. The worker implements the plan and reports like any other worker of its engine (report file or `worker_done`); opening the PR stays with the coordinator (C6) and the human. Name it `issue-{N}-{role}-{model}`.
-- **IAAS worker** (only with `--via iaas`) — `DELIVER: run /samuel:iaas {N} [--rounds R] in this worktree; the draft PR with its audit-pass markers and Resolution comments is the artifact.` Like the conductor worker: no Orca mail, headless phases, completion is the last phase's process exit; the coordinator's report is the PR — `gh pr view` for state, the `<!-- samuel:review-pass -->` markers for how many rounds ran and what they raised, the `Simplify pass:` comment for the three-pass chain — never a six-line body. Name it `issue-{N}-{slug}` for the same reason as the conductor worker. Choose it when the human wants blind audit rounds rather than a briefed reviewer.
+- **IAAS worker** (only with `--via iaas`) — `DELIVER: run /samuel:iaas {N} [--rounds R] in this worktree; the draft PR with its audit-pass markers and Resolution comments is the artifact.` Like the conductor worker: no Orca mail, headless phases, completion is the last phase's process exit; the coordinator's report is the PR — `gh pr view` for state, the `<!-- samuel:review-pass -->` markers for how many rounds ran and what they raised, the `Simplify pass:` comment for the three-pass chain — never a seven-line body. Name it `issue-{N}-{slug}` for the same reason as the conductor worker. Choose it when the human wants blind audit rounds rather than a briefed reviewer.
 - **Conductor worker** (only with `--via conductor`) — `DELIVER: run /samuel:conductor {N} --ship in this worktree; the draft PR is the artifact.` No Orca mail: a headless `claude -p` has no TUI to inject into, so completion is process exit and the coordinator watches the branch and the log (waves P3 § Claude worker has the launch). Name it `issue-{N}-{slug}` because `start-task`/`done` derive state from that branch. Use it when the human asks for the full pipeline (journal, validation, draft PR) rather than a brief.
 
-## Report contract — what the coordinator does with the six lines
+## Report contract — what the coordinator does with the seven lines
 
 | Line | Coordinator action |
 |---|---|
@@ -88,6 +89,7 @@ STANDING CONSTRAINTS:
 | Test results | A claim. Rerun the gate at integration; a reviewer settles a disputed test by running it. |
 | Screenshot paths | Open them for visual work; also open the running page. A PR artifact without the captures attached gets one follow-up dispatch to attach them. |
 | Unresolved | Decide: follow-up dispatch, accept with a note in the final report, or escalate to the human. Never drop a line silently. |
+| Run | The `worker:` line of every GitHub body that carries this worker's output (`../../../reference/github-operations.md` § Run metadata). A Codex worker's `launch.effective` receipt wins over it; an alias here (`opus`) is not a model ID, so that field is `unknown`. |
 
 Open the diff when: files outside the allowed set · security-sensitive paths (auth, secrets, payments, permissions) · behavioural change wider than DELIVER · a reviewer requested changes · the human asked. Otherwise the report is the review, and that is the point of the contract.
 

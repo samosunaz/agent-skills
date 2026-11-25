@@ -56,7 +56,7 @@ allowed-tools: Bash(gh *) Bash(which *) Bash(printf *) Bash(awk *) Bash(test *) 
 
 Record the decision: `gh issue comment {item} -R {repo} --body "**Decision:** {chosen approach} — {why}. (phase: plan)"`
 
-Before posting any Issue comment from this skill, append `samuel:run` with `phase: plan` per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact).
+Every issue body this skill writes, on create or rewrite, and every Issue comment it posts ends with a `samuel:run` block, `phase: plan`, per [Run metadata](../../reference/github-operations.md#run-metadata--who-produced-this-artifact). A rewrite replaces only the `plan` block and re-emits the others byte-identical.
 
 **No Open Questions Gate**: verify all ambiguities resolved. If ANY remain → ask now. (An undecided plan is not pickup-ready.)
 

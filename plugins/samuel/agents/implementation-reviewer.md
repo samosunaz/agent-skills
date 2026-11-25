@@ -38,6 +38,8 @@ Read the diff, then open the changed files and their call sites (`Read`/`Grep`/`
 ## Output Format
 
 ```
+Run: claude {your exact runtime model ID, from your system prompt}
+
 ### Verdict: APPROVE | REQUEST CHANGES
 
 {1-2 sentences: the strongest concern, or why the change is genuinely clean}
